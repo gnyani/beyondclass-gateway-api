@@ -1,0 +1,4 @@
+include 'engineering-everything-api'
+include 'engineering-everything-client'
+include 'engineering-everything-core'
+
