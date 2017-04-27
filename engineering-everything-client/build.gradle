@@ -1,6 +1,3 @@
-apply plugin: 'groovy'
-apply plugin: 'java'
-
 
 repositories {
     mavenCentral()
