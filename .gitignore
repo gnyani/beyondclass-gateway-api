@@ -1,0 +1,17 @@
+# eclipse
+.classpath
+.project
+.settings/
+
+
+# intelliJ
+.idea/
+.idea/*/*
+*.iml
+
+# gradle
+.gradle/
+build/
+
+# vagrant
+.vagrant/
