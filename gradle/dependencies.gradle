@@ -9,17 +9,21 @@ versions += [
         junit                    : "4.11"
 ]
 libs+=[
-        groovy                     : [group: 'org.codehaus.groovy', name: 'groovy-all', version: "${versions.groovy}"],
-        springBootParent           : [group: "org.springframework.boot", name: "spring-boot-starter-parent", version: "${versions.springBootVersion}"],
-        springBootStarterWeb       : [group: "org.springframework.boot", name: "spring-boot-starter-web", version: "${versions.springBootVersion}"],
-        springBootStarterTest      : [group: "org.springframework.boot", name: "spring-boot-starter-test", version: "${versions.springBootVersion}"],
-        springBootGradlePlugin     : [group: "org.springframework.boot", name: "spring-boot-gradle-plugin", version: "${versions.springBootVersion}"],
-        springBootJdbc             : [group: "org.springframework.boot", name: "spring-boot-starter-jdbc", version: "${versions.springBootVersion}"],
-        springBootJpa              : [group: 'org.springframework.boot', name: "spring-boot-starter-data-jpa", version: "${versions.springBootVersion}"],
-        springBootTomcat           : [group: 'org.springframework.boot', name: 'spring-boot-starter-tomcat', version: "${versions.springBootVersion}"],
-        springBootActuator         : [group: 'org.springframework.boot', name: 'spring-boot-starter-actuator', version: "${versions.springBootVersion}"],
-        springBootRest             : [group: 'org.springframework.boot', name: 'spring-boot-starter-data-rest', version: "${versions.springBootVersion}"],
-        springBootLog4j            : [group: 'org.springframework.boot', name: 'spring-boot-starter-log4j', version: "${versions.springBootVersion}"],
-        springBootHateoas          : [group: 'org.springframework.boot', name: 'spring-boot-starter-hateoas', version: "${versions.springBootVersion}"],
-        junit                      : [group: 'junit', name: 'junit', version: "${versions.junit}"]
+        groovy                      : [group: 'org.codehaus.groovy', name: 'groovy-all', version: "${versions.groovy}"],
+        springBootParent            : [group: "org.springframework.boot", name: "spring-boot-starter-parent", version: "${versions.springBootVersion}"],
+        springBootStarter           : [group: "org.springframework.boot" ,name: "spring-boot-starter",version: "${versions.springBootVersion}"],
+        springBootStarterWeb        : [group: "org.springframework.boot", name: "spring-boot-starter-web", version: "${versions.springBootVersion}"],
+        springBootStarterTest       : [group: "org.springframework.boot", name: "spring-boot-starter-test", version: "${versions.springBootVersion}"],
+        springBootGradlePlugin      : [group: "org.springframework.boot", name: "spring-boot-gradle-plugin", version: "${versions.springBootVersion}"],
+        springBootJdbc              : [group: "org.springframework.boot", name: "spring-boot-starter-jdbc", version: "${versions.springBootVersion}"],
+        springBootJpa               : [group: 'org.springframework.boot', name: "spring-boot-starter-data-jpa", version: "${versions.springBootVersion}"],
+        springBootTomcat            : [group: 'org.springframework.boot', name: 'spring-boot-starter-tomcat', version: "${versions.springBootVersion}"],
+        springBootActuator          : [group: 'org.springframework.boot', name: 'spring-boot-starter-actuator', version: "${versions.springBootVersion}"],
+        springBootRest              : [group: 'org.springframework.boot', name: 'spring-boot-starter-data-rest', version: "${versions.springBootVersion}"],
+        springBootLog4j             : [group: 'org.springframework.boot', name: 'spring-boot-starter-log4j', version: "${versions.springBootVersion}"],
+        springBootHateoas           : [group: 'org.springframework.boot', name: 'spring-boot-starter-hateoas', version: "${versions.springBootVersion}"],
+        springBootStarterDataMongodb: [group: 'org.springframework.boot', name: 'spring-boot-starter-data-mongodb', version: "${versions.springBootVersion}"],
+        junit                       : [group: 'junit', name: 'junit', version: "${versions.junit}"],
+        hibernateValidator          : 'org.hibernate:hibernate-validator:5.1.3.Final',
+        jackson                     : [group:'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.0.1']
 ]

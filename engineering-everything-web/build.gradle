@@ -1,0 +1,18 @@
+
+apply from: "../gradle/dependencies.gradle"
+apply plugin: 'application'
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile project (':engineering-everything-api')
+    compile project (':engineering-everything-core')
+    compile(libs.groovy)
+    compile(libs.springBootStarterWeb)
+    compile(libs.springBootStarterDataMongodb)
+    testCompile(libs.springBootStarterTest)
+    testCompile (libs.junit)
+}
+
+mainClassName = 'Application.EngineeringEverythingApplication'

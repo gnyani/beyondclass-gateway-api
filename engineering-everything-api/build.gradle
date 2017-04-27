@@ -3,7 +3,20 @@ repositories {
     mavenCentral()
 }
 
+
 dependencies {
-    compile (libs.groovy)
+    compile(libs.springBootStarter)
+    compile(libs.hibernateValidator)
+    compile(libs.jackson)
+    compile(libs.springBootStarterDataMongodb)
     testCompile (libs.junit)
 }
+
+bootRepackage {
+    enabled = false
+}
+
+findMainClass{
+    enabled=false
+}
+
