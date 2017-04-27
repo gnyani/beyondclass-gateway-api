@@ -1,4 +1,4 @@
-Bro do not checking .idea folder and .git folder.
+Bro do not checkin .idea folder and .gradle folder.
 
 Useful commands for gradle:
 ./gradlew build -- builds the project

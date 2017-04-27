@@ -1,0 +1,19 @@
+apply from: 'gradle/dependencies.gradle'
+apply plugin: 'groovy'
+apply plugin: 'java'
+
+buildscript {
+
+    apply from: 'gradle/dependencies.gradle'
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath libs.springBootGradlePlugin
+    }
+}
+allprojects {
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+}
