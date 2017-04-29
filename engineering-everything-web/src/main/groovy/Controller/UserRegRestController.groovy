@@ -28,6 +28,11 @@ class UserRegRestController {
     public String userRegistration(@Valid @RequestBody User user)
     {   User registered
         Boolean flag = false
+        //code for checking password and confirm password
+        if(!(user.getPassword().equals(user.getConfirmpassword()))){
+            return "Confirm password must match password"
+        }
+
         // code for filtering branch names
         def branch = user.getBranch()
         for (BranchNames type : BranchNames.values()) {
@@ -46,10 +51,10 @@ class UserRegRestController {
                 return "User already exists please sign up with other email address"
             }
             user.setBranch(branch.toUpperCase())
-            registered = repository.insert(user);
+            registered = repository.save(user);
         }
         catch(Exception e){
-            return "Error occurred while registering user please try again after sometime"
+            return "Error occurred while registering user please try again after sometime" + e.getMessage()
     }
         response="User registration successful for "+registered.getFirstName()+ " with email " + registered.getEmail()
         return response

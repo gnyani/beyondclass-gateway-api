@@ -12,6 +12,7 @@ dependencies {
     compile project (':engineering-everything-core')
     compile(libs.groovy)
     compile(libs.springBootStarterWeb)
+//    compile(libs.springBootStarterSecurity)
     compile(libs.springBootStarterDataMongodb)
     testCompile(libs.springBootStarterTest)
     testCompile (libs.junit)
