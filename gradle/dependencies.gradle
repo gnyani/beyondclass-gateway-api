@@ -23,6 +23,7 @@ libs+=[
         springBootLog4j             : [group: 'org.springframework.boot', name: 'spring-boot-starter-log4j', version: "${versions.springBootVersion}"],
         springBootHateoas           : [group: 'org.springframework.boot', name: 'spring-boot-starter-hateoas', version: "${versions.springBootVersion}"],
         springBootStarterDataMongodb: [group: 'org.springframework.boot', name: 'spring-boot-starter-data-mongodb', version: "${versions.springBootVersion}"],
+        springBootStarterSecurity   : [group: "org.springframework.boot", name: "spring-boot-starter-security", version: "${versions.springBootVersion}"],
 //        springDataCommons           : [group: 'org.springframework.data', name: 'spring-data-commons', version:"${versions.springDataVersion}"],
         junit                       : [group: 'junit', name: 'junit', version: "${versions.junit}"],
         hibernateValidator          : 'org.hibernate:hibernate-validator:4.3.0.Final',

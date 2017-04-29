@@ -20,5 +20,8 @@ allprojects {
     targetCompatibility = 1.8
 }
 
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.4'
+}
 
 
