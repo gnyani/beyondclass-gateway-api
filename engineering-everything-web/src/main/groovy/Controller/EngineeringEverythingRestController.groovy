@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.RequestMethod
 import org.springframework.web.bind.annotation.RestController
 import repositories.UserRepository
 
+import javax.validation.Valid
+
 /**
  * Created by GnyaniMac on 27/04/17.
  */
@@ -22,7 +24,7 @@ class EngineeringEverythingRestController {
 
 
     @RequestMapping(value="/users/registration", produces ="application/json" ,method = RequestMethod.POST)
-    public String userRegistration(@RequestBody User user)
+    public String userRegistration(@Valid @RequestBody User user)
     {   User registered
         registered=repository.save(user);
         response="User registration successful for "+registered.firstName

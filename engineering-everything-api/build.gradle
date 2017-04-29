@@ -7,16 +7,11 @@ repositories {
 dependencies {
     compile(libs.springBootStarter)
     compile(libs.hibernateValidator)
+    compile(libs.validationApi)
+    compile(libs.jbossLogging)
     compile(libs.jackson)
     compile(libs.springBootStarterDataMongodb)
     testCompile (libs.junit)
 }
 
-bootRepackage {
-    enabled = false
-}
-
-findMainClass{
-    enabled=false
-}
 

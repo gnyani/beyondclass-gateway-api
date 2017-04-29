@@ -1,4 +1,5 @@
 apply from: 'gradle/dependencies.gradle'
+
 buildscript {
 
     apply from: 'gradle/dependencies.gradle'
@@ -14,13 +15,10 @@ allprojects {
     apply plugin: 'groovy'
     apply plugin: 'java'
     apply plugin: 'idea'
-    apply plugin: 'org.springframework.boot'
 
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
 }
 
-bootRepackage {
-    enabled = false
-}
+
 

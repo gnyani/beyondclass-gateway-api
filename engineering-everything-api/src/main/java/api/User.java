@@ -2,6 +2,7 @@ package api;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.hibernate.validator.constraints.NotEmpty;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.data.annotation.Id;
 
 import javax.validation.constraints.NotNull;
@@ -12,17 +13,17 @@ import javax.validation.constraints.NotNull;
  */
 public class User {
    @Id
-    public String id;
+     private String id;
 
     @NotEmpty
     @NotNull
     @JsonProperty
-    public String firstName;
+     private String firstName;
 
     @NotEmpty
     @NotNull
     @JsonProperty
-    public String lastName;
+     private String lastName;
 
     public User() {}
 

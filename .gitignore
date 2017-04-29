@@ -12,6 +12,10 @@
 # gradle
 .gradle/
 build/
+engineering-everything-api/build/
+engineering-everything-core/build/
+engineering-everything-web/build/
+engineering-everything-client/build/
 
 # vagrant
 .vagrant/

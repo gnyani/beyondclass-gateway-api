@@ -8,11 +8,3 @@ dependencies {
     testCompile (libs.junit)
 }
 
-bootRepackage {
-    enabled = false
-}
-
-
-findMainClass{
-    enabled=false
-}

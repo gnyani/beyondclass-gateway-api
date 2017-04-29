@@ -1,23 +1,16 @@
 package Application
 
-import api.User
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.CommandLineRunner
+
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
-import org.springframework.boot.autoconfigure.domain.EntityScan
 import org.springframework.context.annotation.ComponentScan
-import org.springframework.context.annotation.Configuration
-import org.springframework.data.mongodb.repository.config.EnableMongoRepositories
-import repositories.UserRepository
+
 
 
 /**
  * Created by GnyaniMac on 27/04/17.
  */
-@Configuration
 @ComponentScan(basePackages = ['controller'],basePackageClasses =[])
-@EnableMongoRepositories(basePackageClasses = UserRepository.class)
 @SpringBootApplication
 public class EngineeringEverythingApplication{
 
