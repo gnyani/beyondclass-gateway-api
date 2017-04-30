@@ -1,4 +1,4 @@
-package Application
+package com.engineering.Application
 
 
 import org.springframework.boot.SpringApplication
@@ -10,7 +10,7 @@ import org.springframework.context.annotation.ComponentScan
 /**
  * Created by GnyaniMac on 27/04/17.
  */
-@ComponentScan(basePackages = ['controller'],basePackageClasses =[])
+@ComponentScan(basePackages = ['com.engineering.Application'],basePackageClasses =[])
 @SpringBootApplication
 public class EngineeringEverythingApplication{
 

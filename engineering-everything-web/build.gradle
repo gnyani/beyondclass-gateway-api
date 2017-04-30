@@ -18,5 +18,5 @@ dependencies {
     testCompile (libs.junit)
 }
 
-mainClassName = 'Application.EngineeringEverythingApplication'
+mainClassName = 'com.engineering.Application.EngineeringEverythingApplication'
 
