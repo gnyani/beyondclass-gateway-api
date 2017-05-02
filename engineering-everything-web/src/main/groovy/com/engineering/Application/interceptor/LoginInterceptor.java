@@ -17,7 +17,6 @@ public class LoginInterceptor implements HandlerInterceptor {
 			throws Exception {
 
 		if( !request.getRequestURI().equalsIgnoreCase("/users/login")){
-			System.out.print("entered interceptor");
 			UserLogin u=  (UserLogin) request.getSession().getAttribute("LOGGEDIN_USER");
 			if(u==null){
 			    response.sendRedirect("/");
