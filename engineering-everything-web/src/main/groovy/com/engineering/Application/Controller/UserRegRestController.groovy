@@ -1,10 +1,12 @@
 package com.engineering.Application.Controller
 
-import api.User
+
 import api.UserLogin
 import constants.BranchNames
+
+import api.User;
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.context.annotation.ComponentScan
+
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -15,6 +17,7 @@ import repositories.UserRepository
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 import javax.validation.Valid
+import java.security.Principal
 
 /**
  * Created by GnyaniMac on 27/04/17.
@@ -92,6 +95,14 @@ class UserRegRestController {
             return "enter both username and passoword"
         }
 
+    }
+
+    @RequestMapping(value="/users/logout",method = RequestMethod.GET)
+    public String logout(HttpServletRequest request, HttpServletResponse response)
+    {
+        UserLogin userLogin = request.getSession().getAttribute("LOGGEDIN_USER");
+        request.getSession().invalidate();
+        return "Logout successful for user " +userLogin.getEmail();
     }
 
 }
