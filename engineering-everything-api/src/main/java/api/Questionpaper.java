@@ -2,12 +2,9 @@ package api;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.hibernate.validator.constraints.NotEmpty;
-import org.springframework.data.mongodb.core.index.CompoundIndex;
-import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.validation.constraints.NotNull;
-import java.io.File;
 
 /**
  * Created by GnyaniMac on 02/05/17.
@@ -23,11 +20,15 @@ public class Questionpaper {
     @JsonProperty
     @NotEmpty
     @NotNull
-    private String collegecode;
+    private String college;
     @JsonProperty
     @NotEmpty
     @NotNull
     private String branch;
+    @JsonProperty
+    @NotEmpty
+    @NotNull
+    private String section;
     @JsonProperty
     @NotEmpty
     @NotNull
@@ -46,10 +47,11 @@ public class Questionpaper {
 
     }
 
-    public Questionpaper(String university, String collegecode, String branch, String year, String sem, String subject) {
+    public Questionpaper(String university, String college, String branch, String section, String year, String sem, String subject) {
         this.university = university;
-        this.collegecode = collegecode;
+        this.college = college;
         this.branch = branch;
+        this.section = section;
         this.year = year;
         this.sem = sem;
         this.subject = subject;
@@ -63,12 +65,12 @@ public class Questionpaper {
         this.university = university;
     }
 
-    public String getCollegecode() {
-        return collegecode;
+    public String getCollege() {
+        return college;
     }
 
-    public void setCollegecode(String collegecode) {
-        this.collegecode = collegecode;
+    public void setCollege(String college) {
+        this.college = college;
     }
 
     public String getBranch() {
@@ -101,6 +103,13 @@ public class Questionpaper {
 
     public void setSubject(String subject) {
         this.subject = subject;
+    }
+    public String getSection() {
+        return section;
+    }
+
+    public void setSection(String section) {
+        this.section = section;
     }
 
 }

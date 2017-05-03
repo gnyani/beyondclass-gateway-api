@@ -1,10 +1,6 @@
 
-import Service.filenamegenerator
-import java.io.File;
-import java.io.IOException;
-import java.net.UnknownHostException;
-import com.mongodb.DB;
-import com.mongodb.DBCollection;
+import com.engineering.core.Service.filenamegenerator
+import com.mongodb.DB
 import com.mongodb.DBCursor;
 import com.mongodb.Mongo;
 import com.mongodb.MongoException;
@@ -28,7 +24,7 @@ public class QuestionPaperinsertUtility {
 
 
 
-            String newFileName = new filenamegenerator().generateName("ou","vasv","cse","4","1","DM");
+            String newFileName = new filenamegenerator().generateName("OU","VASV","CSE","B","4","1","DM");
 
             File imageFile = new File("/Users/GnyaniMac/Desktop/testimage.jpg");
 

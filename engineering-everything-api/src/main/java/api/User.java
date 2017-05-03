@@ -54,6 +54,11 @@ public class User {
      private String lastName;
 
     @JsonProperty
+    @NotEmpty(message = "university name cannot be null")
+    @NotNull(message = "university name cannot be null")
+    private String university;
+
+    @JsonProperty
     @NotEmpty(message = "college name cannot be null")
     @NotNull(message = "college name cannot be null")
     private String college;
@@ -77,7 +82,7 @@ public class User {
     @JsonProperty
     @NotNull
     @NotEmpty(message = "please enter year")
-    @Max(value = 4,message = "please enter year in range 1 to 4")@Min(value = 1,message = "please enter year in range 1 to 4")
+   // @Max(value = 4,message = "please enter year in range 1 to 4")@Min(value = 1,message = "please enter year in range 1 to 4")
     private String year;
 
     @JsonProperty
@@ -101,12 +106,13 @@ public class User {
     public User(){
     }
 
-    public User(String email, String password, String confirmpassword, String firstName, String lastName, String college, String branch, String rollno, String section, String year, String sem, String hostel, Date dob, String mobilenumber, LocalDateTime registerdate) {
+    public User(String email, String password, String confirmpassword, String firstName, String lastName,String university, String college, String branch, String rollno, String section, String year, String sem, String hostel, Date dob, String mobilenumber, LocalDateTime registerdate) {
         this.email = email;
         this.password = password;
         this.confirmpassword = confirmpassword;
         this.firstName = firstName;
         this.lastName = lastName;
+        this.university = university;
         this.college = college;
         this.branch = branch;
         this.rollno = rollno;
@@ -239,6 +245,14 @@ public class User {
         this.confirmpassword = confirmpassword;
     }
 
+    public String getUniversity() {
+        return university;
+    }
+
+    public void setUniversity(String university) {
+        this.university = university;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -252,6 +266,7 @@ public class User {
         if (!confirmpassword.equals(user.confirmpassword)) return false;
         if (!firstName.equals(user.firstName)) return false;
         if (lastName != null ? !lastName.equals(user.lastName) : user.lastName != null) return false;
+        if (!university.equals(user.university)) return false;
         if (!college.equals(user.college)) return false;
         if (!branch.equals(user.branch)) return false;
         if (!rollno.equals(user.rollno)) return false;
@@ -273,6 +288,7 @@ public class User {
         result = 31 * result + confirmpassword.hashCode();
         result = 31 * result + firstName.hashCode();
         result = 31 * result + (lastName != null ? lastName.hashCode() : 0);
+        result = 31 * result + university.hashCode();
         result = 31 * result + college.hashCode();
         result = 31 * result + branch.hashCode();
         result = 31 * result + rollno.hashCode();

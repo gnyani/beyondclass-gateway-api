@@ -1,6 +1,6 @@
 package com.engineering.Application.interceptor;
 
-import api.UserLogin;
+import api.User;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
@@ -17,7 +17,7 @@ public class LoginInterceptor implements HandlerInterceptor {
 			throws Exception {
 
 		if( !request.getRequestURI().equalsIgnoreCase("/users/login")){
-			UserLogin u=  (UserLogin) request.getSession().getAttribute("LOGGEDIN_USER");
+			User u=  (User) request.getSession().getAttribute("LOGGEDIN_USER");
 			if(u==null){
 			    response.sendRedirect("/");
 			    return false;}
