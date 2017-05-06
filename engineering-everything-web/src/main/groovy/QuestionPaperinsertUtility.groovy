@@ -3,17 +3,13 @@ import com.engineering.core.Service.FilenameGenerator
 import com.mongodb.BasicDBObject
 import com.mongodb.DB
 import com.mongodb.DBCursor
-import com.mongodb.DBObject;
 import com.mongodb.Mongo;
 import com.mongodb.MongoException;
 import com.mongodb.gridfs.GridFS;
 import com.mongodb.gridfs.GridFSDBFile;
 import com.mongodb.gridfs.GridFSInputFile;
 
-/**
- * Java MongoDB : Save image example
- *
- */
+
 
 public class QuestionPaperinsertUtility {
     public static void main(String[] args) {
@@ -26,7 +22,7 @@ public class QuestionPaperinsertUtility {
 
 
 
-            String newFileName = new FilenameGenerator().generateQpName("OU","VASV","CSE","B","4","1","DM","2015");
+            String newFileName = new FilenameGenerator().generateQpName("OU","VASV","CSE","4","1","OS","2015");
 
             File imageFile = new File("/Users/GnyaniMac/Desktop/mywork/testimage.jpg");
 

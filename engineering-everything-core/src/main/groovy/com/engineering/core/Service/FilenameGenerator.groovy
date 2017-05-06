@@ -14,15 +14,14 @@ class FilenameGenerator {
 
      }
 
-    public String generateQpName(String university, String collegecode, String branch, String section, String year, String sem, String subject,String qpyear)
+    public String generateQpName(String university, String collegecode, String branch, String year, String sem, String subject,String qpyear)
     {
         university = university.toUpperCase();
         collegecode = collegecode.toUpperCase();
         branch = branch.toUpperCase();
-        section = section.toUpperCase();
         subject = subject.toUpperCase();
         def filename =null;
-        filename = university+"-"+collegecode+"-"+branch+"-"+section+"-"+year+"-"+sem+"-"+subject+"-"+qpyear;
+        filename = university+"-"+collegecode+"-"+branch+"-"+year+"-"+sem+"-"+subject+"-"+qpyear;
         return  filename;
     }
     public String generateSyllabusName(String university, String collegecode, String branch, String section, String year, String sem, String subject)

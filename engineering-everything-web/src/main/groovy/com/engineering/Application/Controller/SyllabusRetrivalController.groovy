@@ -1,6 +1,6 @@
 package com.engineering.Application.Controller
 
-import api.QuestionPaperSubject
+import api.Subject
 import api.Syllabus
 import api.User
 import com.engineering.core.Service.FilenameGenerator
@@ -69,7 +69,7 @@ class SyllabusRetrivalController {
     }
     @ResponseBody
     @RequestMapping(value="/users/syllabus",produces = "application/pdf" ,method= RequestMethod.POST)
-    public byte[] retrievedefault (@RequestBody QuestionPaperSubject subject, HttpServletRequest request, HttpServletResponse response)
+    public byte[] retrievedefault (@RequestBody Subject subject, HttpServletRequest request, HttpServletResponse response)
     {
         byte[] file = null;
         User userLogin = request.getSession().getAttribute("LOGGEDIN_USER");

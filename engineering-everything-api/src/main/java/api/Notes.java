@@ -6,32 +6,24 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.validation.constraints.NotNull;
 
+
 /**
  * Created by GnyaniMac on 02/05/17.
  */
-@Document(collection = "questionpapers")
+@Document(collection = "notes")
 
-public class Questionpaper {
+public class Notes {
 
-    @JsonProperty
-    @NotEmpty
-    @NotNull
     private String university;
-    @JsonProperty
-    @NotEmpty
-    @NotNull
+
     private String college;
-    @JsonProperty
-    @NotEmpty
-    @NotNull
+
     private String branch;
-    @JsonProperty
-    @NotEmpty
-    @NotNull
+
+    private String section;
+
     private String year;
-    @JsonProperty
-    @NotEmpty
-    @NotNull
+
     private String sem;
     @JsonProperty
     @NotEmpty
@@ -40,21 +32,22 @@ public class Questionpaper {
     @JsonProperty
     @NotEmpty
     @NotNull
-    private  String qpyear;
+    private byte[] file;
 
-    public Questionpaper()
+    public Notes()
     {
 
     }
 
-    public Questionpaper(String university, String college, String branch,  String year, String sem, String subject, String qpyear) {
+    public Notes(String university, String college, String branch, String section, String year, String sem, String subject, byte[] file) {
         this.university = university;
         this.college = college;
         this.branch = branch;
+        this.section = section;
         this.year = year;
         this.sem = sem;
         this.subject = subject;
-        this.qpyear = qpyear;
+        this.file = file;
     }
 
 
@@ -105,13 +98,20 @@ public class Questionpaper {
     public void setSubject(String subject) {
         this.subject = subject;
     }
-
-    public String getQpyear() {
-        return qpyear;
+    public String getSection() {
+        return section;
     }
 
-    public void setQpyear(String qpyear) {
-        this.qpyear = qpyear;
+    public void setSection(String section) {
+        this.section = section;
+    }
+
+    public byte[] getFile() {
+        return file;
+    }
+
+    public void setFile(byte[] file) {
+        this.file = file;
     }
 
 

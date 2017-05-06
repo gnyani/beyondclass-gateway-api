@@ -54,7 +54,7 @@ class QuestionPaperRetrivalController {
     public byte[] retriveothers (@RequestBody Questionpaper qp, HttpServletRequest request, HttpServletResponse response)
     {
         byte[] file = null;
-        String filename= fg.generateQpName(qp.getUniversity(),qp.getCollege(),qp.getBranch(),qp.getSection(),qp.getYear(),qp.getSem(),qp.getSubject(),qp.getQpyear())
+        String filename= fg.generateQpName(qp.getUniversity(),qp.getCollege(),qp.getBranch(),qp.getYear(),qp.getSem(),qp.getSubject(),qp.getQpyear())
         Mongo mongo = new Mongo(mongodbhost,mongoport);
         DB db = mongo.getDB(db);
         // create a "photo" namespace
@@ -83,7 +83,7 @@ class QuestionPaperRetrivalController {
         byte[] file = null;
         User userLogin = request.getSession().getAttribute("LOGGEDIN_USER");
         User currentuser = repository.findByEmail(userLogin.getEmail());
-        String filename = fg.generateQpName(currentuser.getUniversity(),currentuser.getCollege(),currentuser.getBranch(),currentuser.getSection(),currentuser.getYear(),currentuser.getSem(),subject.getSubject(),subject.getQpyear())
+        String filename = fg.generateQpName(currentuser.getUniversity(),currentuser.getCollege(),currentuser.getBranch(),currentuser.getYear(),currentuser.getSem(),subject.getSubject(),subject.getQpyear())
         Mongo mongo = new Mongo(mongodbhost, mongoport);
         DB db = mongo.getDB(db);
         // create a "photo" namespace
