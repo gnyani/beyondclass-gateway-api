@@ -9,9 +9,9 @@ import javax.validation.constraints.NotNull;
 /**
  * Created by GnyaniMac on 02/05/17.
  */
-@Document(collection = "questionpapers")
+@Document(collection = "syllabus")
 
-public class Questionpaper {
+public class Syllabus {
 
     @JsonProperty
     @NotEmpty
@@ -41,17 +41,13 @@ public class Questionpaper {
     @NotEmpty
     @NotNull
     private String subject;
-    @JsonProperty
-    @NotEmpty
-    @NotNull
-    private  String qpyear;
 
-    public Questionpaper()
+    public Syllabus()
     {
 
     }
 
-    public Questionpaper(String university, String college, String branch, String section, String year, String sem, String subject, String qpyear) {
+    public Syllabus(String university, String college, String branch, String section, String year, String sem, String subject) {
         this.university = university;
         this.college = college;
         this.branch = branch;
@@ -59,9 +55,7 @@ public class Questionpaper {
         this.year = year;
         this.sem = sem;
         this.subject = subject;
-        this.qpyear = qpyear;
     }
-
 
     public String getUniversity() {
         return university;
@@ -117,14 +111,5 @@ public class Questionpaper {
     public void setSection(String section) {
         this.section = section;
     }
-
-    public String getQpyear() {
-        return qpyear;
-    }
-
-    public void setQpyear(String qpyear) {
-        this.qpyear = qpyear;
-    }
-
 
 }

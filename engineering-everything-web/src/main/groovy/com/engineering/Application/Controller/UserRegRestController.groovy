@@ -1,23 +1,29 @@
 package com.engineering.Application.Controller
 
-
+import com.engineering.core.Service.DetailsValidator
 import api.UserLogin
 import constants.BranchNames
 
-import api.User;
+import api.User
+import constants.Colleges
+import constants.Sections
+import constants.Semester
+import constants.Universities
+import constants.year;
 import org.springframework.beans.factory.annotation.Autowired
-
+import org.springframework.context.annotation.ComponentScan
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories
+import org.springframework.stereotype.Component
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestMethod
 import org.springframework.web.bind.annotation.RestController
-import repositories.UserRepository
+import com.engineering.core.repositories.UserRepository
 
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 import javax.validation.Valid
-import java.security.Principal
+
 
 /**
  * Created by GnyaniMac on 27/04/17.
@@ -29,36 +35,79 @@ class UserRegRestController {
 
     @Autowired
     public UserRepository repository;
-     String response
 
+    @Autowired
+    DetailsValidator validation;
 
     @RequestMapping(value="/users/registration", produces ="application/json" ,method = RequestMethod.POST)
     public String userRegistration(@Valid @RequestBody User user)
-    {   User registered
-        Boolean flag = false
-        //code for checking password and confirm password
+    {
+        User registered
+        String response
+       // System.out.println("USer is"+user + "email is " + user.getEmail())
+        //***************************VALIDATION****************************\\
+        //code for checking password and confirm password might have to implement this from UI side
         if(!(user.getPassword().equals(user.getConfirmpassword()))){
             return "Confirm password must match password"
         }
-
+        // code for filtering universities
+        def validUniv = validation.refineUniv(user.getUniversity());
+        if(validUniv.getValid())
+        {
+            user.setUniversity(validUniv.getResult())
+        } else{
+            return "please enter valid University names from "+Universities.values();
+        }
+        // code for refining college names
+        def validCol = validation.refineCollege(user.getCollege());
+        if(validUniv.getValid())
+        {
+            user.setCollege(validCol.getResult())
+        } else{
+            return "please enter valid College names from "+Colleges.values();
+        }
+        // code for refining year
+        def validYear = validation.refineYear(user.getYear());
+        if(validYear.getValid())
+        {
+            user.setYear(validYear.getResult())
+        } else{
+            return "please enter valid year from"+ year.values();
+        }
+        //code for refining semester
+        def validSem = validation.refineSemester(user.getSem());
+        if(validSem.getValid())
+        {
+            user.setSem(validSem.getResult())
+        } else{
+            return "please enter valid Semester "+ Semester.values();
+        }
         // code for filtering branch names
-        def branch = user.getBranch()
-        for (BranchNames type : BranchNames.values()) {
-            if ((type.name().equalsIgnoreCase(branch))) {
-                flag=true
-            }
+        def validBranch = validation.refineBranch(user.getBranch());
+        if(validBranch.getValid())
+        {
+            user.setBranch(validBranch.getResult())
+        } else{
+            return "please enter valid branch names from "+BranchNames.values();
         }
-        if (!flag){
-            return "please enter a valid branch name in"+ BranchNames.values();
+        // code for refining section
+        def validSec = validation.refineSection(user.getSection());
+        if(validSec.getValid())
+        {
+            user.setSection(validSec.getResult())
+        } else{
+            return "please enter valid section from "+ Sections.values();
         }
-
-        //code for filtering "." from email addresses
-
+        //code for validating email addresses
+        def validEmail = validation.refineEmail(user.getEmail())
+        if(repository.findByEmail(validEmail.getResult()))
+        {
+            return "Please register with other email address,this email already exists"
+        }
+        user.setEmail(validEmail.getResult())
+        //******************************VALIDATION DONE **********************\\
         try {
-            if(repository.findByEmail(user.getEmail())) {
-                return "User already exists please sign up with other email address"
-            }
-            user.setBranch(branch.toUpperCase())
+            //saving to collection
             registered = repository.save(user);
         }
         catch(Exception e){
@@ -67,18 +116,22 @@ class UserRegRestController {
         response="User registration successful for "+registered.getFirstName()+ " with email " + registered.getEmail()
         return response
     }
+    //should be deprecated vulnerable end point
     @RequestMapping(value="/users" ,method = RequestMethod.GET)
     public String listUsers()
     {   System.out.println("lsiting users now");
         String name =repository.findAll()
         return  name;
     }
+
     @RequestMapping(value="/users/login",method = RequestMethod.POST)
    public String logIn(@RequestBody UserLogin person, HttpServletRequest request, HttpServletResponse response)
     {
+        println(person.getEmail())
         if (!((person.getEmail().isEmpty()) || (person.getPassword().isEmpty()))) {
 
-            UserLogin u = repository.findByEmail(person.getEmail());
+            User u = repository.findByEmail(person.getEmail());
+            println(u.toString());
 
             if (u != null) {
                 if (u.getPassword().equals(person.getPassword())) {
@@ -100,7 +153,7 @@ class UserRegRestController {
     @RequestMapping(value="/users/logout",method = RequestMethod.GET)
     public String logout(HttpServletRequest request, HttpServletResponse response)
     {
-        UserLogin userLogin = request.getSession().getAttribute("LOGGEDIN_USER");
+        User userLogin = request.getSession().getAttribute("LOGGEDIN_USER");
         request.getSession().invalidate();
         return "Logout successful for user " +userLogin.getEmail();
     }

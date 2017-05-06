@@ -10,7 +10,8 @@ import org.springframework.context.annotation.ComponentScan
 /**
  * Created by GnyaniMac on 27/04/17.
  */
-@ComponentScan(basePackages = ['com.engineering.Application'],basePackageClasses =[])
+
+@ComponentScan(basePackages = ['com.engineering.Application','com.engineering.core.Service'],basePackageClasses =[])
 @SpringBootApplication
 public class EngineeringEverythingApplication{
 

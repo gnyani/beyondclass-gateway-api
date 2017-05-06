@@ -1,4 +1,4 @@
-package repositories;
+package com.engineering.core.repositories;
 
 
 import api.User
@@ -12,5 +12,6 @@ import org.springframework.data.mongodb.repository.MongoRepository;
  */
 
 public interface UserRepository extends MongoRepository<User,String> {
-    public UserLogin findByEmail(String email);
+    public User findByEmail(String email);
+   // public User findbyEmail(String email);
 }
