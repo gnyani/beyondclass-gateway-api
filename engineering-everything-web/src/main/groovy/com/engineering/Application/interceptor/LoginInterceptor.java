@@ -16,7 +16,8 @@ public class LoginInterceptor implements HandlerInterceptor {
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
 			throws Exception {
 
-		if( !request.getRequestURI().equalsIgnoreCase("/users/login")){
+		 if( !request.getRequestURI().equalsIgnoreCase("/users/login")){
+			System.out.print("Intercepted");
 			User u=  (User) request.getSession().getAttribute("LOGGEDIN_USER");
 			if(u==null){
 			    response.sendRedirect("/");

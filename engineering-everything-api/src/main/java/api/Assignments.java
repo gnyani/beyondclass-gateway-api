@@ -6,36 +6,24 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.validation.constraints.NotNull;
 
+
 /**
  * Created by GnyaniMac on 02/05/17.
  */
-@Document(collection = "questionpapers")
+@Document(collection = "assignments")
 
-public class Questionpaper {
+public class Assignments{
 
-    @JsonProperty
-    @NotEmpty
-    @NotNull
     private String university;
-    @JsonProperty
-    @NotEmpty
-    @NotNull
+
     private String college;
-    @JsonProperty
-    @NotEmpty
-    @NotNull
+
     private String branch;
-    @JsonProperty
-    @NotEmpty
-    @NotNull
+
     private String section;
-    @JsonProperty
-    @NotEmpty
-    @NotNull
+
     private String year;
-    @JsonProperty
-    @NotEmpty
-    @NotNull
+
     private String sem;
     @JsonProperty
     @NotEmpty
@@ -44,14 +32,14 @@ public class Questionpaper {
     @JsonProperty
     @NotEmpty
     @NotNull
-    private  String qpyear;
+    private byte[] file;
 
-    public Questionpaper()
+    public Assignments()
     {
 
     }
 
-    public Questionpaper(String university, String college, String branch, String section, String year, String sem, String subject, String qpyear) {
+    public Assignments(String university, String college, String branch, String section, String year, String sem, String subject, byte[] file) {
         this.university = university;
         this.college = college;
         this.branch = branch;
@@ -59,7 +47,7 @@ public class Questionpaper {
         this.year = year;
         this.sem = sem;
         this.subject = subject;
-        this.qpyear = qpyear;
+        this.file = file;
     }
 
 
@@ -118,12 +106,12 @@ public class Questionpaper {
         this.section = section;
     }
 
-    public String getQpyear() {
-        return qpyear;
+    public byte[] getFile() {
+        return file;
     }
 
-    public void setQpyear(String qpyear) {
-        this.qpyear = qpyear;
+    public void setFile(byte[] file) {
+        this.file = file;
     }
 
 

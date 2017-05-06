@@ -7,6 +7,7 @@ import constants.Colleges
 import constants.Sections
 import constants.Semester
 import constants.Universities
+import org.springframework.context.annotation.Bean
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories
 import org.springframework.stereotype.Component
 import com.engineering.core.repositories.UserRepository
@@ -14,7 +15,7 @@ import com.engineering.core.repositories.UserRepository
 /**
  * Created by GnyaniMac on 02/05/17.
  */
-@EnableMongoRepositories(basePackageClasses = UserRepository.class)
+
 @Component
 class DetailsValidator {
 

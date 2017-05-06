@@ -1,27 +1,28 @@
 package api;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import javax.validation.constraints.NotNull;
 
 /**
- * Created by GnyaniMac on 06/05/17.
+ * Created by GnyaniMac on 02/05/17.
  */
-public class Subject {
+public class QuestionPaperSubject {
 
     @JsonProperty
-    @NotEmpty
     @NotNull
-    public String subject;
+    @NotEmpty
+    private String subject;
 
-    public Subject(){
+    @JsonProperty
+    @NotNull
+    @NotEmpty
+    private String qpyear;
 
-    }
-    @JsonCreator
-    public Subject(@JsonProperty("subject") String subject) {
-        this.subject = subject;
+    public QuestionPaperSubject()
+    {
+
     }
 
     public String getSubject() {
@@ -30,5 +31,12 @@ public class Subject {
 
     public void setSubject(String subject) {
         this.subject = subject;
+    }
+    public String getQpyear() {
+        return qpyear;
+    }
+
+    public void setQpyear(String qpyear) {
+        this.qpyear = qpyear;
     }
 }

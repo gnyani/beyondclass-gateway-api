@@ -36,8 +36,8 @@ class UserRegRestController {
     @Autowired
     public UserRepository repository;
 
-
-    DetailsValidator validation = new DetailsValidator();
+    @Autowired
+    DetailsValidator validation;
 
     @RequestMapping(value="/users/registration", produces ="application/json" ,method = RequestMethod.POST)
     public String userRegistration(@Valid @RequestBody User user)

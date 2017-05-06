@@ -28,7 +28,7 @@ public class SaveImageApp {
 
 			String newFileName = "myimage";
 
-			File imageFile = new File("/Users/GnyaniMac/Desktop/testimage.jpg");
+			File imageFile = new File("/Users/GnyaniMac/Desktop/mywork/testimage.jpg");
 
 			// create a "photo" namespace
 			GridFS gfsPhoto = new GridFS(db, "photo");

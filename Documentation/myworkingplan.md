@@ -1,10 +1,10 @@
 Studies
 1. Question Papers:
-    1. current sem all subjects maybe?(users/questionpapers)
-    2. make him choose what ever question paper he needs(users/questionpapers/other)
+    1. current sem all subjects maybe?(users/questionpapers) -- Done
+    2. make him choose what ever question paper he needs(users/questionpapers/other) -- Done
 
-2. Questions (sorted per unit) with answers ? Not sure need to discuss further more
-3. Syllabus
+2. Questions (sorted per unit) with answers ? Not sure need to discuss further more -- Manual
+3. Syllabus 
     1. current sem syllabus all subjects or maybe selected subject (users/syllabus)
     2. other sems and other branches syllabus
 4. Assignments
