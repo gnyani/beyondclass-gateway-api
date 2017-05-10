@@ -54,11 +54,10 @@ class AssignmentsRestController {
     @RequestMapping(value="/users/assignments/upload",method= RequestMethod.POST)
     public String uploadassignments (@RequestBody Assignments assignments, HttpServletRequest request, HttpServletResponse response)
     {
-        byte[] file = null;
 
         User userLogin = request.getSession().getAttribute("LOGGEDIN_USER");
         User currentuser = repository.findByEmail(userLogin.getEmail());
-        String filename=new FilenameGenerator().generateAssignmentName(currentuser.getUniversity(),currentuser.getCollege(),currentuser.getBranch(),currentuser.getSection(),currentuser.getYear(),currentuser.getSem(),assignments.getSubject(),currentuser.getEmail())
+        String filename=fg.generateAssignmentName(currentuser.getUniversity(),currentuser.getCollege(),currentuser.getBranch(),currentuser.getSection(),currentuser.getYear(),currentuser.getSem(),assignments.getSubject(),currentuser.getEmail())
         Mongo mongo = new Mongo(mongodbhost,mongoport);
         DB db = mongo.getDB(db);
         // create a "photo" namespace
@@ -80,7 +79,7 @@ class AssignmentsRestController {
     {
         User userLogin = request.getSession().getAttribute("LOGGEDIN_USER");
         User currentuser = repository.findByEmail(userLogin.getEmail());
-        String filename = new FilenameGenerator().generateSyllabusName(currentuser.getUniversity(),currentuser.getCollege(),currentuser.getBranch(),currentuser.getSection(),currentuser.getYear(),currentuser.getSem(),subjects.getSubject())
+        String filename = fg.generateSyllabusName(currentuser.getUniversity(),currentuser.getCollege(),currentuser.getBranch(),currentuser.getSection(),currentuser.getYear(),currentuser.getSem(),subjects.getSubject())
         filename = filename + "-*";
         Mongo mongo = new Mongo(mongodbhost, mongoport);
         DB db = mongo.getDB(db);

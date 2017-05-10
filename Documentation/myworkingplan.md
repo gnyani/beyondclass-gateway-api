@@ -38,5 +38,7 @@ Studies
     
 User
 
-1. Forgot password
-2. Update Profile
+1. Forgot password -- 
+2. Update Profile -- almost done needs optimization
+3. Update password -- done
+4. Change email -- need to think more (easy to implement if it is without email verification)

@@ -47,12 +47,10 @@ class NotesRestController {
     @RequestMapping(value="/users/notes/upload",method= RequestMethod.POST)
     public String uploadanotes (@RequestBody Notes notes, HttpServletRequest request, HttpServletResponse response)
     {
-        byte[] file = null;
-
         User userLogin = request.getSession().getAttribute("LOGGEDIN_USER");
         User currentuser = repository.findByEmail(userLogin.getEmail());
         //Using generate assignment name since both notes and assignments need the same basic functionality
-        String filename=new FilenameGenerator().generateAssignmentName(currentuser.getUniversity(),currentuser.getCollege(),currentuser.getBranch(),currentuser.getSection(),currentuser.getYear(),currentuser.getSem(),notes.getSubject(),currentuser.getEmail())
+        String filename=fg.generateAssignmentName(currentuser.getUniversity(),currentuser.getCollege(),currentuser.getBranch(),currentuser.getSection(),currentuser.getYear(),currentuser.getSem(),notes.getSubject(),currentuser.getEmail())
         Mongo mongo = new Mongo(mongodbhost,mongoport);
         DB db = mongo.getDB(db);
         // create a "photo" namespace
@@ -76,7 +74,7 @@ class NotesRestController {
         User currentuser = repository.findByEmail(userLogin.getEmail());
 
         //using generate syllabus because of generate assignment name has email
-        String filename = new FilenameGenerator().generateSyllabusName(currentuser.getUniversity(),currentuser.getCollege(),currentuser.getBranch(),currentuser.getSection(),currentuser.getYear(),currentuser.getSem(),subjects.getSubject())
+        String filename = fg.generateSyllabusName(currentuser.getUniversity(),currentuser.getCollege(),currentuser.getBranch(),currentuser.getSection(),currentuser.getYear(),currentuser.getSem(),subjects.getSubject())
         filename = filename + "-*";
         Mongo mongo = new Mongo(mongodbhost, mongoport);
         DB db = mongo.getDB(db);

@@ -239,7 +239,7 @@ class UserRegRestController {
 
 
         try {
-            mongoOperation.upsert(query, update, User.class);
+            mongoOperation.updateFirst(query, update, User.class);
         }
         catch(Exception e){
             return "Error occurred while registering user please try again after sometime" + e.getMessage()
@@ -270,7 +270,7 @@ class UserRegRestController {
                      //userTest.setConfirmpassword(updateduser.getConfirmpassword())
                      Update update = new Update();
                      update.set("password",userTest.getPassword());
-                     mongoOperation.upsert(query, update, User.class);
+                     mongoOperation.updateFirst(query, update, User.class);
                      return "Password updation successful for user "+userTest.getEmail()
                  }
            }else{
