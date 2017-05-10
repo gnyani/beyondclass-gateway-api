@@ -1,7 +1,7 @@
 package com.engineering.Application.Controller
 
+import api.Notes
 import api.Subject
-import api.Assignments
 import api.User
 import com.engineering.core.Service.FilenameGenerator
 import com.engineering.core.repositories.UserRepository
@@ -15,23 +15,16 @@ import com.mongodb.gridfs.GridFSInputFile
 import groovy.json.JsonSlurper
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestMethod
-import org.springframework.web.bind.annotation.RequestParam
-import org.springframework.web.bind.annotation.ResponseBody
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
-
-
 
 /**
  * Created by GnyaniMac on 05/05/17.
  */
 @RestController
-class AssignmentsRestController {
+class NotesRestController {
     @Autowired
     FilenameGenerator fg;
 
@@ -44,27 +37,27 @@ class AssignmentsRestController {
     @Value('${mongodb.port}')
     private Integer mongoport
 
-    @Value('${mongo.assignments.db}')
+    @Value('${mongo.notes.db}')
     private String db
 
-    @Value('${mongo.assignments.namespace}')
+    @Value('${mongo.notes.namespace}')
     private String namespace
 
     @ResponseBody
-    @RequestMapping(value="/users/assignments/upload",method= RequestMethod.POST)
-    public String uploadassignments (@RequestBody Assignments assignments, HttpServletRequest request, HttpServletResponse response)
+    @RequestMapping(value="/users/notes/upload",method= RequestMethod.POST)
+    public String uploadanotes (@RequestBody Notes notes, HttpServletRequest request, HttpServletResponse response)
     {
-
         User userLogin = request.getSession().getAttribute("LOGGEDIN_USER");
         User currentuser = repository.findByEmail(userLogin.getEmail());
-        String filename=fg.generateAssignmentName(currentuser.getUniversity(),currentuser.getCollege(),currentuser.getBranch(),currentuser.getSection(),currentuser.getYear(),currentuser.getSem(),assignments.getSubject(),currentuser.getEmail())
+        //Using generate assignment name since both notes and assignments need the same basic functionality
+        String filename=fg.generateAssignmentName(currentuser.getUniversity(),currentuser.getCollege(),currentuser.getBranch(),currentuser.getSection(),currentuser.getYear(),currentuser.getSem(),notes.getSubject(),currentuser.getEmail())
         Mongo mongo = new Mongo(mongodbhost,mongoport);
         DB db = mongo.getDB(db);
         // create a "photo" namespace
         GridFS gfsPhoto = new GridFS(db, namespace);
 
         // get image file from local drive
-        GridFSInputFile gfsFile = gfsPhoto.createFile(assignments.getFile());
+        GridFSInputFile gfsFile = gfsPhoto.createFile(notes.getFile());
 
         // set a new filename for identify purpose
         gfsFile.setFilename(filename);
@@ -74,11 +67,13 @@ class AssignmentsRestController {
 
         return "File uploaded successfully with filename " + filename;
     }
-    @RequestMapping(value="/users/assignmentslist" ,method= RequestMethod.POST)
-    public  String[] retrievedefault (@RequestBody Subject subjects, HttpServletRequest request, HttpServletResponse response)
+    @RequestMapping(value="/users/noteslist" ,method= RequestMethod.POST)
+    public  String[] retrievedefaultnotes (@RequestBody Subject subjects, HttpServletRequest request, HttpServletResponse response)
     {
         User userLogin = request.getSession().getAttribute("LOGGEDIN_USER");
         User currentuser = repository.findByEmail(userLogin.getEmail());
+
+        //using generate syllabus because of generate assignment name has email
         String filename = fg.generateSyllabusName(currentuser.getUniversity(),currentuser.getCollege(),currentuser.getBranch(),currentuser.getSection(),currentuser.getYear(),currentuser.getSem(),subjects.getSubject())
         filename = filename + "-*";
         Mongo mongo = new Mongo(mongodbhost, mongoport);
@@ -105,15 +100,15 @@ class AssignmentsRestController {
         println("filelist" +filelist)
         for (String fl : filelist){
             println(fl);
-            links[i++] = "http://localhost:8080/users/assignments?filename="+fl;
+            links[i++] = "http://localhost:8080/users/notes?filename="+fl;
         }
         println("links are "+links.toString());
 
         return links;
     }
 
-    @RequestMapping(value="/users/assignments",produces = "application/pdf" ,method= RequestMethod.GET)
-    public byte[] retrieveAssignment(@RequestParam(value = "filename", required = true) Object filename){
+    @RequestMapping(value="/users/notes",produces = "application/pdf" ,method= RequestMethod.GET)
+    public byte[] retrieveNotes(@RequestParam(value = "filename", required = true) Object filename){
 
         byte[] file = null;
         Mongo mongo = new Mongo(mongodbhost, mongoport);

@@ -22,8 +22,6 @@ import java.util.Date;
  */
 @Document(collection = "users")
 public class User {
-   @Id
-     private String id;
 
     @JsonProperty
     @NotEmpty(message = "please enter your emailaddress")
@@ -253,6 +251,7 @@ public class User {
         this.university = university;
     }
 
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -260,7 +259,6 @@ public class User {
 
         User user = (User) o;
 
-        if (id != null ? !id.equals(user.id) : user.id != null) return false;
         if (!email.equals(user.email)) return false;
         if (!password.equals(user.password)) return false;
         if (!confirmpassword.equals(user.confirmpassword)) return false;
@@ -269,7 +267,7 @@ public class User {
         if (!university.equals(user.university)) return false;
         if (!college.equals(user.college)) return false;
         if (!branch.equals(user.branch)) return false;
-        if (!rollno.equals(user.rollno)) return false;
+        if (rollno != null ? !rollno.equals(user.rollno) : user.rollno != null) return false;
         if (!section.equals(user.section)) return false;
         if (!year.equals(user.year)) return false;
         if (!sem.equals(user.sem)) return false;
@@ -282,8 +280,7 @@ public class User {
 
     @Override
     public int hashCode() {
-        int result = id != null ? id.hashCode() : 0;
-        result = 31 * result + email.hashCode();
+        int result = email.hashCode();
         result = 31 * result + password.hashCode();
         result = 31 * result + confirmpassword.hashCode();
         result = 31 * result + firstName.hashCode();
@@ -291,7 +288,7 @@ public class User {
         result = 31 * result + university.hashCode();
         result = 31 * result + college.hashCode();
         result = 31 * result + branch.hashCode();
-        result = 31 * result + rollno.hashCode();
+        result = 31 * result + (rollno != null ? rollno.hashCode() : 0);
         result = 31 * result + section.hashCode();
         result = 31 * result + year.hashCode();
         result = 31 * result + sem.hashCode();

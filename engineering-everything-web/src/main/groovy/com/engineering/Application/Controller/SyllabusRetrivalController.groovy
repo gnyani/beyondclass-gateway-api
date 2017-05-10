@@ -1,6 +1,6 @@
 package com.engineering.Application.Controller
 
-import api.QuestionPaperSubject
+import api.Subject
 import api.Syllabus
 import api.User
 import com.engineering.core.Service.FilenameGenerator
@@ -25,6 +25,9 @@ import javax.servlet.http.HttpServletResponse
 class SyllabusRetrivalController {
 
     @Autowired
+    FilenameGenerator fg;
+
+    @Autowired
     public UserRepository repository;
 
     @Value('${mongodb.host}')
@@ -40,14 +43,12 @@ class SyllabusRetrivalController {
     private String namespace
 
 
-
-
     @ResponseBody
     @RequestMapping(value="/users/syllabus/other",produces = "application/pdf" ,method= RequestMethod.POST)
     public byte[] retriveothers (@RequestBody Syllabus qp, HttpServletRequest request, HttpServletResponse response)
     {
         byte[] file = null;
-        String filename=new FilenameGenerator().generateSyllabusName(qp.getUniversity(),qp.getCollege(),qp.getBranch(),qp.getSection(),qp.getYear(),qp.getSem(),qp.getSubject())
+        String filename=fg.generateSyllabusName(qp.getUniversity(),qp.getCollege(),qp.getBranch(),qp.getSection(),qp.getYear(),qp.getSem(),qp.getSubject())
         Mongo mongo = new Mongo(mongodbhost,mongoport);
         DB db = mongo.getDB(db);
         // create a "photo" namespace
@@ -69,12 +70,12 @@ class SyllabusRetrivalController {
     }
     @ResponseBody
     @RequestMapping(value="/users/syllabus",produces = "application/pdf" ,method= RequestMethod.POST)
-    public byte[] retrievedefault (@RequestBody QuestionPaperSubject subject, HttpServletRequest request, HttpServletResponse response)
+    public byte[] retrievedefault (@RequestBody Subject subject, HttpServletRequest request, HttpServletResponse response)
     {
         byte[] file = null;
         User userLogin = request.getSession().getAttribute("LOGGEDIN_USER");
         User currentuser = repository.findByEmail(userLogin.getEmail());
-        String filename = new FilenameGenerator().generateSyllabusName(currentuser.getUniversity(),currentuser.getCollege(),currentuser.getBranch(),currentuser.getSection(),currentuser.getYear(),currentuser.getSem(),subject.getSubject())
+        String filename = fg.generateSyllabusName(currentuser.getUniversity(),currentuser.getCollege(),currentuser.getBranch(),currentuser.getSection(),currentuser.getYear(),currentuser.getSem(),subject.getSubject())
         Mongo mongo = new Mongo(mongodbhost, mongoport);
         DB db = mongo.getDB(db);
         // create a "photo" namespace
