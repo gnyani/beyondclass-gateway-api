@@ -5,8 +5,7 @@ import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.validation.constraints.NotNull;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+
 
 
 /**
