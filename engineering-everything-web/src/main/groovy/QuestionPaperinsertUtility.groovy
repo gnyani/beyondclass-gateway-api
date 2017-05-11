@@ -17,7 +17,7 @@ public class QuestionPaperinsertUtility {
         try {
 
             Mongo mongo = new Mongo("localhost", 27017);
-            DB db = mongo.getDB("questionpapers");
+            DB db = mongo.getDB("test");
             //	DBCollection collection = db.getCollection("images");
 
 
@@ -27,7 +27,7 @@ public class QuestionPaperinsertUtility {
             File imageFile = new File("/Users/GnyaniMac/Desktop/mywork/testimage.jpg");
 
             // create a "photo" namespace
-            GridFS gfsPhoto = new GridFS(db, "papers");
+            GridFS gfsPhoto = new GridFS(db, "questionpapers");
 
             // get image file from local drive
             GridFSInputFile gfsFile = gfsPhoto.createFile(imageFile);

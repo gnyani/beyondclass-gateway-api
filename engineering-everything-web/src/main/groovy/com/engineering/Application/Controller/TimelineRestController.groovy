@@ -7,16 +7,13 @@ import api.User
 import com.engineering.core.Service.FilenameGenerator
 import com.engineering.core.repositories.TimelineRepository
 import com.engineering.core.repositories.UserRepository
-import com.mongodb.BasicDBObject
-import com.mongodb.DB
-import com.mongodb.DBCursor
-import com.mongodb.Mongo
-import com.mongodb.gridfs.GridFS
 import com.mongodb.gridfs.GridFSDBFile
-import com.mongodb.gridfs.GridFSInputFile
-import groovy.json.JsonSlurper
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.data.mongodb.core.query.Criteria
+import org.springframework.data.mongodb.core.query.Query
+import org.springframework.data.mongodb.gridfs.GridFsTemplate
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestBody
@@ -49,17 +46,9 @@ class TimelineRestController {
     @Value('${engineering.everything.host}')
     private String servicehost;
 
-    @Value('${mongodb.host}')
-    private String mongodbhost
-
-    @Value('${mongodb.port}')
-    private Integer mongoport
-
-    @Value('${mongo.timeline-files.db}')
-    private String db
-
-    @Value('${mongo.timeline-files.namespace}')
-    private String namespace
+    @Autowired
+    @Qualifier("timeline-files")
+    GridFsTemplate gridFsTemplate
 
 
     @ResponseBody
@@ -81,23 +70,10 @@ class TimelineRestController {
         timelinePostsmetaapi.setFilename(filename)
         String postUrl = "http://"+servicehost+":8080/users/timeline/view/"+filename;
         timelinePostsmetaapi.setPostUrl(postUrl);
-
-        Mongo mongo = new Mongo(mongodbhost,mongoport);
-        DB db = mongo.getDB(db);
-        // create a "photo" namespace
-        GridFS gfsPhoto = new GridFS(db, namespace);
-
-        // get image file from user
-        GridFSInputFile gfsFile = gfsPhoto.createFile(post.getFile());
-
-        // set a new filename for identify purpose
-        gfsFile.setFilename(filename);
-
-        // save the image file into mongoDB
-        gfsFile.save();
+        InputStream inputStream = new ByteArrayInputStream(post.getFile())
+        gridFsTemplate.store(inputStream,filename)
 
         def object = timelineRepository.save(timelinePostsmetaapi);
-
         if(object)
              return "Your post has been updated successfully " + filename;
         else
@@ -115,26 +91,14 @@ class TimelineRestController {
         String filename=fg.generatePostnamewithouttime(user.getUniversity(),user.getCollege(),user.getBranch(),user.getSection(),user.getYear(),user.getSem(),user.getEmail())
 
         filename = filename + "-*";
+        Query query = new Query().addCriteria(Criteria.where("filename").regex(filename))
 
-        Mongo mongo = new Mongo(mongodbhost, mongoport);
-        DB db = mongo.getDB(db);
-        // create a "photo" namespace
-        GridFS gfsPhoto = new GridFS(db, namespace);
-
-        BasicDBObject regexQuery = new BasicDBObject();
-        regexQuery.put("filename",
-                new BasicDBObject('$regex', filename)
-                        .append('$options', "i"));
-
-        DBCursor cursor = gfsPhoto.getFileList(regexQuery);
+        def list = gridFsTemplate.find(query)
         def filelist = []
         int i = 0
-        def jsonSlurper = new JsonSlurper()
-        while (cursor.hasNext()) {
-            String file = cursor.next()
-            def object = jsonSlurper.parseText(file);
-            filelist.add(object.filename);
-        }
+        for(GridFSDBFile fl : list)
+            filelist[i++] = fl.getFilename();
+
         for (String fl : filelist){
             def temp = timelineRepository.findByFilename(fl);
             objectlist.add(temp);
@@ -148,13 +112,9 @@ class TimelineRestController {
     public byte[] retrievePost(@PathVariable(value = "filename", required = true) Object filename){
 
         byte[] file = null;
-        Mongo mongo = new Mongo(mongodbhost, mongoport);
-        DB db = mongo.getDB(db);
-        // create a "photo" namespace
-        GridFS gfsPhoto = new GridFS(db, namespace);
-        System.out.println("file name is "+filename)
         // get image file by it's filename
-        GridFSDBFile imageForOutput = gfsPhoto.findOne(filename.toString());
+        Query query = new Query().addCriteria(Criteria.where("filename").is(filename))
+        GridFSDBFile imageForOutput = gridFsTemplate.findOne(query)
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         imageForOutput.writeTo(baos);

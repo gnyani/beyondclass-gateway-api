@@ -17,7 +17,7 @@ class SyllabusInsertUtility {
         try {
 
             Mongo mongo = new Mongo("localhost", 27017);
-            DB db = mongo.getDB("syllabus");
+            DB db = mongo.getDB("test");
             //	DBCollection collection = db.getCollection("images");
 
 
@@ -27,7 +27,7 @@ class SyllabusInsertUtility {
             File imageFile = new File("/Users/GnyaniMac/Desktop/mydocsforloan/HR Letter.pdf");
 
             // create a "photo" namespace
-            GridFS gfsPhoto = new GridFS(db, "syllabusstore");
+            GridFS gfsPhoto = new GridFS(db, "syllabus");
 
             // get image file from local drive
             GridFSInputFile gfsFile = gfsPhoto.createFile(imageFile);
