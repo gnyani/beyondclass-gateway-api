@@ -5,16 +5,12 @@ import api.Assignments
 import api.User
 import com.engineering.core.Service.FilenameGenerator
 import com.engineering.core.repositories.UserRepository
-import com.mongodb.BasicDBObject
-import com.mongodb.DB
-import com.mongodb.DBCursor
-import com.mongodb.Mongo
-import com.mongodb.gridfs.GridFS
 import com.mongodb.gridfs.GridFSDBFile
-import com.mongodb.gridfs.GridFSInputFile
-import groovy.json.JsonSlurper
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Value
+import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.data.mongodb.core.query.Criteria
+import org.springframework.data.mongodb.core.query.Query
+import org.springframework.data.mongodb.gridfs.GridFsTemplate
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestMethod
@@ -36,19 +32,14 @@ class AssignmentsRestController {
     FilenameGenerator fg;
 
     @Autowired
-    public UserRepository repository;
+    UserRepository repository;
 
-    @Value('${mongodb.host}')
-    private String mongodbhost
+    @Autowired
+    @Qualifier("assignments")
+    GridFsTemplate gridFsTemplate
 
-    @Value('${mongodb.port}')
-    private Integer mongoport
 
-    @Value('${mongo.assignments.db}')
-    private String db
 
-    @Value('${mongo.assignments.namespace}')
-    private String namespace
 
     @ResponseBody
     @RequestMapping(value="/users/assignments/upload",method= RequestMethod.POST)
@@ -58,19 +49,8 @@ class AssignmentsRestController {
         User userLogin = request.getSession().getAttribute("LOGGEDIN_USER");
         User currentuser = repository.findByEmail(userLogin.getEmail());
         String filename=fg.generateAssignmentName(currentuser.getUniversity(),currentuser.getCollege(),currentuser.getBranch(),currentuser.getSection(),currentuser.getYear(),currentuser.getSem(),assignments.getSubject(),currentuser.getEmail())
-        Mongo mongo = new Mongo(mongodbhost,mongoport);
-        DB db = mongo.getDB(db);
-        // create a "photo" namespace
-        GridFS gfsPhoto = new GridFS(db, namespace);
-
-        // get image file from local drive
-        GridFSInputFile gfsFile = gfsPhoto.createFile(assignments.getFile());
-
-        // set a new filename for identify purpose
-        gfsFile.setFilename(filename);
-
-        // save the image file into mongoDB
-        gfsFile.save();
+        InputStream inputStream = new ByteArrayInputStream(assignments.getFile())
+        gridFsTemplate.store(inputStream,filename)
 
         return "File uploaded successfully with filename " + filename;
     }
@@ -81,26 +61,16 @@ class AssignmentsRestController {
         User currentuser = repository.findByEmail(userLogin.getEmail());
         String filename = fg.generateSyllabusName(currentuser.getUniversity(),currentuser.getCollege(),currentuser.getBranch(),currentuser.getSection(),currentuser.getYear(),currentuser.getSem(),subjects.getSubject())
         filename = filename + "-*";
-        Mongo mongo = new Mongo(mongodbhost, mongoport);
-        DB db = mongo.getDB(db);
-        // create a "photo" namespace
-        GridFS gfsPhoto = new GridFS(db, namespace);
 
-        BasicDBObject regexQuery = new BasicDBObject();
-        regexQuery.put("filename",
-                new BasicDBObject('$regex', filename)
-                        .append('$options', "i"));
+        Query query = new Query().addCriteria(Criteria.where("filename").regex(filename))
 
-        DBCursor cursor = gfsPhoto.getFileList(regexQuery);
+        def list = gridFsTemplate.find(query)
         def filelist = []
         def links = []
         int i = 0
-        def jsonSlurper = new JsonSlurper()
-        while (cursor.hasNext()) {
-            String file = cursor.next()
-            def object = jsonSlurper.parseText(file);
-            filelist[i++] = object.filename;
-        }
+        for(GridFSDBFile fl : list)
+            filelist[i++] = fl.getFilename();
+
         i=0;
         println("filelist" +filelist)
         for (String fl : filelist){
@@ -116,13 +86,10 @@ class AssignmentsRestController {
     public byte[] retrieveAssignment(@RequestParam(value = "filename", required = true) Object filename){
 
         byte[] file = null;
-        Mongo mongo = new Mongo(mongodbhost, mongoport);
-        DB db = mongo.getDB(db);
-        // create a "photo" namespace
-        GridFS gfsPhoto = new GridFS(db, namespace);
         System.out.println(filename)
         // get image file by it's filename
-        GridFSDBFile imageForOutput = gfsPhoto.findOne(filename.toString());
+        Query query = new Query().addCriteria(Criteria.where("filename").is(filename))
+        GridFSDBFile imageForOutput = gridFsTemplate.findOne(query)
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         imageForOutput.writeTo(baos);
