@@ -61,12 +61,13 @@ class NotesRestController {
         def filelist = []
         def links = []
         int i = 0
-        for(GridFSDBFile fl : list)
-            filelist[i++] = fl.getFilename();
+        list.each {
+            filelist[i++] = it.getFilename();
+        }
         i=0;
-        for (String fl : filelist){
-            println(fl);
-            links[i++] = "http://localhost:8080/users/notes?filename="+fl;
+        filelist.each{
+            println(it);
+            links[i++] = "http://localhost:8080/users/notes?filename="+it;
         }
         println("links are "+links.toString());
 
