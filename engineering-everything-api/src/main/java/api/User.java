@@ -27,7 +27,7 @@ public class User {
     @NotEmpty(message = "please enter your emailaddress")
     @NotNull(message = "please enter your emailAddress")
     @Email(regexp = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@" + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$",message = "invalid email")
-    @Indexed(unique = true)
+    @Id
     private String email;
 
     @JsonProperty

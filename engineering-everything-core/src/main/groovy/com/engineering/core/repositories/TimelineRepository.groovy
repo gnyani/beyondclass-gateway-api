@@ -10,4 +10,5 @@ import org.springframework.data.mongodb.repository.MongoRepository
 public interface TimelineRepository extends MongoRepository<TimelinePostsmetaapi,String> {
     public TimelinePostsmetaapi findByFilename(String filename);
    // public User findbyEmail(String email);
+
 }

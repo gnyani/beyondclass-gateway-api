@@ -11,8 +11,9 @@ dependencies {
     compile(libs.jbossLogging)
     compile(libs.springBootStarterSecurity)
     compile(libs.jackson)
+    compile(libs.groovy)
+    compile(libs.spock)
     compile(libs.springBootStarterDataMongodb)
-    testCompile (libs.junit)
 }
 
 

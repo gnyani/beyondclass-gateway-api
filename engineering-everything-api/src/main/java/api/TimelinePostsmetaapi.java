@@ -1,10 +1,13 @@
 package api;
 
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * Created by GnyaniMac on 09/05/17.
@@ -12,25 +15,34 @@ import java.util.Arrays;
 @Document(collection = "timeline-files-meta")
 public class TimelinePostsmetaapi {
     //we can set expiration rules if we want.
-    @Indexed(unique = true)
+   // @Indexed(unique = true)
+    @Id
     private String filename;
+    private String description;
     private String postUrl;
+    private String likeUrl;
+    private String commentUrl;
     private int likes;
-    private String[] comments;
+    private ArrayList<Comment> comments;
     private String owner;
     private LocalDateTime postdateTime;
-
+    private ArrayList<User> likedUsers = new ArrayList<>();
     public TimelinePostsmetaapi(){
 
     }
 
-    public TimelinePostsmetaapi(String filename, String postUrl, int likes, String[] comments, String owner, LocalDateTime postdateTime) {
+
+    public TimelinePostsmetaapi(String filename,String description, String postUrl,String likeUrl,String commentUrl, int likes, ArrayList<Comment> comments, String owner, LocalDateTime postdateTime,ArrayList<User> likedUsers) {
         this.filename = filename;
+        this.description = description;
         this.postUrl = postUrl;
+        this.likeUrl = likeUrl;
+        this.commentUrl = commentUrl;
         this.likes = likes;
         this.comments = comments;
         this.owner = owner;
         this.postdateTime = postdateTime;
+        this.likedUsers = likedUsers;
     }
 
     public String getFilename() {
@@ -57,11 +69,11 @@ public class TimelinePostsmetaapi {
         this.likes = likes;
     }
 
-    public String[] getComments() {
+    public ArrayList<Comment> getComments() {
         return comments;
     }
 
-    public void setComments(String[] comments) {
+    public void setComments(ArrayList<Comment> comments) {
         this.comments = comments;
     }
 
@@ -81,15 +93,51 @@ public class TimelinePostsmetaapi {
         this.postdateTime = postdateTime;
     }
 
+    public ArrayList<User> getLikedUsers() {
+        return likedUsers;
+    }
+
+    public void setLikedUsers(ArrayList<User> likedUsers) {
+        this.likedUsers = likedUsers;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getLikeUrl() {
+        return likeUrl;
+    }
+
+    public void setLikeUrl(String likeUrl) {
+        this.likeUrl = likeUrl;
+    }
+
+    public String getCommentUrl() {
+        return commentUrl;
+    }
+
+    public void setCommentUrl(String commentUrl) {
+        this.commentUrl = commentUrl;
+    }
+
     @Override
     public String toString() {
         return "TimelinePostsmetaapi{" +
                 "filename='" + filename + '\'' +
+                ", description='" + description + '\'' +
                 ", postUrl='" + postUrl + '\'' +
+                ", likeUrl='" + likeUrl + '\'' +
+                ", commentUrl='" + commentUrl + '\'' +
                 ", likes=" + likes +
-                ", comments=" + Arrays.toString(comments) +
+                ", comments=" + comments +
                 ", owner='" + owner + '\'' +
                 ", postdateTime=" + postdateTime +
+                ", likedUsers=" + likedUsers +
                 '}';
     }
 }

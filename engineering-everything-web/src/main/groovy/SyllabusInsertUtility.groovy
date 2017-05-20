@@ -17,12 +17,12 @@ class SyllabusInsertUtility {
         try {
 
             Mongo mongo = new Mongo("localhost", 27017);
-            DB db = mongo.getDB("test");
+            DB db = mongo.getDB("mydatabase");
             //	DBCollection collection = db.getCollection("images");
 
 
 
-            String newFileName = new FilenameGenerator().generateSyllabusName("OU","VASV","CSE","B","4","1","DS");
+            String newFileName = new FilenameGenerator().generateSyllabusName("OU","VASV","CSE","B","4","3","DS");
 
             File imageFile = new File("/Users/GnyaniMac/Desktop/mydocsforloan/HR Letter.pdf");
 

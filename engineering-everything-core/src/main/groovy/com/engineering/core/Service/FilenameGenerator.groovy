@@ -61,14 +61,14 @@ class FilenameGenerator {
         return  filename;
     }
 
-    public String generatePostnamewithouttime(String university, String collegecode, String branch, String section, String year, String sem,String email)
+    public String generatePostnamewithouttime(String university, String collegecode, String branch, String section, String year, String sem)
     {
         university = university.toUpperCase();
         collegecode = collegecode.toUpperCase();
         branch = branch.toUpperCase();
         section = section.toUpperCase();
         def filename =null;
-        filename = university+"-"+collegecode+"-"+branch+"-"+section+"-"+year+"-"+sem+"-"+email;
+        filename = university+"-"+collegecode+"-"+branch+"-"+section+"-"+year+"-"+sem;
         return  filename;
     }
 

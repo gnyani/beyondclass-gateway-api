@@ -6,7 +6,10 @@ repositories {
 dependencies {
     compile project (':engineering-everything-api')
     compile(libs.groovy)
+    compile(libs.spock)
     compile(libs.springBootStarter)
     compile(libs.springBootStarterDataMongodb)
+    compile(libs.springBootStarterTest)
+    compile(libs.springBootParent)
     testCompile (libs.junit)
 }

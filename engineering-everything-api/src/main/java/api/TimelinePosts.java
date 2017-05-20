@@ -12,14 +12,18 @@ public class TimelinePosts {
     @JsonProperty
     private byte[] file;
 
+    @JsonProperty
+    private String description;
+
     private String filename;
 
     public TimelinePosts(){
 
     }
 
-    public TimelinePosts(byte[] file, String filename) {
+    public TimelinePosts(byte[] file,String description, String filename) {
         this.file = file;
+        this.description = description;
         this.filename = filename;
     }
 
@@ -37,5 +41,13 @@ public class TimelinePosts {
 
     public void setFilename(String filename) {
         this.filename = filename;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

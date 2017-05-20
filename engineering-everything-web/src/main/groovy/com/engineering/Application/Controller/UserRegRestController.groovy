@@ -115,7 +115,7 @@ class UserRegRestController {
         //******************************VALIDATION DONE **********************\\
         try {
             //saving to collection
-            registered = repository.save(user);
+            registered = repository.insert(user);
         }
         catch(Exception e){
             return "Error occurred while registering user please try again after sometime" + e.getMessage()
@@ -162,18 +162,9 @@ class UserRegRestController {
     @RequestMapping(value="/users/details/updateprofile", produces ="application/json" ,method = RequestMethod.POST)
     public String userDetailsUpdate( @RequestBody User updateduser,HttpServletRequest request, HttpServletResponse response) {
 
-        ApplicationContext ctx =
-                new AnnotationConfigApplicationContext(SpringMongoConfig.class);
-        MongoOperations mongoOperation =
-                (MongoOperations) ctx.getBean("mongoTemplate");
-
-
         User loggeduser = request.getSession().getAttribute("LOGGEDIN_USER");
 
-        Query query = new Query();
-        query.addCriteria(Criteria.where("email").is(loggeduser.getEmail()));
-        User userTest1 = mongoOperation.findOne(query, User.class);
-
+        User userTest1 =repository.findByEmail(loggeduser.getEmail())
       //  println("retrieved object is"+userTest1)
       //Should improve validations for both mobile number and DOB
        if(updateduser.getMobilenumber() != null){
@@ -189,8 +180,6 @@ class UserRegRestController {
         {
             userTest1.setDob(updateduser.getDob())
         }
-
-
         if (updateduser.getFirstName() != null) {
             userTest1.setFirstName(updateduser.getFirstName())
         }
@@ -227,19 +216,8 @@ class UserRegRestController {
             }
         }
 
-        Update update = new Update();
-        update.set("firstName",userTest1.getFirstName());
-        update.set("lastName",userTest1.getLastName());
-        update.set("year",userTest1.getYear());
-        update.set("sem",userTest1.getSem());
-        update.set("section",userTest1.getSection())
-        update.set("registerdate",LocalDateTime.now())
-        update.set("dob",userTest1.getDob())
-        update.set("mobilenumber",userTest1.getMobilenumber())
-
-
         try {
-            mongoOperation.updateFirst(query, update, User.class);
+           repository.save(userTest1)
         }
         catch(Exception e){
             return "Error occurred while registering user please try again after sometime" + e.getMessage()
@@ -258,19 +236,10 @@ class UserRegRestController {
                  if(!(updateduser.getPassword().equals(updateduser.getConfirmpassword()))){
                       return "Confirm password must match password"
                   }else{
-                     ApplicationContext ctx =
-                             new AnnotationConfigApplicationContext(SpringMongoConfig.class);
-                     MongoOperations mongoOperation =
-                             (MongoOperations) ctx.getBean("mongoTemplate");
                      User loggeduser = request.getSession().getAttribute("LOGGEDIN_USER");
-                     Query query = new Query();
-                     query.addCriteria(Criteria.where("email").is(loggeduser.getEmail()));
-                     User userTest = mongoOperation.findOne(query, User.class);
+                     User userTest = repository.findByEmail(loggeduser.getEmail())
                      userTest.setPassword(updateduser.getPassword())
-                     //userTest.setConfirmpassword(updateduser.getConfirmpassword())
-                     Update update = new Update();
-                     update.set("password",userTest.getPassword());
-                     mongoOperation.updateFirst(query, update, User.class);
+                     repository.save(userTest)
                      return "Password updation successful for user "+userTest.getEmail()
                  }
            }else{

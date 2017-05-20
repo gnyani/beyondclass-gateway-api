@@ -17,7 +17,7 @@ public class QuestionPaperinsertUtility {
         try {
 
             Mongo mongo = new Mongo("localhost", 27017);
-            DB db = mongo.getDB("test");
+            DB db = mongo.getDB("mydatabase");
             //	DBCollection collection = db.getCollection("images");
 
 

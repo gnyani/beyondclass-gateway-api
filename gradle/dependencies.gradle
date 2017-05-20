@@ -5,7 +5,7 @@ ext {
 versions += [
         springBootVersion        : "1.5.3.RELEASE",
         springDataVersion        : "1.11.0.RELEASE",
-        groovy                   : "2.3.11",
+        groovy                   : "2.4.7",
         junit                    : "4.11"
 ]
 libs+=[
@@ -26,6 +26,7 @@ libs+=[
         springBootStarterSecurity   : [group: "org.springframework.boot", name: "spring-boot-starter-security", version: "${versions.springBootVersion}"],
 //        springDataCommons           : [group: 'org.springframework.data', name: 'spring-data-commons', version:"${versions.springDataVersion}"],
         junit                       : [group: 'junit', name: 'junit', version: "${versions.junit}"],
+        spock                      : "org.spockframework:spock-core:1.0-groovy-2.4",
         hibernateValidator          : 'org.hibernate:hibernate-validator:4.3.0.Final',
         validationApi               : [group: 'javax.validation', name: 'validation-api', version: '1.0.0.GA'],
 //        slf4j                       : [group: 'org.slf4j', name: 'slf4j-api', version: '1.6.1'],
