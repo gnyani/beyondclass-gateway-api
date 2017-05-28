@@ -41,7 +41,7 @@ public class SpringMongoConfig extends AbstractMongoConfiguration {
 	 @Bean(name = "mongoTemplate")
 	 public MongoTemplate mongoTemplate() throws Exception {
 
-		MongoTemplate mongoTemplate = new MongoTemplate(new MongoClient("127.0.0.1"),"mydatabase");
+		MongoTemplate mongoTemplate = new MongoTemplate(mongoDbFactory());
 		return mongoTemplate;
 
 	}
@@ -78,7 +78,7 @@ public class SpringMongoConfig extends AbstractMongoConfiguration {
 	@Override
 	@Bean
 	public Mongo mongo() throws Exception {
-		return new MongoClient("127.0.0.1");
+		return new MongoClient(props.getHost());
 	}
 		
 }

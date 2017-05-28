@@ -20,9 +20,11 @@ import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.data.mongodb.core.query.Query
 import org.springframework.data.mongodb.core.query.Update
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories
+import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestMethod
+import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.bind.annotation.RestController
 import com.engineering.core.repositories.UserRepository
 
@@ -46,6 +48,7 @@ class UserRegRestController {
     @Autowired
     DetailsValidator validation;
 
+    @CrossOrigin
     @RequestMapping(value="/users/registration", produces ="application/json" ,method = RequestMethod.POST)
     public String userRegistration(@Valid @RequestBody User user)
     {
@@ -130,8 +133,9 @@ class UserRegRestController {
         String name =repository.findAll()
         return  name;
     }
-
+    @CrossOrigin
     @RequestMapping(value="/users/login",method = RequestMethod.POST)
+    @ResponseBody
    public String logIn(@RequestBody UserLogin person, HttpServletRequest request, HttpServletResponse response)
     {
         println(person.getEmail())

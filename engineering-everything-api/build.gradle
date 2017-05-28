@@ -9,7 +9,6 @@ dependencies {
     compile(libs.hibernateValidator)
     compile(libs.validationApi)
     compile(libs.jbossLogging)
-    compile(libs.springBootStarterSecurity)
     compile(libs.jackson)
     compile(libs.groovy)
     compile(libs.spock)
