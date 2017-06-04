@@ -6,11 +6,14 @@ import api.User
 import com.engineering.core.Service.FilenameGenerator
 import com.engineering.core.repositories.UserRepository
 import com.mongodb.gridfs.GridFSDBFile
+import groovy.json.JsonOutput
+import groovy.json.JsonSlurper
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.data.mongodb.core.query.Query
 import org.springframework.data.mongodb.gridfs.GridFsTemplate
+import org.springframework.security.oauth2.provider.OAuth2Authentication
 import org.springframework.web.bind.annotation.*
 
 import javax.servlet.http.HttpServletRequest
@@ -31,14 +34,18 @@ class NotesRestController {
     @Qualifier("notes")
     GridFsTemplate gridFsTemplate
 
+    JsonSlurper jsonSlurper = new JsonSlurper()
+
 
 
     @ResponseBody
     @RequestMapping(value="/users/notes/upload",method= RequestMethod.POST)
-    public String uploadanotes (@RequestBody Notes notes, HttpServletRequest request, HttpServletResponse response)
+    public String uploadanotes (@RequestBody Notes notes, HttpServletRequest request, HttpServletResponse response,OAuth2Authentication auth)
     {
-        User userLogin = request.getSession().getAttribute("LOGGEDIN_USER");
-        User currentuser = repository.findByEmail(userLogin.getEmail());
+        def m = JsonOutput.toJson( auth.getUserAuthentication().getDetails())
+        def Json = jsonSlurper.parseText(m);
+        String email = Json."email"
+        User currentuser = repository.findByEmail(email);
         //Using generate assignment name since both notes and assignments need the same basic functionality
         String filename=fg.generateAssignmentName(currentuser.getUniversity(),currentuser.getCollege(),currentuser.getBranch(),currentuser.getSection(),currentuser.getYear(),currentuser.getSem(),notes.getSubject(),currentuser.getEmail())
         InputStream inputStream = new ByteArrayInputStream(notes.getFile())
@@ -47,11 +54,12 @@ class NotesRestController {
         return "File uploaded successfully with filename " + filename;
     }
     @RequestMapping(value="/users/noteslist" ,method= RequestMethod.POST)
-    public  String[] retrievedefaultnotes (@RequestBody Subject subjects, HttpServletRequest request, HttpServletResponse response)
+    public  String[] retrievedefaultnotes (@RequestBody Subject subjects, HttpServletRequest request, HttpServletResponse response,OAuth2Authentication auth)
     {
-        User userLogin = request.getSession().getAttribute("LOGGEDIN_USER");
-        User currentuser = repository.findByEmail(userLogin.getEmail());
-
+        def m = JsonOutput.toJson( auth.getUserAuthentication().getDetails())
+        def Json = jsonSlurper.parseText(m);
+        String email = Json."email"
+        User currentuser = repository.findByEmail(email)
         //using generate syllabus because of generate assignment name has email
         String filename = fg.generateSyllabusName(currentuser.getUniversity(),currentuser.getCollege(),currentuser.getBranch(),currentuser.getSection(),currentuser.getYear(),currentuser.getSem(),subjects.getSubject())
         filename = filename + "-*";

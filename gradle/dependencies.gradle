@@ -7,7 +7,7 @@ versions += [
         springDataVersion        : "1.11.0.RELEASE",
         groovy                   : "2.4.7",
         junit                    : "4.11",
-        oauth                    : "1.2.0.RELEASE"
+        oauth                    : "1.2.1.RELEASE"
 ]
 libs+=[
         groovy                      : [group: 'org.codehaus.groovy', name: 'groovy-all', version: "${versions.groovy}"],

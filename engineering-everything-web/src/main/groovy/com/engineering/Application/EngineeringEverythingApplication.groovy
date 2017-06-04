@@ -3,8 +3,9 @@ package com.engineering.Application
 
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
+import org.springframework.boot.autoconfigure.security.oauth2.client.EnableOAuth2Sso
 import org.springframework.context.annotation.ComponentScan
-
+import org.springframework.data.mongodb.repository.config.EnableMongoRepositories
 
 
 /**
@@ -13,6 +14,8 @@ import org.springframework.context.annotation.ComponentScan
 
 @ComponentScan(basePackages = ['com.engineering.Application','com.engineering.core.Service'],basePackageClasses =[])
 @SpringBootApplication
+@EnableMongoRepositories
+@EnableOAuth2Sso
 public class EngineeringEverythingApplication{
 
     public static void main(String[] args) {

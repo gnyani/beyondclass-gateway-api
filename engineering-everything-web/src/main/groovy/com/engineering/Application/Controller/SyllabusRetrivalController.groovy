@@ -6,11 +6,14 @@ import api.User
 import com.engineering.core.Service.FilenameGenerator
 import com.engineering.core.repositories.UserRepository
 import com.mongodb.gridfs.GridFSDBFile
+import groovy.json.JsonOutput
+import groovy.json.JsonSlurper
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.data.mongodb.core.query.Query
 import org.springframework.data.mongodb.gridfs.GridFsTemplate
+import org.springframework.security.oauth2.provider.OAuth2Authentication
 import org.springframework.web.bind.annotation.*
 
 import javax.servlet.http.HttpServletRequest
@@ -33,6 +36,7 @@ class SyllabusRetrivalController {
     @Qualifier("syllabus")
     GridFsTemplate gridFsTemplate
 
+    JsonSlurper jsonSlurper = new JsonSlurper()
 
     @ResponseBody
     @RequestMapping(value="/users/syllabus/other",produces = "application/pdf" ,method= RequestMethod.POST)
@@ -52,11 +56,13 @@ class SyllabusRetrivalController {
     }
     @ResponseBody
     @RequestMapping(value="/users/syllabus",produces = "application/pdf" ,method= RequestMethod.POST)
-    public byte[] retrievedefault (@RequestBody Subject subject, HttpServletRequest request, HttpServletResponse response)
+    public byte[] retrievedefault (@RequestBody Subject subject, HttpServletRequest request, HttpServletResponse response,OAuth2Authentication auth)
     {
         byte[] file = null;
-        User userLogin = request.getSession().getAttribute("LOGGEDIN_USER");
-        User currentuser = repository.findByEmail(userLogin.getEmail());
+        def m = JsonOutput.toJson( auth.getUserAuthentication().getDetails())
+        def Json = jsonSlurper.parseText(m);
+        String email = Json."email"
+        User currentuser = repository.findByEmail(email);
         String filename = fg.generateSyllabusName(currentuser.getUniversity(),currentuser.getCollege(),currentuser.getBranch(),currentuser.getSection(),currentuser.getYear(),currentuser.getSem(),subject.getSubject())
 
         Query query = new Query().addCriteria(Criteria.where("filename").is(filename))

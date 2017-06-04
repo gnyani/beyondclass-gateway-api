@@ -11,5 +11,7 @@ dependencies {
     compile(libs.springBootStarterDataMongodb)
     compile(libs.springBootStarterTest)
     compile(libs.springBootParent)
+    compile(libs.springBootStarterSecurity)
+    compile 'javax.mail:mail:1.4.7'
     testCompile (libs.junit)
 }
