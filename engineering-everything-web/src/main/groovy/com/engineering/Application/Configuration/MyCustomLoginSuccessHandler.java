@@ -32,9 +32,9 @@ public class MyCustomLoginSuccessHandler extends SavedRequestAwareAuthentication
                 String validateuser = userValidationService.validateuserexistence(authentication);
                 System.out.println("validate usr value" + validateuser);
                 if ("true".equalsIgnoreCase(validateuser)) {
-                    redirectUrl = "http://localhost:3000/register";
+                    redirectUrl = "http://localhost:3000/#/dashboard";
                 } else {
-                    redirectUrl = "http://localhost:3000/";
+                    redirectUrl = "http://localhost:3000/#/register";
                 }
             }catch (Exception e){
                 System.out.print("encountered an exception"+ e);

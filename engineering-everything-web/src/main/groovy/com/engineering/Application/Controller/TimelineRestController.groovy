@@ -9,6 +9,8 @@ import com.engineering.core.Service.FilenameGenerator
 import com.engineering.core.repositories.TimelineRepository
 import com.engineering.core.repositories.UserRepository
 import com.mongodb.gridfs.GridFSDBFile
+import groovy.json.JsonOutput
+import groovy.json.JsonSlurper
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
@@ -20,15 +22,20 @@ import org.springframework.data.mongodb.core.query.Query
 import org.springframework.data.mongodb.core.query.Update
 import org.springframework.data.mongodb.gridfs.GridFsTemplate
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories
+import org.springframework.format.annotation.DateTimeFormat
+import org.springframework.security.oauth2.provider.OAuth2Authentication
+import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestMethod
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.bind.annotation.RestController
 
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
+import java.time.LocalDate
 import java.time.LocalDateTime
 
 /**
@@ -36,6 +43,7 @@ import java.time.LocalDateTime
  */
 
 @EnableMongoRepositories(basePackageClasses = [UserRepository.class,TimelineRepository.class])
+@CrossOrigin(origins = ["http://localhost:8081","http://localhost:3000"])
 @RestController
 class TimelineRestController {
 
@@ -55,15 +63,20 @@ class TimelineRestController {
     @Qualifier("timeline-files")
     GridFsTemplate gridFsTemplate
 
+    JsonSlurper jsonSlurper = new JsonSlurper();
+
 
     @ResponseBody
     @RequestMapping(value="/users/timeline/upload",method= RequestMethod.POST)
-    public String uploadposts (@RequestBody TimelinePosts post, HttpServletRequest request, HttpServletResponse response)
+    public String uploadposts (@RequestBody TimelinePosts post, OAuth2Authentication auth)
     {
         //Timeline meta api
         TimelinePostsmetaapi timelinePostsmetaapi = new TimelinePostsmetaapi();
-        User userLogin = request.getSession().getAttribute("LOGGEDIN_USER");
-        User currentuser = repository.findByEmail(userLogin.getEmail());
+        //user loggedin
+        def m = JsonOutput.toJson( auth.getUserAuthentication().getDetails())
+        def Json = jsonSlurper.parseText(m);
+        String email = Json."email"
+        User currentuser = repository.findByEmail(email);
         // setting meta data before uploading the file
         timelinePostsmetaapi.setDescription(post.getDescription())
         timelinePostsmetaapi.setOwner(currentuser.getFirstName())
@@ -71,7 +84,7 @@ class TimelineRestController {
         timelinePostsmetaapi.setLikes(0);
         timelinePostsmetaapi.setComments(new ArrayList<Comment>());
 
-        String filename=fg.generatePostname(currentuser.getUniversity(),currentuser.getCollege(),currentuser.getBranch(),currentuser.getSection(),currentuser.getYear(),currentuser.getSem(),currentuser.getEmail(),System.currentTimeMillis())
+        String filename=fg.generatePostname(currentuser.getUniversity(),currentuser.getCollege(),currentuser.getBranch(),currentuser.getSection(),currentuser.getYear(),currentuser.getSem(),LocalDate.now(),currentuser.getEmail(),System.currentTimeMillis())
         //storing filename in meta
         timelinePostsmetaapi.setFilename(filename)
         println("filename is "+filename)
@@ -93,18 +106,25 @@ class TimelineRestController {
 
     @RequestMapping(value = "/users/timeline/posts",produces = "application/json",method = RequestMethod.GET)
     @ResponseBody
-    public List<TimelinePostsmetaapi> allposts(HttpServletRequest request,HttpServletResponse response){
+    public List<TimelinePostsmetaapi> allposts(@RequestParam(value="date") String date, OAuth2Authentication auth){
 
         def objectlist = []
-
-        User user = request.getSession().getAttribute("LOGGEDIN_USER");
+        def m = JsonOutput.toJson( auth.getUserAuthentication().getDetails())
+        def Json = jsonSlurper.parseText(m);
+        String email = Json."email"
+        User user = repository.findByEmail(email);
 
         String filename=fg.generatePostnamewithouttime(user.getUniversity(),user.getCollege(),user.getBranch(),user.getSection(),user.getYear(),user.getSem())
 
-        filename = filename + "-*";
-        Query query = new Query().addCriteria(Criteria.where("filename").regex(filename))
+        String filenamedate = filename+"-"+date
+        Query query = new Query().addCriteria(Criteria.where("filename").regex(filenamedate))//.and("uploadDate").regex(dateregex))
+
+        System.out.println("filename is" + filename);
+        System.out.print("query is"+query);
+
 
         def list = gridFsTemplate.find(query)
+        System.out.println("list is"  + list);
         def filelist = []
         int i = 0
         for(GridFSDBFile fl : list)
@@ -135,12 +155,17 @@ class TimelineRestController {
 
     @ResponseBody
     @RequestMapping(value="/users/timeline/view/{filename:.+}/like",method= RequestMethod.GET)
-    public String likePost(@PathVariable(value = "filename", required = true) String filename ,HttpServletRequest request){
+    public String likePost(@PathVariable(value = "filename", required = true) String filename ,OAuth2Authentication auth){
 
-        User loggeduser = request.getSession().getAttribute("LOGGEDIN_USER");
+        def m = JsonOutput.toJson( auth.getUserAuthentication().getDetails())
+        def Json = jsonSlurper.parseText(m);
+        String email = Json."email"
+        def loggeduser = repository.findByEmail(email)
         TimelinePostsmetaapi timelinePostsmetaapi = timelineRepository.findByFilename(filename)
         def likes = timelinePostsmetaapi.getLikes()
         def likedusers = timelinePostsmetaapi.getLikedUsers()
+        println("liked users before" + likedusers);
+        println("logged user" + loggeduser.getEmail())
         def flag = true
         likedusers.each {
             if(loggeduser.getEmail() == it.getEmail()){
@@ -150,6 +175,7 @@ class TimelineRestController {
         if(flag){
             likes = likes + 1;
             likedusers.add(loggeduser)
+            println("liked users" + likedusers)
             timelinePostsmetaapi.setLikes(likes)
             timelinePostsmetaapi.setLikedUsers(likedusers)
             timelineRepository.save(timelinePostsmetaapi)
@@ -160,10 +186,56 @@ class TimelineRestController {
     }
 
     @ResponseBody
-    @RequestMapping(value="/users/timeline/view/{filename:.+}/comment",method= RequestMethod.POST)
-    public String CommentPost(@PathVariable(value = "filename", required = true)String filename, @RequestBody Comment comment, HttpServletRequest request){
+    @RequestMapping(value="/users/timeline/view/{filename:.+}/like/likedusers",method= RequestMethod.GET)
+    public List<String> likedUsers(@PathVariable(value = "filename", required = true) String filename ){
+        TimelinePostsmetaapi timelinePostsmetaapi = timelineRepository.findByFilename(filename)
+        def likedusers = timelinePostsmetaapi.getLikedUsers()
+        def usernamesarray = [];
+        likedusers.each{
+            usernamesarray.add(it.getFirstName())
+        }
+        return usernamesarray
+    }
 
-        User loggeduser = request.getSession().getAttribute("LOGGEDIN_USER");
+    @ResponseBody
+    @RequestMapping(value="/users/timeline/view/{filename:.+}/like/unlike",method= RequestMethod.GET)
+    public String unlikePost(@PathVariable(value = "filename", required = true) String filename ,OAuth2Authentication auth){
+
+        def m = JsonOutput.toJson( auth.getUserAuthentication().getDetails())
+        def Json = jsonSlurper.parseText(m);
+        String email = Json."email"
+        def loggeduser = repository.findByEmail(email)
+        TimelinePostsmetaapi timelinePostsmetaapi = timelineRepository.findByFilename(filename)
+        def likes = timelinePostsmetaapi.getLikes()
+        def likedusers = timelinePostsmetaapi.getLikedUsers()
+        println("liked users before" + likedusers);
+        println("logged user" + loggeduser.getEmail())
+        def flag = true
+        likedusers.each {
+            if(loggeduser.getEmail() == it.getEmail()){
+                flag =true
+            }
+        }
+        if(flag){
+            likes = likes - 1;
+            likedusers.remove(loggeduser)
+            println("liked users" + likedusers)
+            timelinePostsmetaapi.setLikes(likes)
+            timelinePostsmetaapi.setLikedUsers(likedusers)
+            timelineRepository.save(timelinePostsmetaapi)
+            return "like success current likes " + likes
+        }
+        return "not liked"
+
+    }
+
+    @ResponseBody
+    @RequestMapping(value="/users/timeline/view/{filename:.+}/comment",method= RequestMethod.POST)
+    public String CommentPost(@PathVariable(value = "filename", required = true)String filename, @RequestBody Comment comment,OAuth2Authentication auth){
+        def m = JsonOutput.toJson( auth.getUserAuthentication().getDetails())
+        def Json = jsonSlurper.parseText(m);
+        String email = Json."email"
+        def loggeduser = repository.findByEmail(email)
         TimelinePostsmetaapi timelinePostsmetaapi = timelineRepository.findByFilename(filename)
         def commentscurrent = timelinePostsmetaapi.getComments()
         comment.setUser(loggeduser);

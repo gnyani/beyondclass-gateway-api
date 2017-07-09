@@ -15,6 +15,7 @@ dependencies {
     compile(libs.springBootStarterSecurity)
     compile(libs.springBootStarterDataMongodb)
     compile(libs.oauth)
+    //compile(libs.jsr311)
     testCompile(libs.springBootStarterTest)
     testCompile (libs.junit)
 }

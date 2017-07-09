@@ -86,28 +86,89 @@ class UserRegGoogleContoller {
         }
     }
 
-    @CrossOrigin
-    @RequestMapping(value="/users/loggedin")
-    public String loggeduser(Authentication auth) {
+    @CrossOrigin(origins = ["http://localhost:8081","http://localhost:3000"])
+    @RequestMapping(value="/user/loggedin" ,produces = "application/json")
+    public Object loggeduser(Authentication auth) {
         def m = JsonOutput.toJson(auth)
 
         def Json = jsonSlurper.parseText(m);
         // println(" json is " + Json)
         String email = Json.userAuthentication.details.email
         println("email is ${email}")
-        User present = userRepository.findByEmail(email);
-        println("User is ${present}")
        return email
     }
 
-    @CrossOrigin
-    @RequestMapping(value="/users" ,method = RequestMethod.GET)
-    public Object listUsers(Authentication auth)
+    @CrossOrigin(origins = ["http://localhost:8081","http://localhost:3000"])
+    @RequestMapping(value="/user/isloggedin" ,method = RequestMethod.GET)
+    public Object isloggedin(Authentication auth)
     {
-        return auth;
+        if(auth){
+            return true
+        }else{
+            return  false
+        }
     }
 
-    @CrossOrigin
+    @CrossOrigin(origins = ["http://localhost:8081","http://localhost:3000"])
+    @RequestMapping(value="/user/name" ,method = RequestMethod.GET)
+    public Object username(Authentication auth)
+    {
+        def m = JsonOutput.toJson(auth)
+        def Json = jsonSlurper.parseText(m);
+        // println(" json is " + Json)
+        String name = Json.userAuthentication.details.name
+        println("username  is ${name}")
+        return name
+    }
+    @CrossOrigin(origins = "http://localhost:3000")
+    @RequestMapping(value="/user/dummy" , produces ="application/json" , method = RequestMethod.POST)
+    public String dummy()
+    {
+        return "test";
+    }
+
+    @CrossOrigin(origins = ["http://localhost:8081","http://localhost:3000"])
+    @RequestMapping(value="/user/firstname" ,method = RequestMethod.GET)
+    public Object firstname(Authentication auth)
+    {
+        def m = JsonOutput.toJson(auth)
+        def Json = jsonSlurper.parseText(m);
+        // println(" json is " + Json)
+        String firstname = Json.userAuthentication.details.given_name
+        println("username  is ${firstname}")
+        return firstname
+    }
+
+    @CrossOrigin(origins = ["http://localhost:8081","http://localhost:3000"])
+    @RequestMapping(value="/user/lastname" , method = RequestMethod.GET)
+    public Object lastname(Authentication auth)
+    {
+        def m = JsonOutput.toJson(auth)
+        def Json = jsonSlurper.parseText(m);
+        // println(" json is " + Json)
+        String lastname = Json.userAuthentication.details.family_name
+        println("username  is ${lastname}")
+        return lastname
+    }
+
+    @CrossOrigin(origins = ["http://localhost:8081","http://localhost:3000"])
+    @RequestMapping(value="/user/propic" ,method = RequestMethod.GET)
+    public Object propicUrl(Authentication auth)
+    {
+        def m = JsonOutput.toJson(auth)
+        def Json = jsonSlurper.parseText(m);
+        // println(" json is " + Json)
+        String propicurl = Json.userAuthentication.details.picture
+        println("propicurl  is ${propicurl}")
+        return propicurl
+    }
+    @RequestMapping(value="/user/authobj" ,method = RequestMethod.GET)
+    public Object giveauthobj(Authentication auth)
+    {
+        return  auth;
+    }
+
+    @CrossOrigin(origins = ["http://localhost:8081","http://localhost:3000"])
     @RequestMapping(value="/users/registration", produces ="application/json" ,method = RequestMethod.POST)
     public String userRegistration(@Valid @RequestBody User user,OAuth2Authentication auth)
     {
@@ -190,10 +251,11 @@ class UserRegGoogleContoller {
         catch(Exception e){
             return "Error occurred while registering user please try again after sometime" + e.getMessage()
         }
-        response="User registration successful for "+registered.getFirstName()+ " with email " + registered.getEmail()
+        response="User registration successful"
         return response
     }
 
+    @CrossOrigin(origins = ["http://localhost:8081","http://localhost:3000"])
     @RequestMapping(value="/users/details/updateprofile", produces ="application/json" ,method = RequestMethod.POST)
     public String userDetailsUpdate( @RequestBody User updateduser,HttpServletRequest request, HttpServletResponse response,OAuth2Authentication auth) {
 
@@ -265,7 +327,7 @@ class UserRegGoogleContoller {
 
     }
 
-
+    @CrossOrigin(origins = ["http://localhost:8081","http://localhost:3000"])
     @RequestMapping(value="/user/logout")
     public Object logout(HttpServletRequest request, HttpServletResponse response)
     {

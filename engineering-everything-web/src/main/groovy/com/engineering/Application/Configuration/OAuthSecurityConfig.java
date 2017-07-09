@@ -19,6 +19,11 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.E
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.header.writers.StaticHeadersWriter;
+import org.springframework.security.web.header.writers.frameoptions.WhiteListedAllowFromStrategy;
+import org.springframework.security.web.header.writers.frameoptions.XFrameOptionsHeaderWriter;
+
+import java.util.Arrays;
 
 
 @Configurable
@@ -45,7 +50,7 @@ public class OAuthSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Bean
 	public AuthenticationSuccessHandler successHandler() {
-		return new MyCustomLoginSuccessHandler("http://localhost:3000");
+		return new MyCustomLoginSuccessHandler("http://localhost:3000/#/");
 	}
 
 	private OAuth2ClientAuthenticationProcessingFilter filter() {
@@ -68,9 +73,14 @@ public class OAuthSecurityConfig extends WebSecurityConfigurerAdapter {
 	protected void configure(HttpSecurity http) throws Exception {
 
 		http
+				.headers()
+		          .frameOptions().disable().addHeaderWriter(new StaticHeadersWriter("X-FRAME-OPTIONS", "ALLOW-FROM localhost"))
+				  .and()
+				.cors().and()
 				.authorizeRequests()
-				.antMatchers("/users/registration","/users", "/html/**.html", "/js/*/*.js", "/js/*/*/*.*","/**.html").permitAll()
+				.antMatchers("/html/**.html", "/js/*/*.js", "/js/*/*/*.*","/**.html").permitAll()
 				.antMatchers(HttpMethod.OPTIONS, "/google/login").permitAll()
+				.antMatchers(HttpMethod.GET, "/google/login").permitAll()
 				.anyRequest().fullyAuthenticated()//
 				.and()
 				.formLogin().loginPage("/google/login").successHandler(successHandler())
@@ -79,7 +89,7 @@ public class OAuthSecurityConfig extends WebSecurityConfigurerAdapter {
 				.logoutSuccessUrl("/users/logout")
 				.permitAll()
 				.and()
-				.addFilterAt(filter(), BasicAuthenticationFilter.class)
+				.addFilterAt(filter(),BasicAuthenticationFilter.class)
 				.csrf().disable();
 				//.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
 	}
