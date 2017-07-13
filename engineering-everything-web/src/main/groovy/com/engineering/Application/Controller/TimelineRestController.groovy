@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.ApplicationContext
 import org.springframework.context.annotation.AnnotationConfigApplicationContext
+import org.springframework.data.domain.Sort
 import org.springframework.data.mongodb.core.MongoOperations
 import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.data.mongodb.core.query.Query
@@ -88,9 +89,9 @@ class TimelineRestController {
         //storing filename in meta
         timelinePostsmetaapi.setFilename(filename)
         println("filename is "+filename)
-        String postUrl = "http://"+servicehost+":8080/users/timeline/view/"+filename;
-        String likeUrl = postUrl +"/like"
-        String commentUrl = postUrl + "/comment"
+        String postUrl = post.file ? "http://"+servicehost+":8080/users/timeline/view/"+filename : null ;
+        String likeUrl =  "http://"+servicehost+":8080/users/timeline/view/"+filename+"/like"
+        String commentUrl =  "http://"+servicehost+":8080/users/timeline/view/"+filename+ "/comment"
         timelinePostsmetaapi.setPostUrl(postUrl);
         timelinePostsmetaapi.setLikeUrl(likeUrl);
         timelinePostsmetaapi.setCommentUrl(commentUrl);
@@ -117,7 +118,7 @@ class TimelineRestController {
         String filename=fg.generatePostnamewithouttime(user.getUniversity(),user.getCollege(),user.getBranch(),user.getSection(),user.getYear(),user.getSem())
 
         String filenamedate = filename+"-"+date
-        Query query = new Query().addCriteria(Criteria.where("filename").regex(filenamedate))//.and("uploadDate").regex(dateregex))
+        Query query = new Query().with(new Sort(Sort.Direction.DESC, "uploadDate")).addCriteria(Criteria.where("filename").regex(filenamedate))
 
         System.out.println("filename is" + filename);
         System.out.print("query is"+query);
