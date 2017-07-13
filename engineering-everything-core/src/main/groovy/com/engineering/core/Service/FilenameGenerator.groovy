@@ -2,6 +2,7 @@ package com.engineering.core.Service
 
 import org.springframework.stereotype.Component
 
+import java.time.LocalDate
 import java.time.LocalDateTime
 
 
@@ -26,15 +27,14 @@ class FilenameGenerator {
         filename = university+"-"+collegecode+"-"+branch+"-"+year+"-"+sem+"-"+subject+"-"+qpyear;
         return  filename;
     }
-    public String generateSyllabusName(String university, String collegecode, String branch, String section, String year, String sem, String subject)
+    public String generateSyllabusName(String university, String collegecode, String branch, String year, String sem, String subject)
     {
         university = university.toUpperCase();
         collegecode = collegecode.toUpperCase();
         branch = branch.toUpperCase();
-        section = section.toUpperCase();
         subject = subject.toUpperCase();
         def filename =null;
-        filename = university+"-"+collegecode+"-"+branch+"-"+section+"-"+year+"-"+sem+"-"+subject;
+        filename = university+"-"+collegecode+"-"+branch+"-"+year+"-"+sem+"-"+subject;
         return  filename;
     }
 
@@ -50,18 +50,41 @@ class FilenameGenerator {
         return  filename;
     }
 
-    public String generatePostname(String university, String collegecode, String branch, String section, String year, String sem,String email,long currenttime)
+    public String generateAssignmentNamewithoutEmail(String university, String collegecode, String branch, String section, String year, String sem, String subject)
+    {
+        university = university.toUpperCase();
+        collegecode = collegecode.toUpperCase();
+        branch = branch.toUpperCase();
+        section = section.toUpperCase();
+        subject = subject.toUpperCase();
+        def filename =null;
+        filename = university+"-"+collegecode+"-"+branch+"-"+section+"-"+year+"-"+sem+"-"+subject;
+        return  filename;
+    }
+
+    public String generatePostname(String university, String collegecode, String branch, String section, String year, String sem,LocalDate date, String email,long currenttime)
     {
         university = university.toUpperCase();
         collegecode = collegecode.toUpperCase();
         branch = branch.toUpperCase();
         section = section.toUpperCase();
         def filename =null;
-        filename = university+"-"+collegecode+"-"+branch+"-"+section+"-"+year+"-"+sem+"-"+email+"-"+currenttime;
+        filename = university+"-"+collegecode+"-"+branch+"-"+section+"-"+year+"-"+sem+"-"+date.toString()+"-"+email+"-"+currenttime;
         return  filename;
     }
 
     public String generatePostnamewithouttime(String university, String collegecode, String branch, String section, String year, String sem)
+    {
+        university = university.toUpperCase();
+        collegecode = collegecode.toUpperCase();
+        branch = branch.toUpperCase();
+        section = section.toUpperCase();
+        def filename =null;
+        filename = university+"-"+collegecode+"-"+branch+"-"+section+"-"+year+"-"+sem;
+        return  filename;
+    }
+
+    public String generateClassId(String university,String collegecode,String branch,String section,String year, String sem)
     {
         university = university.toUpperCase();
         collegecode = collegecode.toUpperCase();

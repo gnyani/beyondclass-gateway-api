@@ -28,10 +28,6 @@ public class Syllabus {
     @JsonProperty
     @NotEmpty
     @NotNull
-    private String section;
-    @JsonProperty
-    @NotEmpty
-    @NotNull
     private String year;
     @JsonProperty
     @NotEmpty
@@ -47,11 +43,10 @@ public class Syllabus {
 
     }
 
-    public Syllabus(String university, String college, String branch, String section, String year, String sem, String subject) {
+    public Syllabus(String university, String college, String branch, String year, String sem, String subject) {
         this.university = university;
         this.college = college;
         this.branch = branch;
-        this.section = section;
         this.year = year;
         this.sem = sem;
         this.subject = subject;
@@ -103,13 +98,6 @@ public class Syllabus {
 
     public void setSubject(String subject) {
         this.subject = subject;
-    }
-    public String getSection() {
-        return section;
-    }
-
-    public void setSection(String section) {
-        this.section = section;
     }
 
 }

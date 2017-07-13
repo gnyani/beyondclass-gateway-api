@@ -22,7 +22,7 @@ class SyllabusInsertUtility {
 
 
 
-            String newFileName = new FilenameGenerator().generateSyllabusName("OU","VASV","CSE","B","4","3","DS");
+            String newFileName = new FilenameGenerator().generateSyllabusName("OU","VASV","CSE","4","1","DS");
 
             File imageFile = new File("/Users/GnyaniMac/Desktop/mydocsforloan/HR Letter.pdf");
 

@@ -5,11 +5,17 @@ import api.Questionpaper
 import api.QuestionPaperSubject
 import api.User
 import com.mongodb.gridfs.GridFSDBFile
+import groovy.json.JsonOutput
+import groovy.json.JsonSlurper
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.data.mongodb.core.query.Query
 import org.springframework.data.mongodb.gridfs.GridFsTemplate
+import org.springframework.security.oauth2.provider.OAuth2Authentication
+import org.springframework.web.bind.annotation.CrossOrigin
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestMethod
@@ -23,7 +29,7 @@ import javax.servlet.http.HttpServletResponse
 /**
  * Created by GnyaniMac on 01/05/17.
  */
-
+@CrossOrigin(origins = ["http://localhost:8081","http://localhost:3000"])
 @RestController
 class QuestionPaperRetrivalController {
 
@@ -38,42 +44,60 @@ class QuestionPaperRetrivalController {
     @Qualifier("questionpapers")
     GridFsTemplate gridFsTemplate
 
+    @Value('${engineering.everything.host}')
+    private String servicehost;
 
+    JsonSlurper jsonSlurper = new JsonSlurper();
 
     @ResponseBody
-    @RequestMapping(value="/users/questionpapers/other",produces= "image/*e" ,method= RequestMethod.POST)
-    public byte[] retriveothers (@RequestBody Questionpaper qp, HttpServletRequest request, HttpServletResponse response)
+    @RequestMapping(value="/user/questionpaperurl/other",produces= "text/plain" ,method= RequestMethod.POST)
+    public Object retriveotherQpurl (@RequestBody Questionpaper qp)
     {
-        byte[] file = null;
         String filename= fg.generateQpName(qp.getUniversity(),qp.getCollege(),qp.getBranch(),qp.getYear(),qp.getSem(),qp.getSubject(),qp.getQpyear())
+        println("file name is " + filename)
+        def url = "http://"+servicehost+":8080/user/questionpaper/"+filename
+        return url
+    }
+
+    @ResponseBody
+    @RequestMapping(value="/user/questionpaper/other/{filename:.+}",produces= "image/jpg" ,method= RequestMethod.GET)
+    public byte[] retriveotherQp(@PathVariable(value = "filename", required = true) Object filename) {
+        byte[] file = null;
         // get image file by it's filename
         Query query = new Query().addCriteria(Criteria.where("filename").is(filename))
         GridFSDBFile imageForOutput = gridFsTemplate.findOne(query)
-
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         imageForOutput.writeTo(baos);
-        file=baos.toByteArray()
-
+        file = baos.toByteArray();
         return file
     }
 
     @ResponseBody
-    @RequestMapping(value="/users/questionpapers",produces= "image/*e" ,method= RequestMethod.POST)
-    public byte[] retrievedefault (@RequestBody QuestionPaperSubject subject, HttpServletRequest request, HttpServletResponse response)
+    @RequestMapping(value="/user/questionpaper/{filename:.+}",produces= "image/jpg" ,method= RequestMethod.GET)
+    public byte[] retrievedefault (@PathVariable(value = "filename", required = true) Object filename)
     {
         byte[] file = null;
-        User userLogin = request.getSession().getAttribute("LOGGEDIN_USER");
-        User currentuser = repository.findByEmail(userLogin.getEmail());
-        String filename = fg.generateQpName(currentuser.getUniversity(),currentuser.getCollege(),currentuser.getBranch(),currentuser.getYear(),currentuser.getSem(),subject.getSubject(),subject.getQpyear());
-        // get image file by it's filename
-        println("file name is " + filename)
         Query query = new Query().addCriteria(Criteria.where("filename").is(filename))
         GridFSDBFile imageForOutput = gridFsTemplate.findOne(query)
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         imageForOutput.writeTo(baos);
         file=baos.toByteArray()
-
         return file
+    }
+
+    @ResponseBody
+    @RequestMapping(value="/user/questionpaperurl",produces= "text/plain" ,method= RequestMethod.POST)
+    public Object retrieveQpurl (@RequestBody QuestionPaperSubject subject,OAuth2Authentication auth)
+    {
+        def m = JsonOutput.toJson( auth.getUserAuthentication().getDetails())
+        def Json = jsonSlurper.parseText(m);
+        String email = Json."email"
+        User currentuser = repository.findByEmail(email);
+        String filename = fg.generateQpName(currentuser.getUniversity(),currentuser.getCollege(),currentuser.getBranch(),currentuser.getYear(),currentuser.getSem(),subject.getSubject(),subject.getQpyear());
+        // get image file by it's filename
+        println("file name is " + filename)
+        def url = "http://"+servicehost+":8080/user/questionpaper/"+filename
+        return url
     }
 
 }

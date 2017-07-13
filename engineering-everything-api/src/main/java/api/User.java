@@ -15,6 +15,8 @@ import org.springframework.data.mongodb.core.mapping.Field;
 import javax.validation.constraints.*;
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 
 /**
@@ -23,25 +25,8 @@ import java.util.Date;
 @Document(collection = "users")
 public class User {
 
-    @JsonProperty
-    @NotEmpty(message = "please enter your emailaddress")
-    @NotNull(message = "please enter your emailAddress")
-    @Email(regexp = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@" + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$",message = "invalid email")
     @Id
     private String email;
-
-    @JsonProperty
-    @NotNull
-    @NotEmpty(message = "please enter your password")
-    @Size(max = 20 , min = 6 ,message = "password length should be in between 6 and 20")
-    private String password;
-
-    @JsonProperty
-    @NotNull
-    @NotEmpty(message = "please confirm your password")
-    @Size(max = 20 , min = 6, message = "password length should be in between 6 and 20" )
-    @Transient
-    private String confirmpassword;
 
     @NotEmpty(message = "please enter your name")
     @NotNull(message = "please enter your name")
@@ -101,13 +86,20 @@ public class User {
 
     private LocalDateTime registerdate = LocalDateTime.now();
 
+    private boolean accountNonExpired;
+    private boolean accountNonLocked;
+    private boolean credentialsNonExpired;
+    private boolean enabled;
+
+
+
+    private Set<String> roles = new HashSet<String>();
+
     public User(){
     }
 
-    public User(String email, String password, String confirmpassword, String firstName, String lastName,String university, String college, String branch, String rollno, String section, String year, String sem, String hostel, Date dob, String mobilenumber, LocalDateTime registerdate) {
+    public User(String email, String firstName, String lastName,String university, String college, String branch, String rollno, String section, String year, String sem, String hostel, Date dob, String mobilenumber, LocalDateTime registerdate) {
         this.email = email;
-        this.password = password;
-        this.confirmpassword = confirmpassword;
         this.firstName = firstName;
         this.lastName = lastName;
         this.university = university;
@@ -227,21 +219,6 @@ public class User {
         this.section = section;
     }
 
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getConfirmpassword() {
-        return confirmpassword;
-    }
-
-    public void setConfirmpassword(String confirmpassword) {
-        this.confirmpassword = confirmpassword;
-    }
 
     public String getUniversity() {
         return university;
@@ -249,6 +226,53 @@ public class User {
 
     public void setUniversity(String university) {
         this.university = university;
+    }
+
+    public void addRole(String role) {
+        roles.add(role);
+    }
+
+    public Set<String> getRoles() {
+        return roles;
+    }
+
+    public String getUsername() {
+        return email;
+    }
+
+    public void setUsername(String email) {
+        this.email = email;
+    }
+
+    public boolean isAccountNonExpired() {
+        return accountNonExpired;
+    }
+
+    public void setAccountNonExpired(boolean accountNonExpired) {
+        this.accountNonExpired = accountNonExpired;
+    }
+
+    public boolean isAccountNonLocked() {
+        return accountNonLocked;
+    }
+
+    public void setAccountNonLocked(boolean accountNonLocked) {
+        this.accountNonLocked = accountNonLocked;
+    }
+
+    public boolean isCredentialsNonExpired() {
+        return credentialsNonExpired;
+    }
+
+    public void setCredentialsNonExpired(boolean credentialsNonExpired) {
+        this.credentialsNonExpired = credentialsNonExpired;
+    }
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 
 
@@ -259,36 +283,35 @@ public class User {
 
         User user = (User) o;
 
-        if (!email.equals(user.email)) return false;
-        if (!password.equals(user.password)) return false;
-        if (!confirmpassword.equals(user.confirmpassword)) return false;
+        if (accountNonExpired != user.accountNonExpired) return false;
+        if (accountNonLocked != user.accountNonLocked) return false;
+        if (credentialsNonExpired != user.credentialsNonExpired) return false;
+        if (enabled != user.enabled) return false;
         if (!firstName.equals(user.firstName)) return false;
-        if (lastName != null ? !lastName.equals(user.lastName) : user.lastName != null) return false;
+        if (!lastName.equals(user.lastName)) return false;
         if (!university.equals(user.university)) return false;
         if (!college.equals(user.college)) return false;
         if (!branch.equals(user.branch)) return false;
-        if (rollno != null ? !rollno.equals(user.rollno) : user.rollno != null) return false;
+        if (!rollno.equals(user.rollno)) return false;
         if (!section.equals(user.section)) return false;
         if (!year.equals(user.year)) return false;
         if (!sem.equals(user.sem)) return false;
         if (hostel != null ? !hostel.equals(user.hostel) : user.hostel != null) return false;
         if (dob != null ? !dob.equals(user.dob) : user.dob != null) return false;
         if (mobilenumber != null ? !mobilenumber.equals(user.mobilenumber) : user.mobilenumber != null) return false;
-        return registerdate != null ? registerdate.equals(user.registerdate) : user.registerdate == null;
+        if (registerdate != null ? !registerdate.equals(user.registerdate) : user.registerdate != null) return false;
+        return roles != null ? roles.equals(user.roles) : user.roles == null;
 
     }
 
     @Override
     public int hashCode() {
-        int result = email.hashCode();
-        result = 31 * result + password.hashCode();
-        result = 31 * result + confirmpassword.hashCode();
-        result = 31 * result + firstName.hashCode();
-        result = 31 * result + (lastName != null ? lastName.hashCode() : 0);
+        int result = firstName.hashCode();
+        result = 31 * result + lastName.hashCode();
         result = 31 * result + university.hashCode();
         result = 31 * result + college.hashCode();
         result = 31 * result + branch.hashCode();
-        result = 31 * result + (rollno != null ? rollno.hashCode() : 0);
+        result = 31 * result + rollno.hashCode();
         result = 31 * result + section.hashCode();
         result = 31 * result + year.hashCode();
         result = 31 * result + sem.hashCode();
@@ -296,6 +319,11 @@ public class User {
         result = 31 * result + (dob != null ? dob.hashCode() : 0);
         result = 31 * result + (mobilenumber != null ? mobilenumber.hashCode() : 0);
         result = 31 * result + (registerdate != null ? registerdate.hashCode() : 0);
+        result = 31 * result + (accountNonExpired ? 1 : 0);
+        result = 31 * result + (accountNonLocked ? 1 : 0);
+        result = 31 * result + (credentialsNonExpired ? 1 : 0);
+        result = 31 * result + (enabled ? 1 : 0);
+        result = 31 * result + (roles != null ? roles.hashCode() : 0);
         return result;
     }
 
@@ -303,8 +331,6 @@ public class User {
     public String toString() {
         return "User{" +
                 "email='" + email + '\'' +
-                ", password='" + password + '\'' +
-                ", confirmpassword='" + confirmpassword + '\'' +
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", college='" + college + '\'' +
