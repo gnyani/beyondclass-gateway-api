@@ -75,6 +75,13 @@ public class SpringMongoConfig extends AbstractMongoConfiguration {
         return new GridFsTemplate(mongoDbFactory(), mappingMongoConverter(),"timeline-files");
     }
 
+	@Bean(name = "coachingcentres-files")
+	public GridFsTemplate gridFsTemplate5() throws Exception {
+		return new GridFsTemplate(mongoDbFactory(), mappingMongoConverter(),"coachingcentres-files");
+	}
+
+
+
 	@Override
 	@Bean
 	public Mongo mongo() throws Exception {

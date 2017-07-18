@@ -10,7 +10,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class TimelinePosts {
 
     @JsonProperty
-    private byte[] file;
+    private byte[] file ;
 
     @JsonProperty
     private String description;

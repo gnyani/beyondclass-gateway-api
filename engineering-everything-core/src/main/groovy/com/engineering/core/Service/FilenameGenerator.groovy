@@ -1,5 +1,6 @@
 package com.engineering.core.Service
 
+import api.Coachingcentre
 import org.springframework.stereotype.Component
 
 import java.time.LocalDate
@@ -93,6 +94,20 @@ class FilenameGenerator {
         def filename =null;
         filename = university+"-"+collegecode+"-"+branch+"-"+section+"-"+year+"-"+sem;
         return  filename;
+    }
+
+    public String generateCoachingCentreId(Coachingcentre coachingcentre )
+    {
+        def filename = coachingcentre.getType().toString() +"-"+coachingcentre.getCity().toString()+"-"+ coachingcentre.getArea().toString()+"-" + coachingcentre.getOrgname()
+
+        return  filename
+    }
+
+    public String generateCoachingCentreIdwithoutname(Coachingcentre coachingcentre )
+    {
+        def filename = coachingcentre.getType().toString() +"-"+coachingcentre.getCity().toString()+"-"+ coachingcentre.getArea().toString()
+
+        return  filename
     }
 
 }
