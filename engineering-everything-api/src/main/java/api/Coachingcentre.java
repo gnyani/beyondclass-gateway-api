@@ -6,6 +6,8 @@ import constants.Area;
 import constants.City;
 import constants.CoachingCentreType;
 import org.hibernate.validator.constraints.NotEmpty;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.validation.constraints.NotNull;
@@ -15,6 +17,10 @@ import javax.validation.constraints.NotNull;
  */
 @Document(collection = "coachingcentres")
 public class Coachingcentre {
+
+
+    @Id
+    public String coachingcentreId;
 
     @JsonProperty
     @NotNull
@@ -46,10 +52,31 @@ public class Coachingcentre {
     @NotNull
     public ContactInfo contactinfo;
 
+    public float rating = 4;
+
     //public Review review;
 
     @JsonProperty
+    @Transient
     public byte[] feedetails;
+
+    public String feesdetailsUrl;
+
+    public float getRating() {
+        return rating;
+    }
+
+    public void setRating(float rating) {
+        this.rating = rating;
+    }
+
+    public String getFeesdetailsUrl() {
+        return feesdetailsUrl;
+    }
+
+    public void setFeesdetailsUrl(String feesdetailsUrl) {
+        this.feesdetailsUrl = feesdetailsUrl;
+    }
 
     public CoachingCentreType getType() {
         return type;
@@ -113,5 +140,13 @@ public class Coachingcentre {
 
     public void setFeedetails(byte[] feedetails) {
         this.feedetails = feedetails;
+    }
+
+    public String getCaochingcentreId() {
+        return coachingcentreId;
+    }
+
+    public void setCaochingcentreId(String caochingcentreId) {
+        this.coachingcentreId = caochingcentreId;
     }
 }
