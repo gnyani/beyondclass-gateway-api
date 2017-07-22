@@ -41,7 +41,7 @@ class AnouncementsRestController {
 
     JsonSlurper jsonSlurper = new JsonSlurper()
 
-    def PAGE_SIZE = 4
+    def PAGE_SIZE = 5
 
     @RequestMapping(value="/user/anouncements/insert", method=RequestMethod.POST)
     public String insertAnouncement(@RequestBody Anouncements anouncements, OAuth2Authentication oauth){

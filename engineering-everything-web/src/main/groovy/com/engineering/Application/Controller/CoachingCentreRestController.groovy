@@ -90,30 +90,45 @@ class CoachingCentreRestController {
 
     @CrossOrigin(origins = ["http://localhost:8081","http://localhost:3000"])
     @RequestMapping(value = "/coachingcentres/post/{coachingcentreId:.+}" ,method = RequestMethod.POST )
-    public String postRating (@PathVariable(value = "coachingcentreId" , required = true) String coachingcentreId, @RequestBody float  rating,OAuth2Authentication auth){
+    public String postRating (@PathVariable(value = "coachingcentreId" , required = true) String coachingcentreId, @RequestBody Rating  rating,OAuth2Authentication auth){
 
         def m = JsonOutput.toJson( auth.getUserAuthentication().getDetails())
         def Json = jsonSlurper.parseText(m);
         String email = Json."email"
 
-        Rating rating1 = new Rating()
-        rating1.setCoachingcentreId(coachingcentreId)
-        rating1.setRating(rating)
-        rating1.setEmail(email)
-        ratingRepository.save(rating1)
-        updateRating(coachingcentreId)
+        rating.setCoachingcentreId(coachingcentreId)
+        rating.setEmail(email)
+        ratingRepository.save(rating)
+        def x = updateRating(coachingcentreId)
+        return (x ? "success" : "something went wrong")
+    }
+    @CrossOrigin(origins = ["http://localhost:8081","http://localhost:3000"])
+    @RequestMapping(value = "/coachingcentres/get/{coachingcentreId:.+}/reviews" ,method = RequestMethod.GET )
+    public Object getReviews (@PathVariable(value = "coachingcentreId" , required = true) String coachingcentreId){
+
+        def list = ratingRepository.findBycoachingcentreId(coachingcentreId)
+        def finalist = []
+        list.each{
+
+           if(it.review.length()!=0)
+               finalist.add(it)
+        }
+        return  finalist;
+
     }
 
-   public void updateRating(String coachingcentreId){
+
+   public boolean updateRating(String coachingcentreId){
        def list = ratingRepository.findBycoachingcentreId(coachingcentreId)
-       float actualrating
+       float actualrating = 0
        list.each {
            actualrating += it.getRating()
        }
        actualrating = actualrating/list.size()
        def coachingcentre = centresRepository.findBycoachingcentreId(coachingcentreId)
        coachingcentre.setRating(actualrating)
-       centresRepository.save(coachingcentre)
+       def x = centresRepository.save(coachingcentre)
+       return(x ? true: false)
    }
 
 
