@@ -231,7 +231,7 @@ class UserRegGoogleContoller {
         def Json = jsonSlurper.parseText(m);
         // println(" json is " + Json)
         String email = Json."email"
-
+        String propicurl = Json.picture
         if(userRepository.findByEmail(email))
         {
             return "Please register with other email address,this email already exists"
@@ -245,13 +245,14 @@ class UserRegGoogleContoller {
             user.setAccountNonLocked(true);
             user.setCredentialsNonExpired(true);
             user.addRole("ROLE_USER");
+            user.setGooglepicUrl(propicurl);
             //saving to collection
             registered = userRepository.insert(user);
         }
         catch(Exception e){
             return "Error occurred while registering user please try again after sometime" + e.getMessage()
         }
-        response="User registration successful"
+        response="User registration successful  "
         return response
     }
 

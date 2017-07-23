@@ -26,8 +26,11 @@ class UserValidationService {
         def Json = jsonSlurper.parseText(m);
         // println(" json is " + Json)
         String email = Json.userAuthentication.details.email
+        String googlepic = Json.userAuthentication.details.picture
         println("email is ${email}")
         User present = userRepository.findByEmail(email);
+        present.setGooglepicUrl(googlepic)
+        userRepository.save(present)
         println("User is ${present}")
         if (present != null)
         {

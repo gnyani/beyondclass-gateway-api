@@ -27,12 +27,14 @@ public class TimelinePostsmetaapi {
     private String owner;
     private LocalDateTime postdateTime;
     private ArrayList<User> likedUsers = new ArrayList<>();
+    private String propicUrl;
+    private User uploadeduser;
     public TimelinePostsmetaapi(){
 
     }
 
 
-    public TimelinePostsmetaapi(String filename,String description, String postUrl,String likeUrl,String commentUrl, int likes, ArrayList<Comment> comments, String owner, LocalDateTime postdateTime,ArrayList<User> likedUsers) {
+    public TimelinePostsmetaapi(String filename,String description, String postUrl,String likeUrl,String commentUrl, int likes, ArrayList<Comment> comments, String owner, LocalDateTime postdateTime,ArrayList<User> likedUsers,String propicUrl,User user) {
         this.filename = filename;
         this.description = description;
         this.postUrl = postUrl;
@@ -43,6 +45,8 @@ public class TimelinePostsmetaapi {
         this.owner = owner;
         this.postdateTime = postdateTime;
         this.likedUsers = likedUsers;
+        this.propicUrl = propicUrl;
+        this.uploadeduser = user;
     }
 
     public String getFilename() {
@@ -123,6 +127,22 @@ public class TimelinePostsmetaapi {
 
     public void setCommentUrl(String commentUrl) {
         this.commentUrl = commentUrl;
+    }
+
+    public String getPropicUrl() {
+        return propicUrl;
+    }
+
+    public void setPropicUrl(String propicUrl) {
+        this.propicUrl = propicUrl;
+    }
+
+    public User getUploadeduser() {
+        return uploadeduser;
+    }
+
+    public void setUploadeduser(User uploadeduser) {
+        this.uploadeduser = uploadeduser;
     }
 
     @Override
