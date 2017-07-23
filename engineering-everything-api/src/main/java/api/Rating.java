@@ -2,6 +2,7 @@ package api;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.hibernate.validator.constraints.NotEmpty;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -11,7 +12,6 @@ import javax.validation.constraints.NotNull;
  * Created by GnyaniMac on 16/07/17.
  */
 @Document(collection = "rating")
-@CompoundIndex(name = "Rating", def = "{'coachingcentreId' : 1, 'email': 1}")
 public class Rating {
 
     public String coachingcentreId;
@@ -25,6 +25,17 @@ public class Rating {
 
     @JsonProperty
     public String review;
+
+    @Id
+    public  String ReviewID ;
+
+    public String getReviewID() {
+        return ReviewID;
+    }
+
+    public void setReviewID(String UID) {
+        this.ReviewID = UID;
+    }
 
     public String getReview() {
         return review;

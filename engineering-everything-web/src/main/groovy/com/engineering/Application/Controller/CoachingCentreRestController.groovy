@@ -98,6 +98,7 @@ class CoachingCentreRestController {
 
         rating.setCoachingcentreId(coachingcentreId)
         rating.setEmail(email)
+        rating.setReviewID(coachingcentreId+email)
         ratingRepository.save(rating)
         def x = updateRating(coachingcentreId)
         return (x ? "success" : "something went wrong")
