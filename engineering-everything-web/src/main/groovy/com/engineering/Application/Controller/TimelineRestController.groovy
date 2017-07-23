@@ -141,11 +141,14 @@ class TimelineRestController {
         }
         for(TimelinePostsmetaapi temp : objectlist ){
             def postemail = temp.getUploadeduser().getEmail()
-            def uploadeduser = repository.findByEmail(postemail)
-            def propicUrl = uploadeduser.getGooglepicUrl()
-            if(temp.propicUrl.equalsIgnoreCase(propicUrl)){
+            def userfromdb = repository.findByEmail(postemail)
+            def propicUrl = userfromdb.getGooglepicUrl()
+            def firstNameinDB = userfromdb.getFirstName()
+            if(temp.propicUrl.equalsIgnoreCase(propicUrl) || temp.getOwner().equalsIgnoreCase(firstNameinDB)){
             }else{
                 temp.setPropicUrl(propicUrl)
+                temp.setOwner(firstNameinDB)
+                temp.setUploadeduser(userfromdb)
                 timelineRepository.save(temp)
             }
         }
