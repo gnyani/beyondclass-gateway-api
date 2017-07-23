@@ -84,6 +84,10 @@ public class User {
     @Pattern(regexp="(^$|[0-9]{10})",message = "please enter a valid mobile number")
     private String mobilenumber;
 
+    private String googlepicUrl;
+
+    private String normalpicUrl;
+
     private LocalDateTime registerdate = LocalDateTime.now();
 
     private boolean accountNonExpired;
@@ -274,6 +278,24 @@ public class User {
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
     }
+
+
+    public String getGooglepicUrl() {
+        return googlepicUrl;
+    }
+
+    public void setGooglepicUrl(String googlepicUrl) {
+        this.googlepicUrl = googlepicUrl;
+    }
+
+    public String getNormalpicUrl() {
+        return normalpicUrl;
+    }
+
+    public void setNormalpicUrl(String normalpicUrl) {
+        this.normalpicUrl = normalpicUrl;
+    }
+
 
 
     @Override

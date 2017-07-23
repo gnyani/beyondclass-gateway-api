@@ -36,6 +36,7 @@ import org.springframework.web.bind.annotation.RestController
 
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
+import java.sql.Time
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -79,6 +80,8 @@ class TimelineRestController {
         String email = Json."email"
         User currentuser = repository.findByEmail(email);
         // setting meta data before uploading the file
+        String propicurl = currentuser.normalpicUrl ?: currentuser.googlepicUrl
+        timelinePostsmetaapi.setPropicUrl(propicurl)
         timelinePostsmetaapi.setDescription(post.getDescription())
         timelinePostsmetaapi.setOwner(currentuser.getFirstName())
         timelinePostsmetaapi.setPostdateTime(LocalDateTime.now())
@@ -95,6 +98,7 @@ class TimelineRestController {
         timelinePostsmetaapi.setPostUrl(postUrl);
         timelinePostsmetaapi.setLikeUrl(likeUrl);
         timelinePostsmetaapi.setCommentUrl(commentUrl);
+        timelinePostsmetaapi.setUploadeduser(currentuser);
         InputStream inputStream = new ByteArrayInputStream(post.getFile())
         gridFsTemplate.store(inputStream,filename)
 
@@ -132,8 +136,18 @@ class TimelineRestController {
             filelist[i++] = fl.getFilename();
 
         for (String fl : filelist){
-            def temp = timelineRepository.findByFilename(fl);
+            TimelinePostsmetaapi temp = timelineRepository.findByFilename(fl);
             objectlist.add(temp);
+        }
+        for(TimelinePostsmetaapi temp : objectlist ){
+            def postemail = temp.getUploadeduser().getEmail()
+            def uploadeduser = repository.findByEmail(postemail)
+            def propicUrl = uploadeduser.getGooglepicUrl()
+            if(temp.propicUrl.equalsIgnoreCase(propicUrl)){
+            }else{
+                temp.setPropicUrl(propicUrl)
+                timelineRepository.save(temp)
+            }
         }
 
         return objectlist;
