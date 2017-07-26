@@ -13,6 +13,8 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 
 import com.mongodb.MongoClient;
 import org.springframework.data.mongodb.core.SimpleMongoDbFactory;
+import org.springframework.data.mongodb.core.index.Index;
+import org.springframework.data.mongodb.core.query.Order;
 import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
@@ -42,6 +44,7 @@ public class SpringMongoConfig extends AbstractMongoConfiguration {
 	 public MongoTemplate mongoTemplate() throws Exception {
 
 		MongoTemplate mongoTemplate = new MongoTemplate(mongoDbFactory());
+	    mongoTemplate.indexOps("profilepictures.files").ensureIndex(new Index().on("filename", Order.ASCENDING).unique());
 		return mongoTemplate;
 
 	}
@@ -78,6 +81,11 @@ public class SpringMongoConfig extends AbstractMongoConfiguration {
 	@Bean(name = "coachingcentres-files")
 	public GridFsTemplate gridFsTemplate5() throws Exception {
 		return new GridFsTemplate(mongoDbFactory(), mappingMongoConverter(),"coachingcentres-files");
+	}
+
+	@Bean(name = "profilepictures")
+	public GridFsTemplate gridFsTemplate6() throws Exception {
+		return new GridFsTemplate(mongoDbFactory(), mappingMongoConverter(),"profilepictures");
 	}
 
 

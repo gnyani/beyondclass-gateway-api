@@ -142,9 +142,10 @@ class TimelineRestController {
         for(TimelinePostsmetaapi temp : objectlist ){
             def postemail = temp.getUploadeduser().getEmail()
             def userfromdb = repository.findByEmail(postemail)
-            def propicUrl = userfromdb.getGooglepicUrl()
+            def propicUrl = userfromdb.getNormalpicUrl() ?: userfromdb.getGooglepicUrl()
             def firstNameinDB = userfromdb.getFirstName()
-            if(temp.propicUrl.equalsIgnoreCase(propicUrl) || temp.getOwner().equalsIgnoreCase(firstNameinDB)){
+            System.out.println("from db ${propicUrl} and from timeline repo ${temp.getPropicUrl()}" )
+            if(temp.getPropicUrl().equalsIgnoreCase(propicUrl) || temp.getOwner().equalsIgnoreCase(firstNameinDB)){
             }else{
                 temp.setPropicUrl(propicUrl)
                 temp.setOwner(firstNameinDB)
