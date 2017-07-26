@@ -18,6 +18,8 @@ import constants.year
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper;
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.data.mongodb.gridfs.GridFsTemplate
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
@@ -43,6 +45,7 @@ class UserRegGoogleContoller {
 
     @Autowired
     private LocationService locationUtility;
+
 
     def jsonSlurper = new JsonSlurper()
 
@@ -157,10 +160,9 @@ class UserRegGoogleContoller {
     {
         def m = JsonOutput.toJson(auth)
         def Json = jsonSlurper.parseText(m);
-        // println(" json is " + Json)
-        String propicurl = Json.userAuthentication.details.picture
-        println("propicurl  is ${propicurl}")
-        return propicurl
+        String email = Json.userAuthentication.details.email
+        User user = userRepository.findByEmail(email)
+        return (user.getNormalpicUrl()?:user.getGooglepicUrl())
     }
     @RequestMapping(value="/user/authobj" ,method = RequestMethod.GET)
     public Object giveauthobj(Authentication auth)
@@ -327,6 +329,8 @@ class UserRegGoogleContoller {
 
 
     }
+
+
 
     @CrossOrigin(origins = ["http://localhost:8081","http://localhost:3000"])
     @RequestMapping(value="/user/logout")
