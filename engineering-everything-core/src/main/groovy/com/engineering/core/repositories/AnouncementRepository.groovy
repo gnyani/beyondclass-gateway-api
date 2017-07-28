@@ -14,4 +14,6 @@ public interface  AnouncementRepository extends MongoRepository<Anouncements,Str
 
     Page<Anouncements> findByClassId(String classId, Pageable pageable);
 
+    List<Anouncements> deleteByAid(String announcementtag)
+
 }
