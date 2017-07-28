@@ -14,6 +14,7 @@ import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
 import org.springframework.security.oauth2.provider.OAuth2Authentication
 import org.springframework.web.bind.annotation.CrossOrigin
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestMethod
@@ -43,22 +44,33 @@ class AnouncementsRestController {
 
     def PAGE_SIZE = 5
 
-    @RequestMapping(value="/user/anouncements/insert", method=RequestMethod.POST)
+    @RequestMapping(value="/user/announcements/insert", method=RequestMethod.POST)
     public String insertAnouncement(@RequestBody Anouncements anouncements, OAuth2Authentication oauth){
 
         def m = JsonOutput.toJson(oauth)
         def Json = jsonSlurper.parseText(m);
         String firstname = Json.userAuthentication.details.given_name
-        anouncements.setUsername(firstname);
+        String secondname = Json.userAuthentication.details.family_name
+        String username = firstname + secondname.substring(0,1)
+        anouncements.setUsername(username);
         String email = Json.userAuthentication.details.email
         def user = userRepository.findByEmail(email)
+        anouncements.setPosteduser(user)
         def classId = fg.generateClassId(user.getUniversity(),user.getCollege(),user.getBranch(),user.getSection(),user.getYear(),user.getSem())
         anouncements.setClassId(classId)
+        anouncements.setAid(classId+email+System.currentTimeMillis())
         def object = anouncementRepository.save(anouncements)
-        return  "anouncement saved successfully as " + anouncements.toString()
+        return (object ? "anouncement saved successfully as " + anouncements : "something went wrong")
     }
 
-    @RequestMapping(value="/user/anouncements/list", method= RequestMethod.GET,produces = "application/json")
+    @RequestMapping(value = "/user/announcement/delete/{aid:.+}",method = RequestMethod.GET)
+    public String  deleteAnnouncement(@PathVariable(value = "aid" , required = true) String aid){
+        def deletedannouncement = anouncementRepository.deleteByAid(aid)
+        println("delete announcement" + deletedannouncement)
+        return(deletedannouncement ? "Success": "Something went wrong")
+    }
+
+    @RequestMapping(value="/user/announcements/list", method= RequestMethod.GET,produces = "application/json")
     public Page<Anouncements> getAnouncements(@RequestParam int pageNumber, OAuth2Authentication oauth){
         def m = JsonOutput.toJson(oauth)
         def Json = jsonSlurper.parseText(m);

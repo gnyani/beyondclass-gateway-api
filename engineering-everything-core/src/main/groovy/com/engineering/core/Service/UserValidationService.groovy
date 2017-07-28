@@ -30,12 +30,12 @@ class UserValidationService {
         String firstName = Json.userAuthentication.details.given_name
         println("email is ${email}")
         User present = userRepository.findByEmail(email);
-        present.setGooglepicUrl(googlepic)
-        present.setFirstName(firstName)
-        userRepository.save(present)
-        println("User is ${present}")
-        if (present != null)
+        if (present)
         {
+            present.setGooglepicUrl(googlepic ?: '')
+            present.setFirstName(firstName ?: '')
+            userRepository.save(present)
+            println("User is ${present}")
             return "true"
         }
         else {

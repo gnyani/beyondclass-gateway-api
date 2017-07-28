@@ -13,6 +13,7 @@ import org.springframework.data.mongodb.core.query.Query
 import org.springframework.data.mongodb.gridfs.GridFsTemplate
 import org.springframework.security.oauth2.provider.OAuth2Authentication
 import org.springframework.web.bind.annotation.CrossOrigin
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestMethod
@@ -58,17 +59,14 @@ class UpdateProfileRestController {
             }
         }
 
-        def normalProppicUrl = "http://localhost:8080/user/profilepic/view"
+        def normalProppicUrl = "http://localhost:8080/user/profilepic/view/"+email
         user.setNormalpicUrl(normalProppicUrl)
         def x = userRepository.save(user)
         return(x ? "success" : "something went wrong")
     }
     @CrossOrigin(origins = ["http://localhost:8081","http://localhost:3000"])
-    @RequestMapping(value = "/user/profilepic/view",produces = "image/jpg" , method = RequestMethod.GET)
-    public byte[] viewPropic(OAuth2Authentication auth){
-        def m = JsonOutput.toJson(auth)
-        def Json = jsonSlurper.parseText(m);
-        String email = Json.userAuthentication.details.email
+    @RequestMapping(value = "/user/profilepic/view/{email:.+}",produces = "image/jpg" , method = RequestMethod.GET)
+    public byte[] viewPropic(@PathVariable(value = "email" , required = true) Object email){
         byte[] file = null;
         Query query = new Query().addCriteria(Criteria.where("filename").is(email))
         GridFSDBFile imageForOutput = gridFsTemplate.findOne(query)

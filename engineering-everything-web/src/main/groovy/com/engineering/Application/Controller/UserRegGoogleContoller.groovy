@@ -161,8 +161,12 @@ class UserRegGoogleContoller {
         def m = JsonOutput.toJson(auth)
         def Json = jsonSlurper.parseText(m);
         String email = Json.userAuthentication.details.email
+        String propicurl = Json.userAuthentication.details.picture
         User user = userRepository.findByEmail(email)
+        if(user)
         return (user.getNormalpicUrl()?:user.getGooglepicUrl())
+        else
+         return propicurl
     }
     @RequestMapping(value="/user/authobj" ,method = RequestMethod.GET)
     public Object giveauthobj(Authentication auth)
@@ -254,7 +258,7 @@ class UserRegGoogleContoller {
         catch(Exception e){
             return "Error occurred while registering user please try again after sometime" + e.getMessage()
         }
-        response="User registration successful  "
+        response="User registration successful"
         return response
     }
 

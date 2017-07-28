@@ -4,7 +4,6 @@ import api.Comment
 import api.TimelinePosts
 import api.TimelinePostsmetaapi
 import api.User
-import com.engineering.Application.Configuration.SpringMongoConfig
 import com.engineering.core.Service.FilenameGenerator
 import com.engineering.core.repositories.TimelineRepository
 import com.engineering.core.repositories.UserRepository
@@ -14,16 +13,11 @@ import groovy.json.JsonSlurper
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.context.ApplicationContext
-import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.data.domain.Sort
-import org.springframework.data.mongodb.core.MongoOperations
 import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.data.mongodb.core.query.Query
-import org.springframework.data.mongodb.core.query.Update
 import org.springframework.data.mongodb.gridfs.GridFsTemplate
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories
-import org.springframework.format.annotation.DateTimeFormat
 import org.springframework.security.oauth2.provider.OAuth2Authentication
 import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.PathVariable
@@ -34,9 +28,6 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.bind.annotation.RestController
 
-import javax.servlet.http.HttpServletRequest
-import javax.servlet.http.HttpServletResponse
-import java.sql.Time
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -91,7 +82,6 @@ class TimelineRestController {
         String filename=fg.generatePostname(currentuser.getUniversity(),currentuser.getCollege(),currentuser.getBranch(),currentuser.getSection(),currentuser.getYear(),currentuser.getSem(),LocalDate.now(),currentuser.getEmail(),System.currentTimeMillis())
         //storing filename in meta
         timelinePostsmetaapi.setFilename(filename)
-        println("filename is "+filename)
         String postUrl = post.file ? "http://"+servicehost+":8080/users/timeline/view/"+filename : null ;
         String likeUrl =  "http://"+servicehost+":8080/users/timeline/view/"+filename+"/like"
         String commentUrl =  "http://"+servicehost+":8080/users/timeline/view/"+filename+ "/comment"
@@ -124,12 +114,7 @@ class TimelineRestController {
         String filenamedate = filename+"-"+date
         Query query = new Query().with(new Sort(Sort.Direction.DESC, "uploadDate")).addCriteria(Criteria.where("filename").regex(filenamedate))
 
-        System.out.println("filename is" + filename);
-        System.out.print("query is"+query);
-
-
         def list = gridFsTemplate.find(query)
-        System.out.println("list is"  + list);
         def filelist = []
         int i = 0
         for(GridFSDBFile fl : list)
@@ -145,8 +130,7 @@ class TimelineRestController {
             def propicUrl = userfromdb.getNormalpicUrl() ?: userfromdb.getGooglepicUrl()
             def firstNameinDB = userfromdb.getFirstName()
             System.out.println("from db ${propicUrl} and from timeline repo ${temp.getPropicUrl()}" )
-            if(temp.getPropicUrl().equalsIgnoreCase(propicUrl) || temp.getOwner().equalsIgnoreCase(firstNameinDB)){
-            }else{
+            if((!temp.getPropicUrl().equalsIgnoreCase(propicUrl)) || (!temp.getOwner().equalsIgnoreCase(firstNameinDB))){
                 temp.setPropicUrl(propicUrl)
                 temp.setOwner(firstNameinDB)
                 temp.setUploadeduser(userfromdb)
@@ -155,6 +139,32 @@ class TimelineRestController {
         }
 
         return objectlist;
+    }
+
+    @ResponseBody
+    @RequestMapping(value="/users/timeline/posts/{filename:.+}/delete",method = RequestMethod.GET)
+    public String deletepost(@PathVariable(value = "filename" , required = true) Object filename,OAuth2Authentication auth){
+
+        def m = JsonOutput.toJson( auth.getUserAuthentication().getDetails())
+        def Json = jsonSlurper.parseText(m);
+        String email = Json."email"
+        TimelinePostsmetaapi timelinePostsmetaapi = timelineRepository.findByFilename(filename.toString())
+        if(timelinePostsmetaapi.getUploadeduser().getEmail() == email) {
+            Query query = new Query().addCriteria(Criteria.where("filename").is(filename))
+            try {
+                def deletedmeta = timelineRepository.deleteByFilename(filename.toString())
+                if(deletedmeta)
+                gridFsTemplate.delete(query)
+                else throw Exception
+            } catch (Exception e) {
+                println(e)
+                return "sorry something went wrong ${e}"
+            }
+            return "successfully deleted"
+        }else{
+            return "Not authorized"
+        }
+
     }
 
     @ResponseBody
@@ -183,8 +193,6 @@ class TimelineRestController {
         TimelinePostsmetaapi timelinePostsmetaapi = timelineRepository.findByFilename(filename)
         def likes = timelinePostsmetaapi.getLikes()
         def likedusers = timelinePostsmetaapi.getLikedUsers()
-        println("liked users before" + likedusers);
-        println("logged user" + loggeduser.getEmail())
         def flag = true
         likedusers.each {
             if(loggeduser.getEmail() == it.getEmail()){
@@ -194,7 +202,6 @@ class TimelineRestController {
         if(flag){
             likes = likes + 1;
             likedusers.add(loggeduser)
-            println("liked users" + likedusers)
             timelinePostsmetaapi.setLikes(likes)
             timelinePostsmetaapi.setLikedUsers(likedusers)
             timelineRepository.save(timelinePostsmetaapi)
@@ -227,8 +234,6 @@ class TimelineRestController {
         TimelinePostsmetaapi timelinePostsmetaapi = timelineRepository.findByFilename(filename)
         def likes = timelinePostsmetaapi.getLikes()
         def likedusers = timelinePostsmetaapi.getLikedUsers()
-        println("liked users before" + likedusers);
-        println("logged user" + loggeduser.getEmail())
         def flag = true
         likedusers.each {
             if(loggeduser.getEmail() == it.getEmail()){
@@ -238,7 +243,6 @@ class TimelineRestController {
         if(flag){
             likes = likes - 1;
             likedusers.remove(loggeduser)
-            println("liked users" + likedusers)
             timelinePostsmetaapi.setLikes(likes)
             timelinePostsmetaapi.setLikedUsers(likedusers)
             timelineRepository.save(timelinePostsmetaapi)
