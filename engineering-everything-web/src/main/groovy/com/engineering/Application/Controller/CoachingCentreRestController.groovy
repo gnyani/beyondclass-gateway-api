@@ -3,6 +3,7 @@ package com.engineering.Application.Controller
 import api.CoachingCentreImages
 import api.Coachingcentre
 import api.Rating
+import com.engineering.core.Service.EmailGenerationService
 import com.engineering.core.Service.FilenameGenerator
 import com.engineering.core.repositories.CoachingCentresRepository
 import com.engineering.core.repositories.RatingRepository
@@ -39,13 +40,15 @@ class CoachingCentreRestController {
     RatingRepository ratingRepository
 
     @Autowired
+    EmailGenerationService emailGenerationService
+
+    @Autowired
     @Qualifier("coachingcentres-files")
     GridFsTemplate gridFsTemplate
 
     @Value('${engineering.everything.host}')
     private String servicehost;
 
-    JsonSlurper jsonSlurper = new JsonSlurper();
 
     @RequestMapping(value= "/coachingcentres/insert", method = RequestMethod.POST )
     public String insertCentre ( @RequestBody Coachingcentre coachingcentre )
@@ -91,11 +94,7 @@ class CoachingCentreRestController {
     @CrossOrigin(origins = ["http://localhost:8081","http://localhost:3000"])
     @RequestMapping(value = "/coachingcentres/post/{coachingcentreId:.+}" ,method = RequestMethod.POST )
     public String postRating (@PathVariable(value = "coachingcentreId" , required = true) String coachingcentreId, @RequestBody Rating  rating,OAuth2Authentication auth){
-
-        def m = JsonOutput.toJson( auth.getUserAuthentication().getDetails())
-        def Json = jsonSlurper.parseText(m);
-        String email = Json."email"
-
+        String email = emailGenerationService.parseEmail(auth)
         rating.setCoachingcentreId(coachingcentreId)
         rating.setEmail(email)
         rating.setReviewID(coachingcentreId+email)

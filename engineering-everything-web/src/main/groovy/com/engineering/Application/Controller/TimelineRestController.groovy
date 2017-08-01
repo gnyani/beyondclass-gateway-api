@@ -4,6 +4,7 @@ import api.Comment
 import api.TimelinePosts
 import api.TimelinePostsmetaapi
 import api.User
+import com.engineering.core.Service.EmailGenerationService
 import com.engineering.core.Service.FilenameGenerator
 import com.engineering.core.repositories.TimelineRepository
 import com.engineering.core.repositories.UserRepository
@@ -53,10 +54,11 @@ class TimelineRestController {
     private String servicehost;
 
     @Autowired
+    EmailGenerationService emailGenerationService;
+
+    @Autowired
     @Qualifier("timeline-files")
     GridFsTemplate gridFsTemplate
-
-    JsonSlurper jsonSlurper = new JsonSlurper();
 
 
     @ResponseBody
@@ -66,9 +68,7 @@ class TimelineRestController {
         //Timeline meta api
         TimelinePostsmetaapi timelinePostsmetaapi = new TimelinePostsmetaapi();
         //user loggedin
-        def m = JsonOutput.toJson( auth.getUserAuthentication().getDetails())
-        def Json = jsonSlurper.parseText(m);
-        String email = Json."email"
+        String email = emailGenerationService.parseEmail(auth)
         User currentuser = repository.findByEmail(email);
         // setting meta data before uploading the file
         String propicurl = currentuser.normalpicUrl ?: currentuser.googlepicUrl
@@ -106,9 +106,7 @@ class TimelineRestController {
     public List<TimelinePostsmetaapi> allposts(@RequestParam(value="date") String date, OAuth2Authentication auth){
 
         def objectlist = []
-        def m = JsonOutput.toJson( auth.getUserAuthentication().getDetails())
-        def Json = jsonSlurper.parseText(m);
-        String email = Json."email"
+        String email = emailGenerationService.parseEmail(auth)
         User user = repository.findByEmail(email);
 
         String filename=fg.generatePostnamewithouttime(user.getUniversity(),user.getCollege(),user.getBranch(),user.getSection(),user.getYear(),user.getSem())
@@ -146,10 +144,7 @@ class TimelineRestController {
     @ResponseBody
     @RequestMapping(value="/users/timeline/posts/{filename:.+}/delete",method = RequestMethod.GET)
     public String deletepost(@PathVariable(value = "filename" , required = true) Object filename,OAuth2Authentication auth){
-
-        def m = JsonOutput.toJson( auth.getUserAuthentication().getDetails())
-        def Json = jsonSlurper.parseText(m);
-        String email = Json."email"
+        String email = emailGenerationService.parseEmail(auth)
         TimelinePostsmetaapi timelinePostsmetaapi = timelineRepository.findByFilename(filename.toString())
         if(timelinePostsmetaapi.getUploadeduser().getEmail() == email) {
             Query query = new Query().addCriteria(Criteria.where("filename").is(filename))
@@ -188,9 +183,7 @@ class TimelineRestController {
     @RequestMapping(value="/users/timeline/view/{filename:.+}/like",method= RequestMethod.GET)
     public String likePost(@PathVariable(value = "filename", required = true) String filename ,OAuth2Authentication auth){
 
-        def m = JsonOutput.toJson( auth.getUserAuthentication().getDetails())
-        def Json = jsonSlurper.parseText(m);
-        String email = Json."email"
+        String email = emailGenerationService.parseEmail(auth)
         def loggeduser = repository.findByEmail(email)
         TimelinePostsmetaapi timelinePostsmetaapi = timelineRepository.findByFilename(filename)
         def likes = timelinePostsmetaapi.getLikes()
@@ -229,9 +222,7 @@ class TimelineRestController {
     @RequestMapping(value="/users/timeline/view/{filename:.+}/like/unlike",method= RequestMethod.GET)
     public String unlikePost(@PathVariable(value = "filename", required = true) String filename ,OAuth2Authentication auth){
 
-        def m = JsonOutput.toJson( auth.getUserAuthentication().getDetails())
-        def Json = jsonSlurper.parseText(m);
-        String email = Json."email"
+        String email = emailGenerationService.parseEmail(auth)
         def loggeduser = repository.findByEmail(email)
         TimelinePostsmetaapi timelinePostsmetaapi = timelineRepository.findByFilename(filename)
         def likes = timelinePostsmetaapi.getLikes()
@@ -257,9 +248,7 @@ class TimelineRestController {
     @ResponseBody
     @RequestMapping(value="/users/timeline/view/{filename:.+}/comment",method= RequestMethod.POST)
     public String CommentPost(@PathVariable(value = "filename", required = true)String filename, @RequestBody Comment comment,OAuth2Authentication auth){
-        def m = JsonOutput.toJson( auth.getUserAuthentication().getDetails())
-        def Json = jsonSlurper.parseText(m);
-        String email = Json."email"
+        String email = emailGenerationService.parseEmail(auth)
         def loggeduser = repository.findByEmail(email)
         TimelinePostsmetaapi timelinePostsmetaapi = timelineRepository.findByFilename(filename)
         def commentscurrent = timelinePostsmetaapi.getComments()

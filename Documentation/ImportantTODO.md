@@ -24,7 +24,9 @@ Current status:
 - timeline should not let you to post null values -- **Done**
 - timeline image for the person pasted  -- **Done**
 - announcement delete and timeline delete -- **Done**
-- move user objectCreation to a function in all the controllers
+- move user objectCreation to a function in all the controllers -- **Done**
 - optimise all the controllers
 - multiple answers to a question
 - upvotes, downvotes and comments
+- Fixing bugs in question papers, syllabus, notes, assignments
+- Ui enhancements for all the above as well.

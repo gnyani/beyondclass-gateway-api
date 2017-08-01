@@ -2,6 +2,7 @@ package com.engineering.Application.Controller
 
 import api.FileData
 import api.User
+import com.engineering.core.Service.EmailGenerationService
 import com.engineering.core.repositories.UserRepository
 import com.mongodb.gridfs.GridFSDBFile
 import groovy.json.JsonOutput
@@ -29,6 +30,9 @@ class UpdateProfileRestController {
     private UserRepository userRepository;
 
     @Autowired
+    EmailGenerationService emailGenerationService;
+
+    @Autowired
     @Qualifier("profilepictures")
     GridFsTemplate gridFsTemplate;
 
@@ -37,10 +41,7 @@ class UpdateProfileRestController {
     @CrossOrigin(origins = ["http://localhost:8081","http://localhost:3000"])
     @RequestMapping(value="/user/update/profilepic", method = RequestMethod.POST)
     public Object updateProfilepic(@RequestBody FileData fileText, OAuth2Authentication auth){
-        def m = JsonOutput.toJson(auth)
-        def Json = jsonSlurper.parseText(m);
-        // println(" json is " + Json)
-        String email = Json.userAuthentication.details.email
+        String email = emailGenerationService.parseEmail(auth)
         User user = userRepository.findByEmail(email)
         Query query = new Query().addCriteria(Criteria.where("filename").is(email))
         GridFSDBFile imageForOutput = gridFsTemplate.findOne(query)

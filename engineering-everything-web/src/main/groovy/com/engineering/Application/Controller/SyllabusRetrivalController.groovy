@@ -3,6 +3,7 @@ package com.engineering.Application.Controller
 import api.Subject
 import api.Syllabus
 import api.User
+import com.engineering.core.Service.EmailGenerationService
 import com.engineering.core.Service.FilenameGenerator
 import com.engineering.core.repositories.UserRepository
 import com.mongodb.gridfs.GridFSDBFile
@@ -34,13 +35,15 @@ class SyllabusRetrivalController {
     public UserRepository repository;
 
     @Autowired
+    EmailGenerationService emailGenerationService;
+
+    @Autowired
     @Qualifier("syllabus")
     GridFsTemplate gridFsTemplate
 
     @Value('${engineering.everything.host}')
     private String servicehost;
 
-    JsonSlurper jsonSlurper = new JsonSlurper()
 
     @ResponseBody
     @RequestMapping(value="/user/syllabusurl/other",method= RequestMethod.POST)
@@ -55,9 +58,7 @@ class SyllabusRetrivalController {
     @RequestMapping(value="/user/syllabusurl",produces = "text/plain" ,method= RequestMethod.POST)
     public Object retrievedefault (@RequestBody Subject subject, OAuth2Authentication auth)
     {
-        def m = JsonOutput.toJson( auth.getUserAuthentication().getDetails())
-        def Json = jsonSlurper.parseText(m);
-        String email = Json."email"
+        String email = emailGenerationService.parseEmail(auth)
         User currentuser = repository.findByEmail(email);
         String filename = fg.generateSyllabusName(currentuser.getUniversity(),currentuser.getCollege(),currentuser.getBranch(),currentuser.getYear(),currentuser.getSem(),subject.getSubject())
         def url = "http://"+servicehost+":8080/user/syllabus/"+filename

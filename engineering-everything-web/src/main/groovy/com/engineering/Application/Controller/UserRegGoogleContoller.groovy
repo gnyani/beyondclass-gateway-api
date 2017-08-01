@@ -4,7 +4,8 @@ import api.Location;
 import api.Organisation
 import api.User;
 import api.UserGoogle
-import com.engineering.core.Service.DetailsValidator;
+import com.engineering.core.Service.DetailsValidator
+import com.engineering.core.Service.EmailGenerationService;
 import com.engineering.core.Service.LocationService;
 import com.engineering.core.repositories.UserRepository;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -39,6 +40,9 @@ class UserRegGoogleContoller {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    EmailGenerationService emailGenerationService;
+
 
     @Autowired
     private DetailsValidator validation;
@@ -72,14 +76,8 @@ class UserRegGoogleContoller {
     @RequestMapping("/user/validate")
 
     public String validateuserexistence(Authentication auth) {
-        def m = JsonOutput.toJson(auth)
-
-        def Json = jsonSlurper.parseText(m);
-       // println(" json is " + Json)
-        String email = Json.userAuthentication.details.email
-        println("email is ${email}")
+        String email = emailGenerationService.parseEmail(auth)
         User present = userRepository.findByEmail(email);
-        println("User is ${present}")
         if (present != null)
         {
             return true
@@ -92,12 +90,7 @@ class UserRegGoogleContoller {
     @CrossOrigin(origins = ["http://localhost:8081","http://localhost:3000"])
     @RequestMapping(value="/user/loggedin" ,produces = "application/json")
     public Object loggeduser(Authentication auth) {
-        def m = JsonOutput.toJson(auth)
-
-        def Json = jsonSlurper.parseText(m);
-        // println(" json is " + Json)
-        String email = Json.userAuthentication.details.email
-        println("email is ${email}")
+        String email = emailGenerationService.parseEmail(auth)
        return email
     }
 
@@ -266,9 +259,7 @@ class UserRegGoogleContoller {
     @RequestMapping(value="/users/details/updateprofile", produces ="application/json" ,method = RequestMethod.POST)
     public String userDetailsUpdate( @RequestBody User updateduser,HttpServletRequest request, HttpServletResponse response,OAuth2Authentication auth) {
 
-        def m = JsonOutput.toJson( auth.getUserAuthentication().getDetails())
-        def Json = jsonSlurper.parseText(m);
-        String email = Json."email"
+        String email = emailGenerationService.parseEmail(auth)
         User userTest1 = userRepository.findByEmail(email);
 
         //  println("retrieved object is"+userTest1)
