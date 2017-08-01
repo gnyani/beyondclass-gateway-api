@@ -10,9 +10,10 @@ import org.springframework.stereotype.Component
 @Component
 class EmailGenerationService {
 
+    JsonSlurper jsonSlurper = new JsonSlurper()
     public String parseEmail(Object obj)
     {
-        JsonSlurper jsonSlurper = new JsonSlurper()
+
         def m = JsonOutput.toJson( obj.getUserAuthentication().getDetails())
         def Json = jsonSlurper.parseText(m);
         String email = Json."email"
