@@ -2,6 +2,7 @@ package com.engineering.Application.Controller
 
 import api.Anouncements
 import com.engineering.core.Service.FilenameGenerator
+import com.engineering.core.Service.EmailGenerationService
 import com.engineering.core.repositories.AnouncementRepository
 import com.engineering.core.repositories.UserRepository
 import groovy.json.JsonOutput
@@ -33,6 +34,9 @@ class AnouncementsRestController {
 
     @Autowired
     FilenameGenerator fg;
+
+    @Autowired
+    EmailGenerationService emailgenerationservice
 
     @Autowired
     UserRepository  userRepository;
@@ -72,9 +76,7 @@ class AnouncementsRestController {
 
     @RequestMapping(value="/user/announcements/list", method= RequestMethod.GET,produces = "application/json")
     public Page<Anouncements> getAnouncements(@RequestParam int pageNumber, OAuth2Authentication oauth){
-        def m = JsonOutput.toJson(oauth)
-        def Json = jsonSlurper.parseText(m);
-        String email = Json.userAuthentication.details.email
+        String email = emailgenerationservice.parseEmail(oauth)
         def user = userRepository.findByEmail(email)
         def classId = fg.generateClassId(user.getUniversity(),user.getCollege(),user.getBranch(),user.getSection(),user.getYear(),user.getSem())
         //Anouncements[] anouncements = anouncementRepository.findByClassId(classId);

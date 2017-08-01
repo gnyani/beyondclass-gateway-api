@@ -1,11 +1,11 @@
 package com.engineering.Application.Controller
 
+import com.engineering.core.Service.EmailGenerationService
 import com.engineering.core.Service.FilenameGenerator
 import api.Questionpaper
 import api.QuestionPaperSubject
 import api.User
 import com.mongodb.gridfs.GridFSDBFile
-import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
@@ -23,8 +23,6 @@ import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.bind.annotation.RestController
 import com.engineering.core.repositories.UserRepository
 
-import javax.servlet.http.HttpServletRequest
-import javax.servlet.http.HttpServletResponse
 
 /**
  * Created by GnyaniMac on 01/05/17.
@@ -41,13 +39,15 @@ class QuestionPaperRetrivalController {
     UserRepository repository;
 
     @Autowired
+    EmailGenerationService emailGenerationService
+
+    @Autowired
     @Qualifier("questionpapers")
     GridFsTemplate gridFsTemplate
 
     @Value('${engineering.everything.host}')
     private String servicehost;
 
-    JsonSlurper jsonSlurper = new JsonSlurper();
 
     @ResponseBody
     @RequestMapping(value="/user/questionpaperurl/other",produces= "text/plain" ,method= RequestMethod.POST)
@@ -89,9 +89,7 @@ class QuestionPaperRetrivalController {
     @RequestMapping(value="/user/questionpaperurl",produces= "text/plain" ,method= RequestMethod.POST)
     public Object retrieveQpurl (@RequestBody QuestionPaperSubject subject,OAuth2Authentication auth)
     {
-        def m = JsonOutput.toJson( auth.getUserAuthentication().getDetails())
-        def Json = jsonSlurper.parseText(m);
-        String email = Json."email"
+        String email = emailGenerationService.parseEmail(auth)
         User currentuser = repository.findByEmail(email);
         String filename = fg.generateQpName(currentuser.getUniversity(),currentuser.getCollege(),currentuser.getBranch(),currentuser.getYear(),currentuser.getSem(),subject.getSubject(),subject.getQpyear());
         // get image file by it's filename
