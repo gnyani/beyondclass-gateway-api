@@ -16,14 +16,14 @@ Current status:
 - important questions 
 - Timeline ux
 - User Roles
-- change Register page
+- change Register page -- **Done**
 - main Page                               
 - Edit style for comment views on timeline post -- **Done**
 - print all the exceptions in logs
 - give timeline dates based on available posts
 - timeline should not let you to post null values -- **Done**
 - timeline image for the person pasted  -- **Done**
-- announcement delete and timeline delete
+- announcement delete and timeline delete -- **Done**
 - move user objectCreation to a function in all the controllers
 - optimise all the controllers
 - multiple answers to a question

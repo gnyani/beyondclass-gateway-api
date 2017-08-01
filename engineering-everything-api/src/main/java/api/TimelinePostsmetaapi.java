@@ -29,6 +29,7 @@ public class TimelinePostsmetaapi {
     private ArrayList<User> likedUsers = new ArrayList<>();
     private String propicUrl;
     private User uploadeduser;
+    private boolean isprofilepicchange;
     public TimelinePostsmetaapi(){
 
     }
@@ -47,6 +48,14 @@ public class TimelinePostsmetaapi {
         this.likedUsers = likedUsers;
         this.propicUrl = propicUrl;
         this.uploadeduser = user;
+    }
+
+    public boolean isprofilepicchange() {
+        return isprofilepicchange;
+    }
+
+    public void setIsprofilepicchange(boolean isprofilepicchange) {
+        this.isprofilepicchange = isprofilepicchange;
     }
 
     public String getFilename() {
