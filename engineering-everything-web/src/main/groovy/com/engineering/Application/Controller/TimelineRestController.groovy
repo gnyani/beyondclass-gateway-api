@@ -79,6 +79,8 @@ class TimelineRestController {
         timelinePostsmetaapi.setLikes(0);
         timelinePostsmetaapi.setComments(new ArrayList<Comment>());
 
+        post.isprofilepicchange() ? timelinePostsmetaapi.setIsprofilepicchange(post.isprofilepicchange()) : timelinePostsmetaapi.setIsprofilepicchange(false)
+
         String filename=fg.generatePostname(currentuser.getUniversity(),currentuser.getCollege(),currentuser.getBranch(),currentuser.getSection(),currentuser.getYear(),currentuser.getSem(),LocalDate.now(),currentuser.getEmail(),System.currentTimeMillis())
         //storing filename in meta
         timelinePostsmetaapi.setFilename(filename)

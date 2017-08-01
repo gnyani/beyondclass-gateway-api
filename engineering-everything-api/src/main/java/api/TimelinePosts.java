@@ -15,6 +15,9 @@ public class TimelinePosts {
     @JsonProperty
     private String description;
 
+    @JsonProperty
+    private boolean isprofilepicchange;
+
     private String filename;
 
     public TimelinePosts(){
@@ -25,6 +28,14 @@ public class TimelinePosts {
         this.file = file;
         this.description = description;
         this.filename = filename;
+    }
+
+    public boolean isprofilepicchange() {
+        return isprofilepicchange;
+    }
+
+    public void setIsprofilepicchange(boolean isprofilepicchange) {
+        this.isprofilepicchange = isprofilepicchange;
     }
 
     public byte[] getFile() {
