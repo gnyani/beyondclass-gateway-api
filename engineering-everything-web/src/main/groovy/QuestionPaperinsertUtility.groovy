@@ -22,7 +22,7 @@ public class QuestionPaperinsertUtility {
 
 
 
-            String newFileName = new FilenameGenerator().generateQpName("OU","VASV","CSE","4","1","OS","2015");
+            String newFileName = new FilenameGenerator().generateQpName("OU","VASV","CSE","4","2","OS","2015");
 
             File imageFile = new File("/Users/GnyaniMac/Desktop/mywork/testimage.jpg");
 

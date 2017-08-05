@@ -86,8 +86,8 @@ class CoachingCentreRestController {
         def list = gridFsTemplate.findOne(query)
         System.out.println("list is"  + list);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        list.writeTo(baos);
-        file =baos.toByteArray();
+        list ?. writeTo(baos);
+        file =baos ?. toByteArray();
         return file
     }
 
