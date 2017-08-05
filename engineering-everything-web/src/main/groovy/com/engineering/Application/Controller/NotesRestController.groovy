@@ -94,8 +94,8 @@ class NotesRestController {
         GridFSDBFile imageForOutput = gridFsTemplate.findOne(query)
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        imageForOutput.writeTo(baos);
-        file =baos.toByteArray();
+        imageForOutput ?. writeTo(baos);
+        file =baos ?. toByteArray();
         return file;
     }
 
@@ -110,8 +110,8 @@ class NotesRestController {
         GridFSDBFile imageForOutput = gridFsTemplate.findOne(query)
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        imageForOutput.writeTo(baos);
-        file =baos.toByteArray();
+        imageForOutput ?. writeTo(baos);
+        file =baos ?.toByteArray();
         return file;
     }
 }

@@ -72,8 +72,8 @@ class UpdateProfileRestController {
         Query query = new Query().addCriteria(Criteria.where("filename").is(email))
         GridFSDBFile imageForOutput = gridFsTemplate.findOne(query)
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        imageForOutput.writeTo(baos);
-        file=baos.toByteArray()
+        imageForOutput ?. writeTo(baos);
+        file=baos ?. toByteArray()
         return file
     }
 }

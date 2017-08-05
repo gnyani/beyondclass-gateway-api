@@ -22,9 +22,9 @@ class SyllabusInsertUtility {
 
 
 
-            String newFileName = new FilenameGenerator().generateSyllabusName("OU","VASV","CSE","4","1","DS");
+            String newFileName = new FilenameGenerator().generateSyllabusName("OU","VASV","CSE","4","2","DS");
 
-            File imageFile = new File("/Users/GnyaniMac/Desktop/mydocsforloan/HR Letter.pdf");
+            File imageFile = new File("/Users/GnyaniMac/Desktop/mywork/644205.jpg");
 
             // create a "photo" namespace
             GridFS gfsPhoto = new GridFS(db, "syllabus");
@@ -50,14 +50,7 @@ class SyllabusInsertUtility {
                 System.out.println(cursor.next());
             }
 
-            // get image file by it's filename
-            List<GridFSDBFile> imageForOutput = gfsPhoto.find(regexQuery);
-            def i=0;
-            // save it into a new image file
-            for(GridFSDBFile gf : imageForOutput) {
-                gf.writeTo("/Users/GnyaniMac/Desktop/testsyllabus"+i+".pdf");
-                i++;
-            }
+
 // remove the image file from mongoDB
 //			gfsPhoto.remove(gfsPhoto.findOne(newFileName));
 

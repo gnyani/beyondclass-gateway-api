@@ -59,18 +59,6 @@ class QuestionPaperRetrivalController {
         return url
     }
 
-    @ResponseBody
-    @RequestMapping(value="/user/questionpaper/other/{filename:.+}",produces= "image/jpg" ,method= RequestMethod.GET)
-    public byte[] retriveotherQp(@PathVariable(value = "filename", required = true) Object filename) {
-        byte[] file = null;
-        // get image file by it's filename
-        Query query = new Query().addCriteria(Criteria.where("filename").is(filename))
-        GridFSDBFile imageForOutput = gridFsTemplate.findOne(query)
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        imageForOutput.writeTo(baos);
-        file = baos.toByteArray();
-        return file
-    }
 
     @ResponseBody
     @RequestMapping(value="/user/questionpaper/{filename:.+}",produces= "image/jpg" ,method= RequestMethod.GET)
@@ -80,7 +68,20 @@ class QuestionPaperRetrivalController {
         Query query = new Query().addCriteria(Criteria.where("filename").is(filename))
         GridFSDBFile imageForOutput = gridFsTemplate.findOne(query)
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        imageForOutput.writeTo(baos);
+        imageForOutput ?. writeTo(baos);
+        file=baos.toByteArray()
+        return file
+    }
+
+    @ResponseBody
+    @RequestMapping(value="/user/questionpaper/{filename:.+}/download",produces = "application/octet-stream" ,method= RequestMethod.POST)
+    public byte[] downloadQp (@PathVariable(value = "filename", required = true) Object filename)
+    {
+        byte[] file = null;
+        Query query = new Query().addCriteria(Criteria.where("filename").is(filename))
+        GridFSDBFile imageForOutput = gridFsTemplate.findOne(query)
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        imageForOutput ?. writeTo(baos);
         file=baos.toByteArray()
         return file
     }

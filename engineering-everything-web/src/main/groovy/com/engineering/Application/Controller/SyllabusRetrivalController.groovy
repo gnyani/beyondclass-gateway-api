@@ -64,17 +64,30 @@ class SyllabusRetrivalController {
         def url = "http://"+servicehost+":8080/user/syllabus/"+filename
         return url
     }
+    @ResponseBody
+    @RequestMapping(value="/user/syllabus/{filename:.+}/download",produces = "application/octet-stream" ,method= RequestMethod.POST)
+    public byte[] downloadSyllabus (@PathVariable(value = "filename", required = true) Object filename)
+    {
+        byte[] file = null;
+        Query query = new Query().addCriteria(Criteria.where("filename").is(filename))
+        GridFSDBFile imageForOutput = gridFsTemplate.findOne(query)
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        imageForOutput ?. writeTo(baos);
+        file=baos.toByteArray()
+
+        return file
+    }
 
 
     @ResponseBody
-    @RequestMapping(value="/user/syllabus/{filename:.+}",produces = "application/pdf" ,method= RequestMethod.GET)
+    @RequestMapping(value="/user/syllabus/{filename:.+}",produces = "image/jpg" ,method= RequestMethod.GET)
     public byte[] retrievedefault (@PathVariable(value = "filename", required = true) Object filename)
     {
         byte[] file = null;
         Query query = new Query().addCriteria(Criteria.where("filename").is(filename))
         GridFSDBFile imageForOutput = gridFsTemplate.findOne(query)
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        imageForOutput.writeTo(baos);
+        imageForOutput ?. writeTo(baos);
         file=baos.toByteArray()
 
         return file
