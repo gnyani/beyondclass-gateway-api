@@ -237,9 +237,7 @@ class TimelineRestController {
         if(flag){
             if(likes)
             likes = likes - 1;
-            println("liked users size" + likedusers.size())
             likedusers.remove(loggeduser)
-            println("after removal" + likedusers.size())
             timelinePostsmetaapi.setLikes(likes)
             timelinePostsmetaapi.setLikedUsers(likedusers)
             timelineRepository.save(timelinePostsmetaapi)
