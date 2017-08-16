@@ -41,9 +41,6 @@ class AnouncementsRestController {
     @Autowired
     UserRepository  userRepository;
 
-    @Value('${engineering.everything.host}')
-    private String servicehost;
-
     JsonSlurper jsonSlurper = new JsonSlurper()
 
     def PAGE_SIZE = 5
