@@ -110,4 +110,23 @@ class FilenameGenerator {
         return  filename
     }
 
+    public String generateTeacherAnnouncementId(String univ,String college,String branch,String teacherclass,String email){
+        return (univ+'-'+college+'-'+branch+'-'+teacherclass+'-'+email+'-'+System.currentTimeMillis())
+    }
+
+    public String generateTeacherAnnouncementIdformatch (String univ,String college,String branch,String teacherclass){
+        return(univ+'-'+college+'-'+branch+'-'+teacherclass)
+    }
+    public String genericGenerator(String ... strings) {
+      def x ;
+        for (String s : strings) {
+           if(x == null) {
+               x = s
+           }else{
+               x += '-'
+               x += s
+           }
+        }
+        return x;
+    }
 }

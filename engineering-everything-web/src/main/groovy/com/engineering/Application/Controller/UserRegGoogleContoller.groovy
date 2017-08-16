@@ -73,8 +73,8 @@ class UserRegGoogleContoller {
         return u ;
     }
 
+    //This method is important not unused.
     @RequestMapping("/user/validate")
-
     public String validateuserexistence(Authentication auth) {
         String email = emailGenerationService.parseEmail(auth)
         User present = userRepository.findByEmail(email);
@@ -91,7 +91,8 @@ class UserRegGoogleContoller {
     @RequestMapping(value="/user/loggedin" ,produces = "application/json")
     public Object loggeduser(Authentication auth) {
         String email = emailGenerationService.parseEmail(auth)
-       return email
+        User user = userRepository.findByEmail(email)
+       return user
     }
 
     @CrossOrigin(origins = ["http://localhost:8081","http://localhost:3000"])
@@ -106,15 +107,10 @@ class UserRegGoogleContoller {
     }
 
     @CrossOrigin(origins = ["http://localhost:8081","http://localhost:3000"])
-    @RequestMapping(value="/user/name" ,method = RequestMethod.GET)
-    public Object username(Authentication auth)
+    @RequestMapping(value="/user/google/auth" ,method = RequestMethod.GET)
+    public Object auth(OAuth2Authentication auth)
     {
-        def m = JsonOutput.toJson(auth)
-        def Json = jsonSlurper.parseText(m);
-        // println(" json is " + Json)
-        String name = Json.userAuthentication.details.name
-        println("username  is ${name}")
-        return name
+        return auth
     }
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value="/user/dummy" , produces ="application/json" , method = RequestMethod.POST)
@@ -123,29 +119,6 @@ class UserRegGoogleContoller {
         return "test";
     }
 
-    @CrossOrigin(origins = ["http://localhost:8081","http://localhost:3000"])
-    @RequestMapping(value="/user/firstname" ,method = RequestMethod.GET)
-    public Object firstname(Authentication auth)
-    {
-        def m = JsonOutput.toJson(auth)
-        def Json = jsonSlurper.parseText(m);
-        // println(" json is " + Json)
-        String firstname = Json.userAuthentication.details.given_name
-        println("username  is ${firstname}")
-        return firstname
-    }
-
-    @CrossOrigin(origins = ["http://localhost:8081","http://localhost:3000"])
-    @RequestMapping(value="/user/lastname" , method = RequestMethod.GET)
-    public Object lastname(Authentication auth)
-    {
-        def m = JsonOutput.toJson(auth)
-        def Json = jsonSlurper.parseText(m);
-        // println(" json is " + Json)
-        String lastname = Json.userAuthentication.details.family_name
-        println("username  is ${lastname}")
-        return lastname
-    }
 
     @CrossOrigin(origins = ["http://localhost:8081","http://localhost:3000"])
     @RequestMapping(value="/user/propic" ,method = RequestMethod.GET)
@@ -176,54 +149,54 @@ class UserRegGoogleContoller {
         // System.out.println("USer is"+user + "email is " + user.getEmail())
         //***************************VALIDATION****************************\\
 
-        // code for filtering universities
-        def validUniv = validation.refineUniv(user.getUniversity());
-        if(validUniv.getValid())
-        {
-            user.setUniversity(validUniv.getResult())
-        } else{
-            return "please enter valid University names from "+Universities.values();
-        }
-        // code for refining college names
-        def validCol = validation.refineCollege(user.getCollege());
-        if(validCol.getValid())
-        {
-            user.setCollege(validCol.getResult())
-        } else{
-            return "please enter valid College names from "+Colleges.values();
-        }
-        // code for refining year
-        def validYear = validation.refineYear(user.getYear());
-        if(validYear.getValid())
-        {
-            user.setYear(validYear.getResult())
-        } else{
-            return "please enter valid year from"+ year.values();
-        }
-        //code for refining semester
-        def validSem = validation.refineSemester(user.getSem());
-        if(validSem.getValid())
-        {
-            user.setSem(validSem.getResult())
-        } else{
-            return "please enter valid Semester "+ Semester.values();
-        }
-        // code for filtering branch names
-        def validBranch = validation.refineBranch(user.getBranch());
-        if(validBranch.getValid())
-        {
-            user.setBranch(validBranch.getResult())
-        } else{
-            return "please enter valid branch names from "+BranchNames.values();
-        }
-        // code for refining section
-        def validSec = validation.refineSection(user.getSection());
-        if(validSec.getValid())
-        {
-            user.setSection(validSec.getResult())
-        } else{
-            return "please enter valid section from "+ Sections.values();
-        }
+//        // code for filtering universities
+//        def validUniv = validation.refineUniv(user.getUniversity());
+//        if(validUniv.getValid())
+//        {
+//            user.setUniversity(validUniv.getResult())
+//        } else{
+//            return "please enter valid University names from "+Universities.values();
+//        }
+//        // code for refining college names
+//        def validCol = validation.refineCollege(user.getCollege());
+//        if(validCol.getValid())
+//        {
+//            user.setCollege(validCol.getResult())
+//        } else{
+//            return "please enter valid College names from "+Colleges.values();
+//        }
+//        // code for refining year
+//        def validYear = validation.refineYear(user.getYear());
+//        if(validYear.getValid())
+//        {
+//            user.setYear(validYear.getResult())
+//        } else{
+//            return "please enter valid year from"+ year.values();
+//        }
+//        //code for refining semester
+//        def validSem = validation.refineSemester(user.getSem());
+//        if(validSem.getValid())
+//        {
+//            user.setSem(validSem.getResult())
+//        } else{
+//            return "please enter valid Semester "+ Semester.values();
+//        }
+//        // code for filtering branch names
+//        def validBranch = validation.refineBranch(user.getBranch());
+//        if(validBranch.getValid())
+//        {
+//            user.setBranch(validBranch.getResult())
+//        } else{
+//            return "please enter valid branch names from "+BranchNames.values();
+//        }
+//        // code for refining section
+//        def validSec = validation.refineSection(user.getSection());
+//        if(validSec.getValid())
+//        {
+//            user.setSection(validSec.getResult())
+//        } else{
+//            return "please enter valid section from "+ Sections.values();
+//        }
 
         def m = JsonOutput.toJson( auth.getUserAuthentication().getDetails())
 

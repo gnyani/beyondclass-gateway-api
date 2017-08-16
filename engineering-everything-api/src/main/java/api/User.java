@@ -14,6 +14,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 
 import javax.validation.constraints.*;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -37,40 +38,26 @@ public class User {
      private String lastName;
 
     @JsonProperty
-    @NotEmpty(message = "university name cannot be null")
-    @NotNull(message = "university name cannot be null")
     private String university;
 
     @JsonProperty
-    @NotEmpty(message = "college name cannot be null")
-    @NotNull(message = "college name cannot be null")
     private String college;
 
     @JsonProperty
-    @NotEmpty(message = "please enter your branch name")
-    @NotNull
     private String branch;
 
     @JsonProperty
-    @NotEmpty(message = "please enter your roll number")
-    @NotNull
     private String rollno;
 
     @JsonProperty
-    @NotNull
-    @NotEmpty(message = "please enter your section")
     private String section;
 
 
     @JsonProperty
-    @NotNull
-    @NotEmpty(message = "please enter year")
    // @Max(value = 4,message = "please enter year in range 1 to 4")@Min(value = 1,message = "please enter year in range 1 to 4")
     private String year;
 
     @JsonProperty
-    @NotNull
-    @NotEmpty(message = "please enter semester")
     private String sem;
 
     @JsonProperty
@@ -81,8 +68,15 @@ public class User {
     private Date dob;
 
     @JsonProperty
-    @Pattern(regexp="(^$|[0-9]{10})",message = "please enter a valid mobile number")
     private String mobilenumber;
+
+    @JsonProperty
+    @NotNull
+    @NotEmpty
+    private String userrole;
+
+    @JsonProperty
+    private String[] classes;
 
     private String googlepicUrl;
 
@@ -102,7 +96,7 @@ public class User {
     public User(){
     }
 
-    public User(String email, String firstName, String lastName,String university, String college, String branch, String rollno, String section, String year, String sem, String hostel, Date dob, String mobilenumber, LocalDateTime registerdate) {
+    public User(String email, String firstName, String lastName,String university, String college, String branch, String rollno, String section, String year, String sem, String hostel, Date dob, String mobilenumber, String userrole,String[] classes,LocalDateTime registerdate) {
         this.email = email;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -116,7 +110,25 @@ public class User {
         this.hostel = hostel;
         this.dob = dob;
         this.mobilenumber = mobilenumber;
+        this.userrole = userrole;
         this.registerdate = registerdate;
+        this.classes = classes;
+    }
+
+    public String[] getClasses() {
+        return classes;
+    }
+
+    public void setClasses(String[] classes) {
+        this.classes = classes;
+    }
+
+    public String getUserrole() {
+        return userrole;
+    }
+
+    public void setUserrole(String userrole) {
+        this.userrole = userrole;
     }
 
     public String getEmail() {
@@ -296,8 +308,6 @@ public class User {
         this.normalpicUrl = normalpicUrl;
     }
 
-
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -309,62 +319,54 @@ public class User {
         if (accountNonLocked != user.accountNonLocked) return false;
         if (credentialsNonExpired != user.credentialsNonExpired) return false;
         if (enabled != user.enabled) return false;
+        if (!email.equals(user.email)) return false;
         if (!firstName.equals(user.firstName)) return false;
-        if (!lastName.equals(user.lastName)) return false;
+        if (lastName != null ? !lastName.equals(user.lastName) : user.lastName != null) return false;
         if (!university.equals(user.university)) return false;
         if (!college.equals(user.college)) return false;
         if (!branch.equals(user.branch)) return false;
-        if (!rollno.equals(user.rollno)) return false;
-        if (!section.equals(user.section)) return false;
-        if (!year.equals(user.year)) return false;
-        if (!sem.equals(user.sem)) return false;
+        if (rollno != null ? !rollno.equals(user.rollno) : user.rollno != null) return false;
+        if (section != null ? !section.equals(user.section) : user.section != null) return false;
+        if (year != null ? !year.equals(user.year) : user.year != null) return false;
+        if (sem != null ? !sem.equals(user.sem) : user.sem != null) return false;
         if (hostel != null ? !hostel.equals(user.hostel) : user.hostel != null) return false;
         if (dob != null ? !dob.equals(user.dob) : user.dob != null) return false;
         if (mobilenumber != null ? !mobilenumber.equals(user.mobilenumber) : user.mobilenumber != null) return false;
-        if (registerdate != null ? !registerdate.equals(user.registerdate) : user.registerdate != null) return false;
+        if (!userrole.equals(user.userrole)) return false;
+        // Probably incorrect - comparing Object[] arrays with Arrays.equals
+        if (!Arrays.equals(classes, user.classes)) return false;
+        if (!googlepicUrl.equals(user.googlepicUrl)) return false;
+        if (normalpicUrl != null ? !normalpicUrl.equals(user.normalpicUrl) : user.normalpicUrl != null) return false;
+        if (!registerdate.equals(user.registerdate)) return false;
         return roles != null ? roles.equals(user.roles) : user.roles == null;
 
     }
 
     @Override
     public int hashCode() {
-        int result = firstName.hashCode();
-        result = 31 * result + lastName.hashCode();
+        int result = email.hashCode();
+        result = 31 * result + firstName.hashCode();
+        result = 31 * result + (lastName != null ? lastName.hashCode() : 0);
         result = 31 * result + university.hashCode();
         result = 31 * result + college.hashCode();
         result = 31 * result + branch.hashCode();
-        result = 31 * result + rollno.hashCode();
-        result = 31 * result + section.hashCode();
-        result = 31 * result + year.hashCode();
-        result = 31 * result + sem.hashCode();
+        result = 31 * result + (rollno != null ? rollno.hashCode() : 0);
+        result = 31 * result + (section != null ? section.hashCode() : 0);
+        result = 31 * result + (year != null ? year.hashCode() : 0);
+        result = 31 * result + (sem != null ? sem.hashCode() : 0);
         result = 31 * result + (hostel != null ? hostel.hashCode() : 0);
         result = 31 * result + (dob != null ? dob.hashCode() : 0);
         result = 31 * result + (mobilenumber != null ? mobilenumber.hashCode() : 0);
-        result = 31 * result + (registerdate != null ? registerdate.hashCode() : 0);
+        result = 31 * result + userrole.hashCode();
+        result = 31 * result + Arrays.hashCode(classes);
+        result = 31 * result + googlepicUrl.hashCode();
+        result = 31 * result + (normalpicUrl != null ? normalpicUrl.hashCode() : 0);
+        result = 31 * result + registerdate.hashCode();
         result = 31 * result + (accountNonExpired ? 1 : 0);
         result = 31 * result + (accountNonLocked ? 1 : 0);
         result = 31 * result + (credentialsNonExpired ? 1 : 0);
         result = 31 * result + (enabled ? 1 : 0);
         result = 31 * result + (roles != null ? roles.hashCode() : 0);
         return result;
-    }
-
-    @Override
-    public String toString() {
-        return "User{" +
-                "email='" + email + '\'' +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", college='" + college + '\'' +
-                ", branch='" + branch + '\'' +
-                ", rollno='" + rollno + '\'' +
-                ", section='" + section + '\'' +
-                ", year='" + year + '\'' +
-                ", sem='" + sem + '\'' +
-                ", hostel='" + hostel + '\'' +
-                ", dob=" + dob +
-                ", mobilenumber='" + mobilenumber + '\'' +
-                ", registerdate=" + registerdate +
-                '}';
     }
 }

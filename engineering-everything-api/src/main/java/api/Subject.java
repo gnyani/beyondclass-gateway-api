@@ -12,13 +12,23 @@ import javax.validation.constraints.NotNull;
 public class Subject {
 
     @JsonProperty
-    @NotEmpty
-    @NotNull
     public String subject;
+
+    @JsonProperty
+    public String teacherclass;
 
     public Subject(){
 
     }
+
+    public String getTeacherclass() {
+        return teacherclass;
+    }
+
+    public void setTeacherclass(String teacherclass) {
+        this.teacherclass = teacherclass;
+    }
+
     @JsonCreator
     public Subject(@JsonProperty("subject") String subject) {
         this.subject = subject;

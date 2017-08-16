@@ -227,6 +227,7 @@ class TimelineRestController {
         TimelinePostsmetaapi timelinePostsmetaapi = timelineRepository.findByFilename(filename)
         def likes = timelinePostsmetaapi.getLikes()
         def likedusers = timelinePostsmetaapi.getLikedUsers()
+        println("liked users are" + likedusers)
         def flag = true
         likedusers.each {
             if(loggeduser.getEmail() == it.getEmail()){
@@ -234,12 +235,15 @@ class TimelineRestController {
             }
         }
         if(flag){
+            if(likes)
             likes = likes - 1;
+            println("liked users size" + likedusers.size())
             likedusers.remove(loggeduser)
+            println("after removal" + likedusers.size())
             timelinePostsmetaapi.setLikes(likes)
             timelinePostsmetaapi.setLikedUsers(likedusers)
             timelineRepository.save(timelinePostsmetaapi)
-            return "like success current likes " + likes
+            return "Unlike success current likes " + likes
         }
         return "not liked"
 

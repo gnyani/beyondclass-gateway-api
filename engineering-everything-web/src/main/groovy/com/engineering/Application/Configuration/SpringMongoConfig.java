@@ -88,7 +88,10 @@ public class SpringMongoConfig extends AbstractMongoConfiguration {
 		return new GridFsTemplate(mongoDbFactory(), mappingMongoConverter(),"profilepictures");
 	}
 
-
+	@Bean(name= "TeacherAssignmentUpload")
+	public GridFsTemplate gridFsTemplate7() throws Exception {
+		return new GridFsTemplate(mongoDbFactory(), mappingMongoConverter(),"TeacherAssignmentUpload");
+	}
 
 	@Override
 	@Bean
