@@ -3,6 +3,7 @@ package com.engineering.Application.Controller
 import api.FileData
 import api.User
 import com.engineering.core.Service.EmailGenerationService
+import com.engineering.core.Service.NotificationService
 import com.engineering.core.repositories.UserRepository
 import com.mongodb.gridfs.GridFSDBFile
 import groovy.json.JsonOutput
@@ -36,6 +37,9 @@ class UpdateProfileRestController {
     @Qualifier("profilepictures")
     GridFsTemplate gridFsTemplate;
 
+    @Autowired
+    NotificationService notificationService;
+
     def jsonSlurper = new JsonSlurper()
 
     @CrossOrigin(origins = ["http://localhost:8081","http://localhost:3000"])
@@ -59,7 +63,8 @@ class UpdateProfileRestController {
                 throw new Exception("Data lost exception")
             }
         }
-
+        def message="${user.firstName} changed his profile picture"
+        notificationService.storeNotifications(user,message,"timeline")
         def normalProppicUrl = "http://localhost:8080/user/profilepic/view/"+email
         user.setNormalpicUrl(normalProppicUrl)
         def x = userRepository.save(user)

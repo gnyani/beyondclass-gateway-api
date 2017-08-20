@@ -6,6 +6,7 @@ import api.TimelinePostsmetaapi
 import api.User
 import com.engineering.core.Service.EmailGenerationService
 import com.engineering.core.Service.FilenameGenerator
+import com.engineering.core.Service.NotificationService
 import com.engineering.core.repositories.TimelineRepository
 import com.engineering.core.repositories.UserRepository
 import com.mongodb.gridfs.GridFSDBFile
@@ -59,6 +60,7 @@ class TimelineRestController {
     @Autowired
     @Qualifier("timeline-files")
     GridFsTemplate gridFsTemplate
+
 
 
     @ResponseBody
@@ -129,7 +131,6 @@ class TimelineRestController {
             def userfromdb = repository.findByEmail(postemail)
             def propicUrl = userfromdb.getNormalpicUrl() ?: userfromdb.getGooglepicUrl()
             def firstNameinDB = userfromdb.getFirstName()
-            System.out.println("from db ${propicUrl} and from timeline repo ${temp.getPropicUrl()}" )
             if((!temp.getPropicUrl().equalsIgnoreCase(propicUrl)) || (!temp.getOwner().equalsIgnoreCase(firstNameinDB))){
                 temp.setPropicUrl(propicUrl)
                 temp.setOwner(firstNameinDB)
