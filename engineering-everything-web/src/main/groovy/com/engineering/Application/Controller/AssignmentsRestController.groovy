@@ -5,6 +5,7 @@ import api.Assignments
 import api.User
 import com.engineering.core.Service.EmailGenerationService
 import com.engineering.core.Service.FilenameGenerator
+import com.engineering.core.Service.NotificationService
 import com.engineering.core.repositories.UserRepository
 import com.mongodb.gridfs.GridFSDBFile
 import groovy.json.JsonOutput
@@ -52,6 +53,9 @@ class AssignmentsRestController {
     @Value('${engineering.everything.host}')
     private String servicehost;
 
+    @Autowired
+    NotificationService notificationService
+
 
     @ResponseBody
     @RequestMapping(value="/user/assignments/upload",method= RequestMethod.POST)
@@ -62,7 +66,9 @@ class AssignmentsRestController {
         String filename=fg.generateAssignmentName(currentuser.getUniversity(),currentuser.getCollege(),currentuser.getBranch(),currentuser.getSection(),currentuser.getYear(),currentuser.getSem(),assignments.getSubject(),currentuser.getEmail())
         InputStream inputStream = new ByteArrayInputStream(assignments.getFile())
         gridFsTemplate.store(inputStream,filename)
-
+        //storing notification
+        def message = "You have a new Assignment on subject ${assignments.subject.toUpperCase()} from your friend ${currentuser.firstName}"
+        notificationService.storeNotifications(currentuser,message,"assignments/view/list")
         return "File uploaded successfully with filename " + filename;
     }
     @RequestMapping(value="/user/assignmentslist" ,method= RequestMethod.POST)

@@ -75,6 +75,9 @@ public class User {
     @NotEmpty
     private String userrole;
 
+    @Indexed
+    private String notificationId;
+
     @JsonProperty
     private String[] classes;
 
@@ -96,7 +99,7 @@ public class User {
     public User(){
     }
 
-    public User(String email, String firstName, String lastName,String university, String college, String branch, String rollno, String section, String year, String sem, String hostel, Date dob, String mobilenumber, String userrole,String[] classes,LocalDateTime registerdate) {
+    public User(String email, String firstName, String lastName,String university, String college, String branch, String rollno, String section, String year, String sem,String notificationId, String hostel, Date dob, String mobilenumber, String userrole,String[] classes,LocalDateTime registerdate) {
         this.email = email;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -107,12 +110,21 @@ public class User {
         this.section = section;
         this.year = year;
         this.sem = sem;
+        this.notificationId = notificationId;
         this.hostel = hostel;
         this.dob = dob;
         this.mobilenumber = mobilenumber;
         this.userrole = userrole;
         this.registerdate = registerdate;
         this.classes = classes;
+    }
+
+    public String getNotificationId() {
+        return notificationId;
+    }
+
+    public void setNotificationId(String notificationId) {
+        this.notificationId = notificationId;
     }
 
     public String[] getClasses() {
@@ -333,6 +345,7 @@ public class User {
         if (dob != null ? !dob.equals(user.dob) : user.dob != null) return false;
         if (mobilenumber != null ? !mobilenumber.equals(user.mobilenumber) : user.mobilenumber != null) return false;
         if (!userrole.equals(user.userrole)) return false;
+        if (!notificationId.equals(user.notificationId)) return false;
         // Probably incorrect - comparing Object[] arrays with Arrays.equals
         if (!Arrays.equals(classes, user.classes)) return false;
         if (!googlepicUrl.equals(user.googlepicUrl)) return false;
@@ -358,6 +371,7 @@ public class User {
         result = 31 * result + (dob != null ? dob.hashCode() : 0);
         result = 31 * result + (mobilenumber != null ? mobilenumber.hashCode() : 0);
         result = 31 * result + userrole.hashCode();
+        result = 31 * result + notificationId.hashCode();
         result = 31 * result + Arrays.hashCode(classes);
         result = 31 * result + googlepicUrl.hashCode();
         result = 31 * result + (normalpicUrl != null ? normalpicUrl.hashCode() : 0);

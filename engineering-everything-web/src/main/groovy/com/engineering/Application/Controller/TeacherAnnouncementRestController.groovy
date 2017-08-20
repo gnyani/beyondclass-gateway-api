@@ -4,6 +4,7 @@ import api.Anouncements
 import api.TeacherAnnouncement
 import com.engineering.core.Service.EmailGenerationService
 import com.engineering.core.Service.FilenameGenerator
+import com.engineering.core.Service.NotificationService
 import com.engineering.core.repositories.TeacherAnnouncementRepository
 import com.engineering.core.repositories.UserRepository
 import org.springframework.beans.factory.annotation.Autowired
@@ -40,6 +41,9 @@ class TeacherAnnouncementRestController {
     @Autowired
     UserRepository userRepository
 
+    @Autowired
+    NotificationService notificationService;
+
 
     def PAGE_SIZE = 5
 
@@ -52,6 +56,8 @@ class TeacherAnnouncementRestController {
         announcement.setUser(user)
         try {
             teacherAnnouncementRepository.save(announcement)
+            def message ="You have a new announcement from your teacher ${user.firstName.toUpperCase()}"
+            notificationService.storeNotifications(user,message,"teacherstudentspace",announcement.teacherclass)
         }
         catch(Exception e){
         return "sorry something went wrong please try again"

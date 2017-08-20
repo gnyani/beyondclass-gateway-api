@@ -5,7 +5,8 @@ import api.Organisation
 import api.User;
 import api.UserGoogle
 import com.engineering.core.Service.DetailsValidator
-import com.engineering.core.Service.EmailGenerationService;
+import com.engineering.core.Service.EmailGenerationService
+import com.engineering.core.Service.FilenameGenerator;
 import com.engineering.core.Service.LocationService;
 import com.engineering.core.repositories.UserRepository;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -46,6 +47,9 @@ class UserRegGoogleContoller {
 
     @Autowired
     private DetailsValidator validation;
+
+    @Autowired
+    FilenameGenerator filenameGenerator;
 
     @Autowired
     private LocationService locationUtility;
@@ -209,6 +213,7 @@ class UserRegGoogleContoller {
             return "Please register with other email address,this email already exists"
         }
         user.setEmail(email)
+        String notificationId = filenameGenerator.genericGenerator(user.getUniversity(),user.getCollege(),user.getBranch(),user.getYear()?:' ',user.getSem()?:' ',user.getSection()?:' ')
         //******************************VALIDATION DONE **********************\\
         try {
             user.setUsername(email)
@@ -216,6 +221,7 @@ class UserRegGoogleContoller {
             user.setAccountNonExpired(true);
             user.setAccountNonLocked(true);
             user.setCredentialsNonExpired(true);
+            user.setNotificationId(notificationId);
             user.addRole("ROLE_USER");
             user.setGooglepicUrl(propicurl);
             //saving to collection

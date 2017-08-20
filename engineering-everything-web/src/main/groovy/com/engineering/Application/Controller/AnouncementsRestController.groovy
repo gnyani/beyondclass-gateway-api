@@ -3,7 +3,9 @@ package com.engineering.Application.Controller
 import api.Anouncements
 import com.engineering.core.Service.FilenameGenerator
 import com.engineering.core.Service.EmailGenerationService
+import com.engineering.core.Service.NotificationService
 import com.engineering.core.repositories.AnouncementRepository
+import com.engineering.core.repositories.NotificationsRepository
 import com.engineering.core.repositories.UserRepository
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
@@ -41,9 +43,12 @@ class AnouncementsRestController {
     @Autowired
     UserRepository  userRepository;
 
+    @Autowired
+    NotificationService notificationService;
+
     JsonSlurper jsonSlurper = new JsonSlurper()
 
-    def PAGE_SIZE = 5
+    def PAGE_SIZE = 4
 
     @RequestMapping(value="/user/announcements/insert", method=RequestMethod.POST)
     public String insertAnouncement(@RequestBody Anouncements anouncements, OAuth2Authentication oauth){
@@ -61,6 +66,9 @@ class AnouncementsRestController {
         anouncements.setClassId(classId)
         anouncements.setAid(classId+email+System.currentTimeMillis())
         def object = anouncementRepository.save(anouncements)
+        //storing notifcation
+        String message = user.firstName+" posted an announcement"
+        notificationService.storeNotifications(user,message,"announcements")
         return (object ? "anouncement saved successfully as " + anouncements : "something went wrong")
     }
 

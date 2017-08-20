@@ -6,6 +6,7 @@ import api.TeacherAssignmentUpload
 import api.User
 import com.engineering.core.Service.EmailGenerationService
 import com.engineering.core.Service.FilenameGenerator
+import com.engineering.core.Service.NotificationService
 import com.engineering.core.repositories.UserRepository
 import com.mongodb.gridfs.GridFSDBFile
 import org.springframework.beans.factory.annotation.Autowired
@@ -46,6 +47,9 @@ class TeacherAssignmentRestController {
     @Value('${engineering.everything.host}')
     private String servicehost;
 
+    @Autowired
+    NotificationService notificationService
+
     @ResponseBody
     @RequestMapping(value="/teacher/assignments/upload",method= RequestMethod.POST)
     public String uploadassignments (@RequestBody TeacherAssignmentUpload assignments, OAuth2Authentication auth)
@@ -56,6 +60,8 @@ class TeacherAssignmentRestController {
         String filename=fg.genericGenerator(currentuser.getUniversity(),currentuser.getCollege(),currentuser.getBranch(),assignments.getTeacherclass(),currentuser.getEmail(),assignments.getSubject(),time)
         InputStream inputStream = new ByteArrayInputStream(assignments.getFile())
         gridFsTemplate.store(inputStream,filename)
+        def message ="You got a new assignment from your teacher ${currentuser.firstName.toUpperCase()}"
+        notificationService.storeNotifications(currentuser,message,"teacherstudentspace",assignments.getTeacherclass())
 
         return "File uploaded successfully with filename " + filename;
     }
