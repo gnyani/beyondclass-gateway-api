@@ -53,7 +53,8 @@ class NotesRestController {
         String email = emailGenerationService.parseEmail(auth)
         User currentuser = repository.findByEmail(email);
         //Using generate assignment name since both notes and assignments need the same basic functionality
-        String filename=fg.generateAssignmentName(currentuser.getUniversity(),currentuser.getCollege(),currentuser.getBranch(),currentuser.getSection(),currentuser.getYear(),currentuser.getSem(),notes.getSubject(),currentuser.getEmail())
+        String time= System.currentTimeMillis()
+        String filename=fg.genericGenerator(currentuser.getUniversity(),currentuser.getCollege(),currentuser.getBranch(),currentuser.getSection(),currentuser.getYear(),currentuser.getSem(),notes.getSubject(),currentuser.getEmail(),time)
         InputStream inputStream = new ByteArrayInputStream(notes.getFile())
         gridFsTemplate.store(inputStream,filename)
 
