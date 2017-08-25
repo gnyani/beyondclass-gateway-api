@@ -15,7 +15,7 @@ Current status:
 - screen height -- **Done**
 - important questions 
 - Timeline ux
-- User Roles
+- User Roles -- **Done**
 - change Register page -- **Done**
 - main Page                               
 - Edit style for comment views on timeline post -- **Done**
@@ -28,5 +28,10 @@ Current status:
 - optimise all the controllers
 - multiple answers to a question
 - upvotes, downvotes and comments
-- Fixing bugs in question papers, syllabus, notes, assignments
+- Fixing bugs in question papers, syllabus, notes, assignments -- **Done**
 - Ui enhancements for all the above as well.
+- Profile Pic On hover 
+- Change Question papers ,syllabus,Assignments,Notes to multiple tabs -- **Done**
+- Ui validations make mobile number mandatory
+- send otp before registering and register only iff otp is correct
+- Start thinking about Entertainment page

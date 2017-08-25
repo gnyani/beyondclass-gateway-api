@@ -2,12 +2,14 @@ package com.engineering.Application.Controller
 
 import api.FileData
 import api.User
+import api.updateprofile
 import com.engineering.core.Service.EmailGenerationService
 import com.engineering.core.Service.NotificationService
 import com.engineering.core.repositories.UserRepository
 import com.mongodb.gridfs.GridFSDBFile
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
+import org.bouncycastle.cert.ocsp.Req
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.data.mongodb.core.query.Criteria
@@ -80,6 +82,19 @@ class UpdateProfileRestController {
         imageForOutput ?. writeTo(baos);
         file=baos ?. toByteArray()
         return file
+    }
+    @CrossOrigin(origins = ["http://localhost:8081","http://localhost:3000"])
+    @RequestMapping(value = "/user/update/profile",method = RequestMethod.POST)
+    public String updateProfile(@RequestBody updateprofile updateprofile,OAuth2Authentication auth2Authentication){
+        def email = emailGenerationService.parseEmail(auth2Authentication)
+        def user = userRepository.findByEmail(email)
+        user.setFirstName(updateprofile.getFirstName() ?: user.getFirstName())
+        user.setLastName(updateprofile.getLastName() ?: user.getLastName())
+        user.setDob(updateprofile.getDob() ?: user.getDob())
+        user.setYear(updateprofile.getYear() ?: user.getYear())
+        user.setSem(updateprofile.getSem() ?: user.getSem())
+        def changeduser = userRepository.save(user)
+        return changeduser ? 'success' : 'failure'
     }
 }
 

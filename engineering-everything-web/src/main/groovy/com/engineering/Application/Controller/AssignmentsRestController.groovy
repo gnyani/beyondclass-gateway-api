@@ -63,12 +63,13 @@ class AssignmentsRestController {
     {
         String email = emailGenerationService.parseEmail(auth)
         User currentuser = repository.findByEmail(email);
-        String filename=fg.generateAssignmentName(currentuser.getUniversity(),currentuser.getCollege(),currentuser.getBranch(),currentuser.getSection(),currentuser.getYear(),currentuser.getSem(),assignments.getSubject(),currentuser.getEmail())
+        String time = System.currentTimeMillis()
+        String filename=fg.genericGenerator(currentuser.getUniversity(),currentuser.getCollege(),currentuser.getBranch(),currentuser.getSection(),currentuser.getYear(),currentuser.getSem(),assignments.getSubject(),currentuser.getEmail(),time)
         InputStream inputStream = new ByteArrayInputStream(assignments.getFile())
         gridFsTemplate.store(inputStream,filename)
         //storing notification
         def message = "You have a new Assignment on subject ${assignments.subject.toUpperCase()} from your friend ${currentuser.firstName}"
-        notificationService.storeNotifications(currentuser,message,"assignments/view/list")
+        notificationService.storeNotifications(currentuser,message,"assignments")
         return "File uploaded successfully with filename " + filename;
     }
     @RequestMapping(value="/user/assignmentslist" ,method= RequestMethod.POST)
