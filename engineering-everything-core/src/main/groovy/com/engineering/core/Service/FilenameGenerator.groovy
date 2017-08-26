@@ -1,6 +1,7 @@
 package com.engineering.core.Service
 
 import api.Coachingcentre
+import api.User
 import org.springframework.stereotype.Component
 
 import java.time.LocalDate
@@ -17,6 +18,19 @@ class FilenameGenerator {
      public FilenameGenerator() {
 
      }
+
+    public String generateQuestionIdToSave(User user, Long dateTime){
+        String questionPaperId = user.getUniversity()+"_"+
+                user.getBranch()+"_"+user.getYear()+"_"+user.getSem()+"_"+dateTime;
+        return questionPaperId;
+    }
+
+    public String generateQuestionIdToFetch(User user){
+        String questionPaperId = user.getUniversity()+"_"+
+                user.getBranch()+"_"+user.getYear()+"_"+user.getSem();
+        return questionPaperId;
+    }
+
 
     public String generateQpName(String university, String collegecode, String branch, String year, String sem, String subject,String qpyear)
     {
