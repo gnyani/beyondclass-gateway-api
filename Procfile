@@ -1,0 +1,1 @@
+web: java -cp ".:address-hygiene-service-web/build/libs/address-hygiene-service-web-${VERSION}.jar" org.springframework.boot.loader.JarLauncher
