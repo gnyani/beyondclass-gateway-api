@@ -20,6 +20,9 @@ allprojects {
     targetCompatibility = 1.8
 }
 
+task stage(dependsOn: ['build', 'clean'])
+build.mustRunAfter clean
+
 task wrapper(type: Wrapper) {
     gradleVersion = '2.4'
 }
