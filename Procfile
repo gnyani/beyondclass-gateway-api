@@ -1,1 +1,1 @@
-web: java -cp ".:address-hygiene-service-web/build/libs/address-hygiene-service-web-${VERSION}.jar" org.springframework.boot.loader.JarLauncher
+web: java -cp ".:engineering-everything-web/build/libs/engineering-everything-web-1.0-SNAPSHOT.jar" org.springframework.boot.loader.JarLauncher
