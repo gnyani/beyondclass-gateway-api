@@ -10,7 +10,7 @@ Current status:
 * get used with intellij --todo(manoj)
 
 - css transition 
-- dashboard css on link
+- dashboard css on link -- **Done**
 - Announcement board neat cheyali -- **partly Done**
 - screen height -- **Done**
 - important questions 
@@ -32,6 +32,6 @@ Current status:
 - Ui enhancements for all the above as well.
 - Profile Pic On hover 
 - Change Question papers ,syllabus,Assignments,Notes to multiple tabs -- **Done**
-- Ui validations make mobile number mandatory
-- send otp before registering and register only iff otp is correct
+- Ui validations make mobile number mandatory -- **Done**
+- send otp before registering and register only iff otp is correct -- **Done**
 - Start thinking about Entertainment page

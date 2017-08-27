@@ -1,6 +1,5 @@
 package com.engineering.core.repositories
 
-import api.Organisation
 import api.Question
 import org.springframework.data.mongodb.repository.MongoRepository
 

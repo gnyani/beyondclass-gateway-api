@@ -25,7 +25,7 @@ public class Question {
     private String question;
 
     @JsonProperty
-    private List<String> answer;
+    private String answer;
 
     private User op;
     private Long dateTime;
@@ -76,11 +76,11 @@ public class Question {
         this.question = question;
     }
 
-    public List<String> getAnswer() {
+    public String getAnswer() {
         return answer;
     }
 
-    public void setAnswer(List<String> answer) {
+    public void setAnswer(String answer) {
         this.answer = answer;
     }
 

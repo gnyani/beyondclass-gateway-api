@@ -2,26 +2,26 @@ package com.engineering.Application.Controller;
 
 import api.Location;
 import api.Organisation
+import api.Otp
 import api.User;
 import api.UserGoogle
 import com.engineering.core.Service.DetailsValidator
 import com.engineering.core.Service.EmailGenerationService
 import com.engineering.core.Service.FilenameGenerator;
-import com.engineering.core.Service.LocationService;
+import com.engineering.core.Service.LocationService
+import com.engineering.core.Service.SendSMS
+import com.engineering.core.repositories.OtpRepository;
 import com.engineering.core.repositories.UserRepository;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper
-import constants.BranchNames
-import constants.Colleges
 import constants.Sections
 import constants.Semester
-import constants.Universities
 import constants.year
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper;
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Qualifier
-import org.springframework.data.mongodb.gridfs.GridFsTemplate
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
@@ -52,7 +52,15 @@ class UserRegGoogleContoller {
     FilenameGenerator filenameGenerator;
 
     @Autowired
+    private SendSMS sendSMS;
+
+    @Autowired
+    private OtpRepository otpRepository;
+
+    @Autowired
     private LocationService locationUtility;
+
+
 
 
     def jsonSlurper = new JsonSlurper()
@@ -224,7 +232,6 @@ class UserRegGoogleContoller {
             user.setNotificationId(notificationId);
             user.addRole("ROLE_USER");
             user.setGooglepicUrl(propicurl);
-            //saving to collection
             registered = userRepository.insert(user);
         }
         catch(Exception e){
@@ -236,7 +243,7 @@ class UserRegGoogleContoller {
 
     @CrossOrigin(origins = ["http://localhost:8081","http://localhost:3000"])
     @RequestMapping(value="/users/details/updateprofile", produces ="application/json" ,method = RequestMethod.POST)
-    public String userDetailsUpdate( @RequestBody User updateduser,HttpServletRequest request, HttpServletResponse response,OAuth2Authentication auth) {
+    public String userDetailsUpdate( @RequestBody User updateduser,OAuth2Authentication auth) {
 
         String email = emailGenerationService.parseEmail(auth)
         User userTest1 = userRepository.findByEmail(email);
@@ -303,6 +310,35 @@ class UserRegGoogleContoller {
 
 
     }
+    @CrossOrigin(origins = ["http://localhost:8081","http://localhost:3000"])
+    @PostMapping("/user/generate/otp")
+    public ResponseEntity<?> generateOtp(@RequestBody String number,OAuth2Authentication auth2Authentication) {
+        def email = emailGenerationService.parseEmail(auth2Authentication)
+        //generating OTP
+        Otp otp = new Otp()
+        otp.setEmail(email)
+        def rand = 100000 + (int) (Math.random() * ((999999 - 100000) + 1))
+        otp.setOtp(rand)
+        println("random integer is ${rand}")
+        otpRepository.save(otp)
+        //sending SMS
+        def status = sendSMS.sendSms(number.substring(1), otp.getOtp())
+        println("status is${status}")
+        //check whether status is successful or not
+        return new ResponseEntity<?>("success",HttpStatus.OK)
+    }
+
+    @CrossOrigin(origins = ["http://localhost:8081","http://localhost:3000"])
+    @PostMapping(value="/user/validate/otp")
+    public ResponseEntity<?> validateOtp(@RequestBody int otp,OAuth2Authentication auth2Authentication){
+        def email = emailGenerationService.parseEmail(auth2Authentication)
+        def otpfromrepo = otpRepository.findByEmail(email)
+        println("otp is ${otp} from repo is ${otpfromrepo.getOtp()}")
+        if(otpfromrepo.getOtp() == otp)
+            return new ResponseEntity<>("success",HttpStatus.OK)
+        else
+            return  new ResponseEntity<>("failure",HttpStatus.OK)
+    }
 
 
 
@@ -323,7 +359,8 @@ class UserRegGoogleContoller {
         System.out.print("organization" + org);
         return org;
     }
-}
+
+ }
 
 
 
