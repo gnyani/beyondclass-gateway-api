@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.RestController
 /**
  * Created by GnyaniMac on 01/07/17.
  */
-@CrossOrigin(origins = ["http://localhost:8081","http://localhost:3000"])
+//@CrossOrigin(origins = ["http://localhost:8081","http://localhost:3000"])
 @RestController
 class AnouncementsRestController {
 

@@ -24,7 +24,6 @@ import javax.servlet.http.HttpServletResponse
 /**
  * Created by GnyaniMac on 01/05/17.
  */
-@CrossOrigin(origins = ["http://localhost:8081","http://localhost:3000"])
 @RestController
 class SyllabusRetrivalController {
 

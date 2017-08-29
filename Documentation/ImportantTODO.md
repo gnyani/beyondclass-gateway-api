@@ -35,3 +35,7 @@ Current status:
 - Ui validations make mobile number mandatory -- **Done**
 - send otp before registering and register only iff otp is correct -- **Done**
 - Start thinking about Entertainment page
+- Date validation
+- compound index on User object email and mobile number combo should be unique
+- optimmize for mobile
+- feedback support 

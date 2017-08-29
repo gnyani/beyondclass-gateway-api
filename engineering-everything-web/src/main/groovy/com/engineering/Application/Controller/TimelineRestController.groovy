@@ -38,7 +38,6 @@ import java.time.LocalDateTime
  */
 
 @EnableMongoRepositories(basePackageClasses = [UserRepository.class,TimelineRepository.class])
-@CrossOrigin(origins = ["http://localhost:8081","http://localhost:3000"])
 @RestController
 class TimelineRestController {
 

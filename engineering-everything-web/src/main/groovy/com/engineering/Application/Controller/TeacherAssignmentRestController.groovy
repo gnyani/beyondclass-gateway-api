@@ -1,6 +1,5 @@
 package com.engineering.Application.Controller
 
-import api.Assignments
 import api.Subject
 import api.TeacherAssignmentUpload
 import api.User
@@ -16,7 +15,6 @@ import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.data.mongodb.core.query.Query
 import org.springframework.data.mongodb.gridfs.GridFsTemplate
 import org.springframework.security.oauth2.provider.OAuth2Authentication
-import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -28,7 +26,6 @@ import org.springframework.web.bind.annotation.RestController
  * Created by GnyaniMac on 15/08/17.
  */
 
-@CrossOrigin(origins = ["http://localhost:8081","http://localhost:3000"])
 @RestController
 class TeacherAssignmentRestController {
     @Autowired

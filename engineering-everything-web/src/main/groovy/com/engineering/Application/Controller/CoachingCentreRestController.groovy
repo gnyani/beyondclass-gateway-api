@@ -66,7 +66,6 @@ class CoachingCentreRestController {
         println(x)
         return( (x!=null && y!=null) ? "successfully inserted with Id ${x.getCaochingcentreId()}" : "sorry something went wrong")
     }
-    @CrossOrigin(origins = ["http://localhost:8081","http://localhost:3000"])
     @RequestMapping(value = "/coachingcentres/get/{type:.+}",method = RequestMethod.GET )
     public Object getCoachingCentres (@PathVariable(value = "type", required = true) String caochingcentreId ){
 
@@ -75,7 +74,6 @@ class CoachingCentreRestController {
     }
 
     @ResponseBody
-    @CrossOrigin(origins = ["http://localhost:8081","http://localhost:3000"])
     @RequestMapping(value = "/coachingcentres/get/{coachingcentreId:.+}/feedetails",method = RequestMethod.GET,produces = "image/jpg" )
     public byte[] viewfeeDetails (@PathVariable(value = "coachingcentreId", required = true) String  coachingcentreId ){
 
@@ -91,7 +89,6 @@ class CoachingCentreRestController {
         return file
     }
 
-    @CrossOrigin(origins = ["http://localhost:8081","http://localhost:3000"])
     @RequestMapping(value = "/coachingcentres/post/{coachingcentreId:.+}" ,method = RequestMethod.POST )
     public String postRating (@PathVariable(value = "coachingcentreId" , required = true) String coachingcentreId, @RequestBody Rating  rating,OAuth2Authentication auth){
         String email = emailGenerationService.parseEmail(auth)
@@ -102,7 +99,6 @@ class CoachingCentreRestController {
         def x = updateRating(coachingcentreId)
         return (x ? "success" : "something went wrong")
     }
-    @CrossOrigin(origins = ["http://localhost:8081","http://localhost:3000"])
     @RequestMapping(value = "/coachingcentres/get/{coachingcentreId:.+}/reviews" ,method = RequestMethod.GET )
     public Object getReviews (@PathVariable(value = "coachingcentreId" , required = true) String coachingcentreId){
 

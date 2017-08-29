@@ -99,7 +99,6 @@ class UserRegGoogleContoller {
         }
     }
 
-    @CrossOrigin(origins = ["http://localhost:8081","http://localhost:3000"])
     @RequestMapping(value="/user/loggedin" ,produces = "application/json")
     public Object loggeduser(Authentication auth) {
         String email = emailGenerationService.parseEmail(auth)
@@ -107,7 +106,6 @@ class UserRegGoogleContoller {
        return user
     }
 
-    @CrossOrigin(origins = ["http://localhost:8081","http://localhost:3000"])
     @RequestMapping(value="/user/isloggedin" ,method = RequestMethod.GET)
     public Object isloggedin(Authentication auth)
     {
@@ -118,13 +116,11 @@ class UserRegGoogleContoller {
         }
     }
 
-    @CrossOrigin(origins = ["http://localhost:8081","http://localhost:3000"])
     @RequestMapping(value="/user/google/auth" ,method = RequestMethod.GET)
     public Object auth(OAuth2Authentication auth)
     {
         return auth
     }
-    @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value="/user/dummy" , produces ="application/json" , method = RequestMethod.POST)
     public String dummy()
     {
@@ -132,7 +128,6 @@ class UserRegGoogleContoller {
     }
 
 
-    @CrossOrigin(origins = ["http://localhost:8081","http://localhost:3000"])
     @RequestMapping(value="/user/propic" ,method = RequestMethod.GET)
     public Object propicUrl(Authentication auth)
     {
@@ -152,7 +147,6 @@ class UserRegGoogleContoller {
         return  auth;
     }
 
-    @CrossOrigin(origins = ["http://localhost:8081","http://localhost:3000"])
     @RequestMapping(value="/users/registration", produces ="application/json" ,method = RequestMethod.POST)
     public String userRegistration(@Valid @RequestBody User user,OAuth2Authentication auth)
     {
@@ -241,7 +235,6 @@ class UserRegGoogleContoller {
         return response
     }
 
-    @CrossOrigin(origins = ["http://localhost:8081","http://localhost:3000"])
     @RequestMapping(value="/users/details/updateprofile", produces ="application/json" ,method = RequestMethod.POST)
     public String userDetailsUpdate( @RequestBody User updateduser,OAuth2Authentication auth) {
 
@@ -310,7 +303,7 @@ class UserRegGoogleContoller {
 
 
     }
-    @CrossOrigin(origins = ["http://localhost:8081","http://localhost:3000"])
+
     @PostMapping("/user/generate/otp")
     public ResponseEntity<?> generateOtp(@RequestBody String number,OAuth2Authentication auth2Authentication) {
         def email = emailGenerationService.parseEmail(auth2Authentication)
@@ -319,11 +312,10 @@ class UserRegGoogleContoller {
         otp.setEmail(email)
         def rand = 100000 + (int) (Math.random() * ((999999 - 100000) + 1))
         otp.setOtp(rand)
-        println("random integer is ${rand}")
         otpRepository.save(otp)
         //sending SMS
-        def status = sendSMS.sendSms(number.substring(1), otp.getOtp())
-        println("status is${status}")
+       // def status = sendSMS.sendSms(number.substring(1), otp.getOtp())
+        //println("status is${status}")
         //check whether status is successful or not
         return new ResponseEntity<?>("success",HttpStatus.OK)
     }

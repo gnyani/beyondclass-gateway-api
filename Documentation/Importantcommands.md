@@ -18,3 +18,7 @@ git:
 
 1. to find out number of lines in git repo : git ls-files | xargs cat|wc -l
 2. to find out number of lines per file : git ls-files | xargs wc -l
+
+//greping service logs
+
+journalctl -u studentadda -b --no-pager | grep -B 10 -A 3 "status is"

@@ -44,7 +44,6 @@ class UpdateProfileRestController {
 
     def jsonSlurper = new JsonSlurper()
 
-    @CrossOrigin(origins = ["http://localhost:8081","http://localhost:3000"])
     @RequestMapping(value="/user/update/profilepic", method = RequestMethod.POST)
     public Object updateProfilepic(@RequestBody FileData fileText, OAuth2Authentication auth){
         String email = emailGenerationService.parseEmail(auth)
@@ -72,7 +71,7 @@ class UpdateProfileRestController {
         def x = userRepository.save(user)
         return(x ? "success" : "something went wrong")
     }
-    @CrossOrigin(origins = ["http://localhost:8081","http://localhost:3000"])
+
     @RequestMapping(value = "/user/profilepic/view/{email:.+}",produces = "image/jpg" , method = RequestMethod.GET)
     public byte[] viewPropic(@PathVariable(value = "email" , required = true) Object email){
         byte[] file = null;
@@ -83,7 +82,7 @@ class UpdateProfileRestController {
         file=baos ?. toByteArray()
         return file
     }
-    @CrossOrigin(origins = ["http://localhost:8081","http://localhost:3000"])
+
     @RequestMapping(value = "/user/update/profile",method = RequestMethod.POST)
     public String updateProfile(@RequestBody updateprofile updateprofile,OAuth2Authentication auth2Authentication){
         def email = emailGenerationService.parseEmail(auth2Authentication)
