@@ -13,7 +13,6 @@ import org.springframework.security.oauth2.provider.OAuth2Authentication
 import org.springframework.web.bind.annotation.*
 
 @RestController
-@CrossOrigin(origins = ["http://localhost:8081","http://localhost:3000"])
 @RequestMapping("/user/questions")
 class QuestionController {
 

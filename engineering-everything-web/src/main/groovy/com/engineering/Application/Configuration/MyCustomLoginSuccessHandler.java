@@ -2,6 +2,7 @@ package com.engineering.Application.Configuration;
 
 import com.engineering.core.Service.UserValidationService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 
@@ -15,6 +16,9 @@ public class MyCustomLoginSuccessHandler extends SavedRequestAwareAuthentication
 
     @Autowired
     private UserValidationService userValidationService;
+
+    @Value("${engineering.everything.host}")
+    private String servicehost;
 
     public MyCustomLoginSuccessHandler(String defaultTargetUrl) {
         setDefaultTargetUrl(defaultTargetUrl);
@@ -32,9 +36,9 @@ public class MyCustomLoginSuccessHandler extends SavedRequestAwareAuthentication
                 String validateuser = userValidationService.validateuserexistence(authentication);
                 System.out.println("validate usr value" + validateuser);
                 if ("true".equalsIgnoreCase(validateuser)) {
-                    redirectUrl = "http://localhost:3000/#/dashboard";
+                    redirectUrl = "http://"+servicehost+":3000/#/dashboard";
                 } else {
-                    redirectUrl = "http://localhost:3000/#/register";
+                    redirectUrl = "http://"+servicehost+":3000/#/register";
                 }
             }catch (Exception e){
                 System.out.print("encountered an exception"+ e);

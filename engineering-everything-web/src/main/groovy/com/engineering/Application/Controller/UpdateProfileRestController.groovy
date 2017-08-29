@@ -7,16 +7,14 @@ import com.engineering.core.Service.EmailGenerationService
 import com.engineering.core.Service.NotificationService
 import com.engineering.core.repositories.UserRepository
 import com.mongodb.gridfs.GridFSDBFile
-import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
-import org.bouncycastle.cert.ocsp.Req
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.data.mongodb.core.query.Query
 import org.springframework.data.mongodb.gridfs.GridFsTemplate
 import org.springframework.security.oauth2.provider.OAuth2Authentication
-import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -42,9 +40,12 @@ class UpdateProfileRestController {
     @Autowired
     NotificationService notificationService;
 
+    @Value('${engineering.everything.host}')
+    private String servicehost;
+
+
     def jsonSlurper = new JsonSlurper()
 
-    @CrossOrigin(origins = ["http://localhost:8081","http://localhost:3000"])
     @RequestMapping(value="/user/update/profilepic", method = RequestMethod.POST)
     public Object updateProfilepic(@RequestBody FileData fileText, OAuth2Authentication auth){
         String email = emailGenerationService.parseEmail(auth)
@@ -67,12 +68,12 @@ class UpdateProfileRestController {
         }
         def message="${user.firstName} changed his profile picture"
         notificationService.storeNotifications(user,message,"timeline")
-        def normalProppicUrl = "http://localhost:8080/user/profilepic/view/"+email
+        def normalProppicUrl = "http://${servicehost}:8080/user/profilepic/view/"+email
         user.setNormalpicUrl(normalProppicUrl)
         def x = userRepository.save(user)
         return(x ? "success" : "something went wrong")
     }
-    @CrossOrigin(origins = ["http://localhost:8081","http://localhost:3000"])
+
     @RequestMapping(value = "/user/profilepic/view/{email:.+}",produces = "image/jpg" , method = RequestMethod.GET)
     public byte[] viewPropic(@PathVariable(value = "email" , required = true) Object email){
         byte[] file = null;
@@ -83,7 +84,7 @@ class UpdateProfileRestController {
         file=baos ?. toByteArray()
         return file
     }
-    @CrossOrigin(origins = ["http://localhost:8081","http://localhost:3000"])
+
     @RequestMapping(value = "/user/update/profile",method = RequestMethod.POST)
     public String updateProfile(@RequestBody updateprofile updateprofile,OAuth2Authentication auth2Authentication){
         def email = emailGenerationService.parseEmail(auth2Authentication)

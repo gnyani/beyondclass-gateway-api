@@ -7,8 +7,6 @@ import com.engineering.core.Service.EmailGenerationService
 import com.engineering.core.Service.FilenameGenerator
 import com.engineering.core.repositories.UserRepository
 import com.mongodb.gridfs.GridFSDBFile
-import groovy.json.JsonOutput
-import groovy.json.JsonSlurper
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
@@ -24,7 +22,7 @@ import javax.servlet.http.HttpServletResponse
 /**
  * Created by GnyaniMac on 05/05/17.
  */
-@CrossOrigin(origins = ["http://localhost:8081","http://localhost:3000"])
+
 @RestController
 class NotesRestController {
     @Autowired

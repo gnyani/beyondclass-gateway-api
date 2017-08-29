@@ -6,12 +6,9 @@ import api.TimelinePostsmetaapi
 import api.User
 import com.engineering.core.Service.EmailGenerationService
 import com.engineering.core.Service.FilenameGenerator
-import com.engineering.core.Service.NotificationService
 import com.engineering.core.repositories.TimelineRepository
 import com.engineering.core.repositories.UserRepository
 import com.mongodb.gridfs.GridFSDBFile
-import groovy.json.JsonOutput
-import groovy.json.JsonSlurper
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
@@ -21,7 +18,6 @@ import org.springframework.data.mongodb.core.query.Query
 import org.springframework.data.mongodb.gridfs.GridFsTemplate
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories
 import org.springframework.security.oauth2.provider.OAuth2Authentication
-import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -38,7 +34,6 @@ import java.time.LocalDateTime
  */
 
 @EnableMongoRepositories(basePackageClasses = [UserRepository.class,TimelineRepository.class])
-@CrossOrigin(origins = ["http://localhost:8081","http://localhost:3000"])
 @RestController
 class TimelineRestController {
 
