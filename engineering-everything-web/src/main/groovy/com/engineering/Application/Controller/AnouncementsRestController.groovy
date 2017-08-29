@@ -5,18 +5,15 @@ import com.engineering.core.Service.FilenameGenerator
 import com.engineering.core.Service.EmailGenerationService
 import com.engineering.core.Service.NotificationService
 import com.engineering.core.repositories.AnouncementRepository
-import com.engineering.core.repositories.NotificationsRepository
 import com.engineering.core.repositories.UserRepository
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
 import org.springframework.security.oauth2.provider.OAuth2Authentication
-import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -27,7 +24,6 @@ import org.springframework.web.bind.annotation.RestController
 /**
  * Created by GnyaniMac on 01/07/17.
  */
-//@CrossOrigin(origins = ["http://localhost:8081","http://localhost:3000"])
 @RestController
 class AnouncementsRestController {
 

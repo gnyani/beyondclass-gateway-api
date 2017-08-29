@@ -7,7 +7,6 @@ import com.engineering.core.repositories.NotificationsRepository
 import com.engineering.core.repositories.UserRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.oauth2.provider.OAuth2Authentication
-import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestMethod
