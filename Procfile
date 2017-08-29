@@ -1,1 +1,0 @@
-web: java -cp ".:engineering-everything-web/build/libs/engineering-everything-web-1.0-SNAPSHOT.jar" org.springframework.boot.loader.JarLauncher
