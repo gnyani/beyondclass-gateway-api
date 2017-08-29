@@ -320,7 +320,6 @@ class UserRegGoogleContoller {
         return new ResponseEntity<?>("success",HttpStatus.OK)
     }
 
-    @CrossOrigin(origins = ["http://localhost:8081","http://localhost:3000"])
     @PostMapping(value="/user/validate/otp")
     public ResponseEntity<?> validateOtp(@RequestBody int otp,OAuth2Authentication auth2Authentication){
         def email = emailGenerationService.parseEmail(auth2Authentication)
@@ -334,7 +333,6 @@ class UserRegGoogleContoller {
 
 
 
-    @CrossOrigin(origins = ["http://localhost:8081","http://localhost:3000"])
     @RequestMapping(value="/user/logout")
     public Object logout(HttpServletRequest request, HttpServletResponse response)
     {

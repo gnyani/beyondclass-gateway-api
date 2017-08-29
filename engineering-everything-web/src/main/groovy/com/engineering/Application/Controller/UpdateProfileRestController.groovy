@@ -10,6 +10,7 @@ import com.mongodb.gridfs.GridFSDBFile
 import groovy.json.JsonSlurper
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.data.mongodb.core.query.Query
 import org.springframework.data.mongodb.gridfs.GridFsTemplate
@@ -39,6 +40,10 @@ class UpdateProfileRestController {
     @Autowired
     NotificationService notificationService;
 
+    @Value('${engineering.everything.host}')
+    private String servicehost;
+
+
     def jsonSlurper = new JsonSlurper()
 
     @RequestMapping(value="/user/update/profilepic", method = RequestMethod.POST)
@@ -63,7 +68,7 @@ class UpdateProfileRestController {
         }
         def message="${user.firstName} changed his profile picture"
         notificationService.storeNotifications(user,message,"timeline")
-        def normalProppicUrl = "http://localhost:8080/user/profilepic/view/"+email
+        def normalProppicUrl = "http://${servicehost}:8080/user/profilepic/view/"+email
         user.setNormalpicUrl(normalProppicUrl)
         def x = userRepository.save(user)
         return(x ? "success" : "something went wrong")

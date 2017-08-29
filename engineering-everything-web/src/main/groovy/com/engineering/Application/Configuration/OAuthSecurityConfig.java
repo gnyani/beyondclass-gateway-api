@@ -2,6 +2,7 @@ package com.engineering.Application.Configuration;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.ResourceServerProperties;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.UserInfoTokenServices;
 import org.springframework.context.annotation.Bean;
@@ -37,6 +38,8 @@ public class OAuthSecurityConfig extends WebSecurityConfigurerAdapter {
 	AuthorizationCodeResourceDetails authorizationCodeResourceDetails;
 	@Autowired
 	ResourceServerProperties resourceServerProperties;
+	@Value("${engineering.everything.host}")
+	private String servicehost;
 
 	@Override
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
@@ -50,7 +53,7 @@ public class OAuthSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Bean
 	public AuthenticationSuccessHandler successHandler() {
-		return new MyCustomLoginSuccessHandler("http://localhost:3000/#/");
+		return new MyCustomLoginSuccessHandler("http://"+servicehost+":3000/#/");
 	}
 
 	private OAuth2ClientAuthenticationProcessingFilter filter() {
