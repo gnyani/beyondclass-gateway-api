@@ -20,5 +20,9 @@ dependencies {
     testCompile (libs.junit)
 }
 
+springBoot {
+    executable = true
+}
+
 mainClassName = 'com.engineering.Application.EngineeringEverythingApplication'
 
