@@ -40,3 +40,5 @@ Current status:
 - optimmize for mobile
 - feedback support 
 - parse message delivery status from text local and give appropriate notification inUI.
+- Convert textlocal account to transactional from promotional
+- image compression
