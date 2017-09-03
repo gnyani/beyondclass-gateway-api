@@ -1,5 +1,6 @@
 package com.engineering.Application.Configuration;
 
+import api.User;
 import com.engineering.core.Service.UserValidationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -33,11 +34,13 @@ public class MyCustomLoginSuccessHandler extends SavedRequestAwareAuthentication
             try {
               //  UserRegGoogleContoller ug = new UserRegGoogleContoller();
                 System.out.print("AUthentication object is" + authentication);
-                String validateuser = userValidationService.validateuserexistence(authentication);
+                User validateuser = userValidationService.validateuserexistence(authentication);
                 System.out.println("validate usr value" + validateuser);
-                if ("true".equalsIgnoreCase(validateuser)) {
+                if (validateuser.getUserrole().equals("teacher")) {
+                    redirectUrl = "http://"+servicehost+":3000/#/teacher/"+validateuser.getClasses()[0];
+                }else if(validateuser.getUserrole().equals("student")){
                     redirectUrl = "http://"+servicehost+":3000/#/announcements";
-                } else {
+                }else{
                     redirectUrl = "http://"+servicehost+":3000/#/register";
                 }
             }catch (Exception e){

@@ -99,10 +99,10 @@ class FilenameGenerator {
 
     public String generateClassId(String university,String collegecode,String branch,String section,String year, String sem)
     {
-        university = university.toUpperCase();
-        collegecode = collegecode.toUpperCase();
-        branch = branch.toUpperCase();
-        section = section.toUpperCase();
+        university = university?.toUpperCase();
+        collegecode = collegecode?.toUpperCase();
+        branch = branch?.toUpperCase();
+        section = section?.toUpperCase();
         def filename =null;
         filename = university+"-"+collegecode+"-"+branch+"-"+section+"-"+year+"-"+sem;
         return  filename;
