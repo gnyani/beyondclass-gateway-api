@@ -19,7 +19,7 @@ class UserValidationService {
 
     JsonSlurper jsonSlurper = new JsonSlurper();
 
-    public String validateuserexistence(Authentication auth) {
+    public User validateuserexistence(Authentication auth) {
 
         def m = JsonOutput.toJson(auth)
 
@@ -36,10 +36,10 @@ class UserValidationService {
             present.setFirstName(firstName ?: '')
             userRepository.save(present)
             println("User is ${present}")
-            return "true"
+            return  present
         }
         else {
-            return "false"
+            return null
         }
     }
 }
