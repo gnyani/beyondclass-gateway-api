@@ -36,12 +36,14 @@ public class MyCustomLoginSuccessHandler extends SavedRequestAwareAuthentication
                 System.out.print("AUthentication object is" + authentication);
                 User validateuser = userValidationService.validateuserexistence(authentication);
                 System.out.println("validate usr value" + validateuser);
-                if (validateuser.getUserrole().equals("teacher")) {
+                if(validateuser == null)
+                {
+                    redirectUrl = "http://"+servicehost+":3000/#/register";
+                }
+                else if(validateuser.getUserrole().equals("teacher")) {
                     redirectUrl = "http://"+servicehost+":3000/#/teacher/"+validateuser.getClasses()[0];
                 }else if(validateuser.getUserrole().equals("student")){
                     redirectUrl = "http://"+servicehost+":3000/#/announcements";
-                }else{
-                    redirectUrl = "http://"+servicehost+":3000/#/register";
                 }
             }catch (Exception e){
                 System.out.print("encountered an exception"+ e);
