@@ -39,3 +39,6 @@ Current status:
 - compound index on User object email and mobile number combo should be unique
 - optimmize for mobile
 - feedback support 
+- parse message delivery status from text local and give appropriate notification inUI.
+- Convert textlocal account to transactional from promotional
+- image compression
