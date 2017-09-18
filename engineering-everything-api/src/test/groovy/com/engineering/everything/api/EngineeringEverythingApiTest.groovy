@@ -1,7 +1,6 @@
 package com.engineering.everything.api
 
 import api.Subject
-import api.UserLogin
 import spock.lang.Specification
 
 /**
@@ -16,12 +15,4 @@ class EngineeringEverythingApiTest extends Specification {
         expect :
         a != b
     }
-    def "test UserLogin equals with unequal instaces"(){
-        given:
-        def a = new UserLogin("gnyani007@gmail.com","destro123")
-        def b = new UserLogin("manojkumarjanagam@gmail.com","destro123")
-        expect:
-        a.getEmail() != b.getEmail()
-    }
-
 }

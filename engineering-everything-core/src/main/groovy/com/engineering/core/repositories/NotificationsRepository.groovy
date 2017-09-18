@@ -1,7 +1,7 @@
 package com.engineering.core.repositories
 
-import api.Notifications
-import api.NotificationsReadStatus
+import api.notifications.Notifications
+import api.notifications.NotificationsReadStatus
 import org.springframework.data.mongodb.repository.MongoRepository
 
 /**
@@ -9,7 +9,7 @@ import org.springframework.data.mongodb.repository.MongoRepository
  */
 public interface NotificationsRepository extends MongoRepository<Notifications,String>{
 
-    List<Notifications> findByNotificationIdLikeAndUsersContainingOrderByNotificationIdDesc(String notificationid, NotificationsReadStatus user)
+    List<Notifications> findByNotificationIdStartingWithAndUsersContainingOrderByNotificationIdDesc(String notificationid, NotificationsReadStatus user)
 
     Notifications findByNotificationId(String notificationid)
 

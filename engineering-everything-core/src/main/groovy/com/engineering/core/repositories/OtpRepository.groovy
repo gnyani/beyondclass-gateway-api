@@ -1,6 +1,6 @@
 package com.engineering.core.repositories
 
-import api.Otp
+import api.user.Otp
 import org.springframework.data.mongodb.repository.MongoRepository
 
 /**

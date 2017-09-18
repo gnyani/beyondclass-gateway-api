@@ -1,12 +1,10 @@
 package com.engineering.Application.Controller
 
 import api.Subject
-import api.Assignments
-import api.User
-import com.engineering.core.Service.EmailGenerationService
-import com.engineering.core.Service.FilenameGenerator
+import api.assignments.Assignments
+import api.user.User
+import com.engineering.core.Service.ServiceUtilities
 import com.engineering.core.Service.NotificationService
-import com.engineering.core.repositories.UserRepository
 import com.mongodb.gridfs.GridFSDBFile
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
@@ -14,30 +12,27 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.data.mongodb.core.query.Query
 import org.springframework.data.mongodb.gridfs.GridFsTemplate
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
 import org.springframework.security.oauth2.provider.OAuth2Authentication
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestMethod
 import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.bind.annotation.RestController
 
-
-
-
 /**
- * Created by GnyaniMac on 05/05/17.
+ * Created by Gnyani on 05/05/17.
  */
+
 @RestController
 class AssignmentsRestController {
-    @Autowired
-    FilenameGenerator fg;
+
 
     @Autowired
-    UserRepository repository;
-
-    @Autowired
-    EmailGenerationService emailGenerationService;
+    ServiceUtilities serviceUtils;
 
     @Autowired
     @Qualifier("assignments")
@@ -51,75 +46,67 @@ class AssignmentsRestController {
 
 
     @ResponseBody
-    @RequestMapping(value="/user/assignments/upload",method= RequestMethod.POST)
-    public String uploadassignments (@RequestBody Assignments assignments, OAuth2Authentication auth)
+    @PostMapping(value="/user/assignments/upload")
+    public ResponseEntity<?> uploadassignments (@RequestBody Assignments assignments, OAuth2Authentication auth)
     {
-        String email = emailGenerationService.parseEmail(auth)
-        User currentuser = repository.findByEmail(email);
+        String email = serviceUtils.parseEmail(auth)
+        User currentuser = serviceUtils.findUserByEmail(email);
         String time = System.currentTimeMillis()
-        String filename=fg.genericGenerator(currentuser.getUniversity(),currentuser.getCollege(),currentuser.getBranch(),currentuser.getSection(),currentuser.getYear(),currentuser.getSem(),assignments.getSubject(),currentuser.getEmail(),time)
+        String filename=serviceUtils.generateFileName(currentuser.getUniqueclassid(),assignments?.getSubject(),currentuser.getEmail(),time)
         InputStream inputStream = new ByteArrayInputStream(assignments.getFile())
         gridFsTemplate.store(inputStream,filename)
+
         //storing notification
         def message = "You have a new Assignment on subject ${assignments.subject.toUpperCase()} from your friend ${currentuser.firstName}"
         notificationService.storeNotifications(currentuser,message,"assignments")
-        return "File uploaded successfully with filename " + filename;
-    }
-    @RequestMapping(value="/user/assignmentslist" ,method= RequestMethod.POST)
-    public  String[] retrievedefault (@RequestBody Subject subjects, OAuth2Authentication auth)
-    {
-        String email = emailGenerationService.parseEmail(auth)
-        User currentuser = repository.findByEmail(email);
-        String filename = fg.generateAssignmentNamewithoutEmail(currentuser.getUniversity(),currentuser.getCollege(),currentuser.getBranch(),currentuser.getSection(),currentuser.getYear(),currentuser.getSem(),subjects.getSubject())
-        filename = filename + "-*";
 
+         gridFsTemplate.store(inputStream,filename) ? new ResponseEntity<>("File uploaded successfully with filename ${filename}",HttpStatus.CREATED)
+                : new ResponseEntity<>("Sorry something went wrong",HttpStatus.INTERNAL_SERVER_ERROR)
+    }
+
+    @ResponseBody
+    @PostMapping(value="/user/assignmentslist",produces = "application/json")
+    public String[] retrievedefault (@RequestBody Subject subjects, OAuth2Authentication auth)
+    {
+        String email = serviceUtils.parseEmail(auth)
+        User currentuser = serviceUtils.findUserByEmail(email);
+        String filename = serviceUtils.generateFileName(currentuser.getUniqueclassid(),subjects.getSubject())
         Query query = new Query().addCriteria(Criteria.where("filename").regex(filename))
 
         def list = gridFsTemplate.find(query)
         def filelist = []
-        def links = []
-        int i = 0
-       list.each {
-           filelist[i++] = it.getFilename();
-       }
-        i=0;
-        //println("filelist" +filelist)
-        filelist.each {
-            println(it);
-            links[i++] = "http://"+servicehost+":8080/user/assignment/"+it;
+        list.each {
+            filelist << "http://${servicehost}:8080/user/assignment/${it.getFilename()}";
         }
-        return links;
+
+        filelist
     }
 
     @RequestMapping(value="/user/assignment/{filename:.+}",produces = "application/pdf" )
-    public byte[] retrieveAssignment(@PathVariable(value = "filename", required = true) Object filename){
+    public ResponseEntity<?> retrieveAssignment(@PathVariable(value = "filename", required = true) Object filename){
 
-        byte[] file = null;
-
-        // get image file by it's filename
+        byte[] file;
         Query query = new Query().addCriteria(Criteria.where("filename").is(filename))
         GridFSDBFile imageForOutput = gridFsTemplate.findOne(query)
-
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         imageForOutput ?. writeTo(baos);
-        file =baos ?. toByteArray();
-        return file;
+        file = baos ?. toByteArray();
+
+        new ResponseEntity<> (file,HttpStatus.OK)
     }
 
-    @RequestMapping(value="/user/assignment/{filename:.+}/download",produces = "application/octet-stream",method = RequestMethod.POST)
-    public byte[] downloadAssignment(@PathVariable(value = "filename", required = true) Object filename){
+    @PostMapping(value="/user/assignment/{filename:.+}/download",produces = "application/octet-stream")
+    public ResponseEntity<?> downloadAssignment(@PathVariable(value = "filename", required = true) String filename){
 
-        byte[] file = null;
-        def filename1=filename.toString()
-        def filenameactual = filename1.substring(filename1.indexOf("/") + 1)
-        // get image file by it's filename
+        byte[] file
+        def filenameactual = filename.substring(filename.indexOf("/") + 1)
         Query query = new Query().addCriteria(Criteria.where("filename").is(filenameactual))
         GridFSDBFile imageForOutput = gridFsTemplate.findOne(query)
-
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         imageForOutput ?. writeTo(baos);
         file =baos ?. toByteArray();
-        return file;
+
+        new ResponseEntity<>(file,HttpStatus.OK)
     }
 
 
