@@ -36,7 +36,7 @@
 //        def User1 = new User("test123456@gmailcom","gnyani","nath","ou","vasv","cse","071","B","4","2","xyz","No",dob,"741600585","student",classes,LocalDateTime.now());
 //        userRepository.insert(User1);
 //        def deleteUser = userRepository.findByEmail(User1.getEmail())
-//        assertEquals("User registered and user retrieved are not equal",User1,deleteUser)
+//        assertEquals("User registered and posteduser retrieved are not equal",User1,deleteUser)
 //        def numberofrecords = userRepository.deleteUserByEmail(deleteUser.getEmail())
 //        assertNotNull("number of records deleted are null",numberofrecords)
 //    }

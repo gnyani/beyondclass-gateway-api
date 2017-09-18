@@ -1,4 +1,5 @@
 import com.engineering.core.Service.FilenameGenerator
+import com.engineering.core.Service.ServiceUtilities
 import com.mongodb.BasicDBObject
 import com.mongodb.DB
 import com.mongodb.DBCursor
@@ -22,7 +23,7 @@ class SyllabusInsertUtility {
 
 
 
-            String newFileName = new FilenameGenerator().generateSyllabusName("OU","VASV","CSE","3","2","DS");
+            String newFileName = new ServiceUtilities().generateFileName("OU","VASV","CSE","DS");
 
             File imageFile = new File("/Users/GnyaniMac/Desktop/mywork/644205.jpg");
 
