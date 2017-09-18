@@ -1,11 +1,10 @@
 package com.engineering.Application.Controller
 
-import api.Notes
+import api.notes.Notes
 import api.Subject
-import api.User
-import com.engineering.core.Service.EmailGenerationService
-import com.engineering.core.Service.FilenameGenerator
-import com.engineering.core.repositories.UserRepository
+import api.user.User
+import com.engineering.core.Service.ServiceUtilities
+import com.engineering.core.Service.NotificationService
 import com.mongodb.gridfs.GridFSDBFile
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
@@ -13,11 +12,10 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.data.mongodb.core.query.Query
 import org.springframework.data.mongodb.gridfs.GridFsTemplate
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
 import org.springframework.security.oauth2.provider.OAuth2Authentication
 import org.springframework.web.bind.annotation.*
-
-import javax.servlet.http.HttpServletRequest
-import javax.servlet.http.HttpServletResponse
 
 /**
  * Created by GnyaniMac on 05/05/17.
@@ -25,92 +23,79 @@ import javax.servlet.http.HttpServletResponse
 
 @RestController
 class NotesRestController {
-    @Autowired
-    FilenameGenerator fg;
-
-    @Autowired
-    UserRepository repository;
 
     @Autowired
     @Qualifier("notes")
     GridFsTemplate gridFsTemplate
 
     @Autowired
-    EmailGenerationService emailGenerationService
+    ServiceUtilities serviceUtils
 
     @Value('${engineering.everything.host}')
     private String servicehost;
 
-
+    @Autowired
+    NotificationService notificationService
 
 
     @ResponseBody
-    @RequestMapping(value="/user/notes/upload",method= RequestMethod.POST)
-    public String uploadanotes (@RequestBody Notes notes,OAuth2Authentication auth)
+    @PostMapping(value="/user/notes/upload")
+    public ResponseEntity<?> uploadanotes (@RequestBody Notes notes, OAuth2Authentication auth)
     {
-        String email = emailGenerationService.parseEmail(auth)
-        User currentuser = repository.findByEmail(email);
-        //Using generate assignment name since both notes and assignments need the same basic functionality
+        String email = serviceUtils.parseEmail(auth)
+        User currentuser = serviceUtils.findUserByEmail(email);
         String time= System.currentTimeMillis()
-        String filename=fg.genericGenerator(currentuser.getUniversity(),currentuser.getCollege(),currentuser.getBranch(),currentuser.getSection(),currentuser.getYear(),currentuser.getSem(),notes.getSubject(),currentuser.getEmail(),time)
+        String filename= serviceUtils.generateFileName(currentuser.getUniqueclassid(),notes.getSubject(),currentuser.getEmail(),time)
         InputStream inputStream = new ByteArrayInputStream(notes.getFile())
-        gridFsTemplate.store(inputStream,filename)
+        //storing notification
+        def message = "You have a new Notes on subject ${notes.subject.toUpperCase()} from your friend ${currentuser.firstName}"
+        notificationService.storeNotifications(currentuser,message,"notes")
 
-        return "File uploaded successfully with filename " + filename;
+        gridFsTemplate.store(inputStream,filename) ? new ResponseEntity<>("File uploaded successfully with filename ${filename}",HttpStatus.CREATED)
+                : new ResponseEntity<>("Sorry something went wrong",HttpStatus.INTERNAL_SERVER_ERROR)
+
     }
-    @RequestMapping(value="/user/noteslist" ,method= RequestMethod.POST)
-    public  String[] retrievedefaultnotes (@RequestBody Subject subjects, HttpServletRequest request, HttpServletResponse response,OAuth2Authentication auth)
+    @ResponseBody
+    @PostMapping(value="/user/noteslist",produces = "application/json")
+    public  String[] retrievedefaultnotes (@RequestBody Subject subjects,OAuth2Authentication auth)
     {
-        String email = emailGenerationService.parseEmail(auth)
-        User currentuser = repository.findByEmail(email)
-        //using generate syllabus because of generate assignment name has email
-        String filename = fg.generateAssignmentNamewithoutEmail(currentuser.getUniversity(),currentuser.getCollege(),currentuser.getBranch(),currentuser.getSection(),currentuser.getYear(),currentuser.getSem(),subjects.getSubject())
-        filename = filename + "-*";
-
+        String email = serviceUtils.parseEmail(auth)
+        User currentuser = serviceUtils.findUserByEmail(email)
+        String filename = serviceUtils.generateFileName(currentuser.getUniqueclassid(),subjects.getSubject())
         Query query = new Query().addCriteria(Criteria.where("filename").regex(filename))
         def list = gridFsTemplate.find(query)
         def filelist = []
-        def links = []
-        int i = 0
         list.each {
-            filelist[i++] = it.getFilename();
-        }
-        i=0;
-        filelist.each{
-            links[i++] = "http://"+servicehost+":8080/user/notes/"+it;
+            filelist << "http://${servicehost}:8080/user/notes/${it.getFilename()}"
         }
 
-        return links;
+        filelist
     }
 
     @RequestMapping(value="/user/notes/{filename:.+}",produces = "application/pdf" )
-    public byte[] retrieveNotes(@PathVariable(value = "filename", required = true) Object filename){
+    public ResponseEntity<?> retrieveNotes(@PathVariable(value = "filename", required = true) String filename){
 
-        byte[] file = null;
-
-        // get image file by it's filename
+        byte[] file
         Query query = new Query().addCriteria(Criteria.where("filename").is(filename))
         GridFSDBFile imageForOutput = gridFsTemplate.findOne(query)
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         imageForOutput ?. writeTo(baos);
         file =baos ?. toByteArray();
-        return file;
+        new ResponseEntity<>(file,HttpStatus.OK);
     }
 
-    @RequestMapping(value="/user/notes/{filename:.+}/download",produces = "application/octet-stream",method = RequestMethod.POST)
-    public byte[] downloadNotes(@PathVariable(value = "filename", required = true) Object filename){
+    @PostMapping(value="/user/notes/{filename:.+}/download",produces = "application/octet-stream")
+    public ResponseEntity<?> downloadNotes(@PathVariable(value = "filename", required = true) String filename){
 
-        byte[] file = null;
-        def filename1=filename.toString()
-        def filenameactual = filename1.substring(filename1.indexOf("/") + 1)
-        // get image file by it's filename
+        byte[] file
+        def filenameactual = filename.substring(filename.indexOf("/") + 1)
         Query query = new Query().addCriteria(Criteria.where("filename").is(filenameactual))
         GridFSDBFile imageForOutput = gridFsTemplate.findOne(query)
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         imageForOutput ?. writeTo(baos);
         file =baos ?.toByteArray();
-        return file;
+        new ResponseEntity<>(file,HttpStatus.OK);
     }
 }

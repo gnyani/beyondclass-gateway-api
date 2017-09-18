@@ -1,6 +1,6 @@
 package com.engineering.core.repositories
 
-import api.Coachingcentre
+import api.coachingcentres.Coachingcentre
 import org.springframework.data.mongodb.repository.MongoRepository
 
 /**
@@ -8,7 +8,7 @@ import org.springframework.data.mongodb.repository.MongoRepository
  */
 public interface CoachingCentresRepository extends  MongoRepository<Coachingcentre , String> {
 
-    public List<Coachingcentre> findBycoachingcentreIdLike(String caochingcentreId);
+    public List<Coachingcentre> findBycoachingcentreIdStartingWith(String caochingcentreId);
 
     public Coachingcentre findBycoachingcentreId(String caochingcentreId)
 }

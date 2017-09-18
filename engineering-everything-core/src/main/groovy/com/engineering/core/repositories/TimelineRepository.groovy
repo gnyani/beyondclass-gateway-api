@@ -1,6 +1,6 @@
 package com.engineering.core.repositories
 
-import api.TimelinePostsmetaapi
+import api.Timeline.TimelinePostsmetaapi
 import org.springframework.data.mongodb.repository.MongoRepository
 
 /**
@@ -8,9 +8,10 @@ import org.springframework.data.mongodb.repository.MongoRepository
  */
 
 public interface TimelineRepository extends MongoRepository<TimelinePostsmetaapi,String> {
+
     public TimelinePostsmetaapi findByFilename(String filename);
 
     public List<TimelinePostsmetaapi> deleteByFilename(String filename);
-   // public User findbyEmail(String email);
+
 
 }

@@ -1,5 +1,5 @@
 
-import com.engineering.core.Service.FilenameGenerator
+import com.engineering.core.Service.ServiceUtilities
 import com.mongodb.BasicDBObject
 import com.mongodb.DB
 import com.mongodb.DBCursor
@@ -22,7 +22,7 @@ public class QuestionPaperinsertUtility {
 
 
 
-            String newFileName = new FilenameGenerator().generateQpName("OU","VASV","CSE","4","2","OS","2015");
+            String newFileName = new ServiceUtilities().generateFileName("OU","VASV","CSE","OS","2015");
 
             File imageFile = new File("/Users/GnyaniMac/Desktop/mywork/testimage.jpg");
 

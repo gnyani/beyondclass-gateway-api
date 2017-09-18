@@ -7,7 +7,8 @@ versions += [
         springDataVersion        : "1.11.0.RELEASE",
         groovy                   : "2.4.7",
         junit                    : "4.11",
-        oauth                    : "1.2.1.RELEASE"
+        oauth                    : "1.2.1.RELEASE",
+
 ]
 libs+=[
         groovy                      : [group: 'org.codehaus.groovy', name: 'groovy-all', version: "${versions.groovy}"],
@@ -34,5 +35,5 @@ libs+=[
         jbossLogging                : [group: 'org.jboss.logging', name: 'jboss-logging', version: '3.1.0.CR2'],
         jackson                     : [group:'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.0.1'],
         jsr311                      : [group: 'javax.ws.rs', name: 'jsr311-api', version: '0.11'],
-        oauth                       :[group: 'org.springframework.cloud',name: 'spring-cloud-starter-oauth2',version: "${versions.oauth}"]
+        oauth                       :[group: 'org.springframework.cloud',name: 'spring-cloud-starter-oauth2',version: "${versions.oauth}"],
 ]

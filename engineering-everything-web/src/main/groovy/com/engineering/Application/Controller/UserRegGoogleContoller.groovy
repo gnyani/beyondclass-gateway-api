@@ -1,22 +1,14 @@
-package com.engineering.Application.Controller;
+package com.engineering.Application.Controller
 
-import api.Location;
-import api.Organisation
-import api.Otp
-import api.User;
-import api.UserGoogle
-import com.engineering.core.Service.DetailsValidator
-import com.engineering.core.Service.EmailGenerationService
-import com.engineering.core.Service.FilenameGenerator;
-import com.engineering.core.Service.LocationService
+import api.user.Otp
+import api.user.User
+import com.engineering.core.Service.ServiceUtilities
+import com.engineering.core.Service.FilenameGenerator
 import com.engineering.core.Service.SendSMS
-import com.engineering.core.repositories.OtpRepository;
-import com.engineering.core.repositories.UserRepository;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper
-import constants.Sections
-import constants.Semester
-import constants.year
+import com.engineering.core.repositories.OtpRepository
+import com.engineering.core.repositories.UserRepository
+import com.mongodb.DuplicateKeyException
+import constants.UserRoles
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper;
 import org.springframework.beans.factory.annotation.Autowired
@@ -42,14 +34,7 @@ class UserRegGoogleContoller {
     private UserRepository userRepository;
 
     @Autowired
-    EmailGenerationService emailGenerationService;
-
-
-    @Autowired
-    private DetailsValidator validation;
-
-    @Autowired
-    FilenameGenerator filenameGenerator;
+    ServiceUtilities serviceUtilities;
 
     @Autowired
     private SendSMS sendSMS;
@@ -57,200 +42,66 @@ class UserRegGoogleContoller {
     @Autowired
     private OtpRepository otpRepository;
 
-    @Autowired
-    private LocationService locationUtility;
-
-
-
 
     def jsonSlurper = new JsonSlurper()
 
 
-    @RequestMapping("/user")
-    public UserGoogle sayHello(OAuth2Authentication auth) throws IOException {
-        LinkedHashMap m = (LinkedHashMap) auth.getUserAuthentication().getDetails();
-
-        ObjectMapper mapper = new ObjectMapper();
-        URL url = new URL("http://ip-api.com/json");
-        URLConnection uc = url.openConnection();
-        BufferedReader reader = new BufferedReader(new InputStreamReader(uc.getInputStream()));
-        String line = reader.readLine();
-        JsonNode array = mapper.readValue(line, JsonNode.class);
-        Location location = mapper.readValue(array.traverse(), Location.class);
-
-        m.put("location",location);
-        UserGoogle u = new UserGoogle(m);
-        userRepository.save(u);
-
-        return u ;
-    }
-
-    //This method is important not unused.
-    @RequestMapping("/user/validate")
-    public String validateuserexistence(Authentication auth) {
-        String email = emailGenerationService.parseEmail(auth)
-        User present = userRepository.findByEmail(email);
-        if (present != null)
-        {
-            return true
-        }
-        else {
-            return false
-        }
-    }
-
-    @RequestMapping(value="/user/loggedin" ,produces = "application/json")
-    public Object loggeduser(Authentication auth) {
-        String email = emailGenerationService.parseEmail(auth)
+    @GetMapping(value="/user/loggedin" ,produces = "application/json")
+    public ResponseEntity<?> loggeduser(Authentication auth) {
+        String email = serviceUtilities.parseEmail(auth)
         User user = userRepository.findByEmail(email)
-       return user
-    }
-
-    @RequestMapping(value="/user/isloggedin" ,method = RequestMethod.GET)
-    public Object isloggedin(Authentication auth)
-    {
-        if(auth){
-            return true
-        }else{
-            return  false
-        }
-    }
-
-    @RequestMapping(value="/user/google/auth" ,method = RequestMethod.GET)
-    public Object auth(OAuth2Authentication auth)
-    {
-        return auth
-    }
-    @RequestMapping(value="/user/dummy" , produces ="application/json" , method = RequestMethod.POST)
-    public String dummy()
-    {
-        return "test";
+        new ResponseEntity<>(user,HttpStatus.OK)
     }
 
 
-    @RequestMapping(value="/user/propic" ,method = RequestMethod.GET)
-    public Object propicUrl(Authentication auth)
+    @GetMapping(value="/user/google/auth")
+    public ResponseEntity<?> auth(OAuth2Authentication auth)
     {
-        def m = JsonOutput.toJson(auth)
-        def Json = jsonSlurper.parseText(m);
-        String email = Json.userAuthentication.details.email
-        String propicurl = Json.userAuthentication.details.picture
-        User user = userRepository.findByEmail(email)
-        if(user)
-        return (user.getNormalpicUrl()?:user.getGooglepicUrl())
-        else
-         return propicurl
-    }
-    @RequestMapping(value="/user/authobj" ,method = RequestMethod.GET)
-    public Object giveauthobj(Authentication auth)
-    {
-        return  auth;
+         new ResponseEntity<>(auth,HttpStatus.OK)
     }
 
-    @RequestMapping(value="/users/registration", produces ="application/json" ,method = RequestMethod.POST)
-    public String userRegistration(@Valid @RequestBody User user,OAuth2Authentication auth)
+    @PostMapping(value="/users/registration", produces ="application/json" )
+    public ResponseEntity<?> userRegistration(@Valid @RequestBody User user,OAuth2Authentication auth)
     {
-        User registered
-        String response
-        // System.out.println("USer is"+user + "email is " + user.getEmail())
-        //***************************VALIDATION****************************\\
-
-//        // code for filtering universities
-//        def validUniv = validation.refineUniv(user.getUniversity());
-//        if(validUniv.getValid())
-//        {
-//            user.setUniversity(validUniv.getResult())
-//        } else{
-//            return "please enter valid University names from "+Universities.values();
-//        }
-//        // code for refining college names
-//        def validCol = validation.refineCollege(user.getCollege());
-//        if(validCol.getValid())
-//        {
-//            user.setCollege(validCol.getResult())
-//        } else{
-//            return "please enter valid College names from "+Colleges.values();
-//        }
-//        // code for refining year
-//        def validYear = validation.refineYear(user.getYear());
-//        if(validYear.getValid())
-//        {
-//            user.setYear(validYear.getResult())
-//        } else{
-//            return "please enter valid year from"+ year.values();
-//        }
-//        //code for refining semester
-//        def validSem = validation.refineSemester(user.getSem());
-//        if(validSem.getValid())
-//        {
-//            user.setSem(validSem.getResult())
-//        } else{
-//            return "please enter valid Semester "+ Semester.values();
-//        }
-//        // code for filtering branch names
-//        def validBranch = validation.refineBranch(user.getBranch());
-//        if(validBranch.getValid())
-//        {
-//            user.setBranch(validBranch.getResult())
-//        } else{
-//            return "please enter valid branch names from "+BranchNames.values();
-//        }
-//        // code for refining section
-//        def validSec = validation.refineSection(user.getSection());
-//        if(validSec.getValid())
-//        {
-//            user.setSection(validSec.getResult())
-//        } else{
-//            return "please enter valid section from "+ Sections.values();
-//        }
-
-        def m = JsonOutput.toJson( auth.getUserAuthentication().getDetails())
-
-        def Json = jsonSlurper.parseText(m);
-        // println(" json is " + Json)
+        User userinserted
+        def authJson= JsonOutput.toJson( auth.getUserAuthentication().getDetails())
+        def Json = jsonSlurper.parseText(authJson);
         String email = Json."email"
         String propicurl = Json.picture
         if(userRepository.findByEmail(email))
         {
-            return "Please register with other email address,this email already exists"
+            return new ResponseEntity<>("Please register with other email address,this email already exists",HttpStatus.BAD_REQUEST)
         }
         user.setEmail(email)
-        String notificationId = filenameGenerator.genericGenerator(user.getUniversity(),user.getCollege(),user.getBranch(),user.getYear()?:' ',user.getSem()?:' ',user.getSection()?:' ')
-        //******************************VALIDATION DONE **********************\\
+        if(user.userrole == UserRoles.STUDENT.value) {
+            user.setEndYear(((user.getStartYear() as Integer) + 4).toString())
+            String uniqueClassId = serviceUtilities.generateFileName(user.getUniversity(), user.getCollege(), user.getBranch(), user?.getSection(), user.getStartYear(), user.getEndYear())
+            user.setUniqueclassid(uniqueClassId);
+        }
         try {
-            user.setUsername(email)
             user.setEnabled(true);
             user.setAccountNonExpired(true);
             user.setAccountNonLocked(true);
             user.setCredentialsNonExpired(true);
-            user.setNotificationId(notificationId);
             user.addRole("ROLE_USER");
             user.setGooglepicUrl(propicurl);
-            registered = userRepository.insert(user);
+            userinserted = userRepository.save(user);
         }
         catch(Exception e){
-            return "Error occurred while registering user please try again after sometime" + e.getMessage()
+            if(e instanceof  org.springframework.dao.DuplicateKeyException)
+                return new ResponseEntity<>("Mobile Number already exists",HttpStatus.BAD_REQUEST)
+            else
+                return new ResponseEntity<>("Error occurred while registering user please try again after sometime${e.getClass()}",HttpStatus.INTERNAL_SERVER_ERROR)
         }
-        response="User registration successful"
-        return response
+
+        userinserted ? new ResponseEntity<>("User registration successful",HttpStatus.CREATED) :  new ResponseEntity<>("Something went wrong ",HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
-    @RequestMapping(value="/users/details/updateprofile", produces ="application/json" ,method = RequestMethod.POST)
-    public String userDetailsUpdate( @RequestBody User updateduser,OAuth2Authentication auth) {
+    @PostMapping(value="/users/details/updateprofile", produces ="application/json" )
+    public ResponseEntity<?> userDetailsUpdate( @RequestBody User updateduser,OAuth2Authentication auth) {
 
-        String email = emailGenerationService.parseEmail(auth)
+        String email = serviceUtilities.parseEmail(auth)
         User userTest1 = userRepository.findByEmail(email);
-
-        //  println("retrieved object is"+userTest1)
-        //Should improve validations for both mobile number and DOB
-        if(updateduser.getMobilenumber() != null){
-            if(updateduser.getMobilenumber().size() == 10){
-                userTest1.setMobilenumber(updateduser.getMobilenumber())
-            }
-            else{
-                return "please enter a valid mobile number"
-            }
-        }
 
         if(updateduser.getDob() != null)
         {
@@ -262,95 +113,58 @@ class UserRegGoogleContoller {
         if (updateduser.getLastName() != null) {
             userTest1.setLastName(updateduser.getLastName())
         }
-        if (updateduser.getYear() != null) {
-            def validYear = validation.refineYear(updateduser.getYear());
-            if(validYear.getValid())
-            {
-                userTest1.setYear(validYear.getResult())
-            } else{
-                return "please enter valid year from"+ year.values();
-            }
-        }
-        if(updateduser.getSem() != null){
-
-            def validSem = validation.refineSemester(updateduser.getSem());
-            if(validSem.getValid())
-            {
-                userTest1.setSem(validSem.getResult())
-            } else{
-                return "please enter valid Semester "+ Semester.values();
-            }
-        }
-
-
-        if (updateduser.getSection() != null) {
-            def validSec = validation.refineSection(updateduser.getSection());
-            if (validSec.getValid()) {
-                userTest1.setSection(validSec.getResult())
-            } else {
-                return "please enter valid section from " + Sections.values();
-            }
-        }
 
         try {
             userRepository.save(userTest1)
         }
         catch(Exception e){
-            return "Error occurred while registering user please try again after sometime" + e.getMessage()
+             new ResponseEntity<>("Error occurred while registering user please try again after sometime" + e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR)
         }
 
-        return "User updation successful for user "+userTest1.getEmail()
+         new ResponseEntity<>("User updation successful for user "+userTest1.getEmail(),HttpStatus.CREATED)
 
 
     }
 
     @PostMapping("/user/generate/otp")
     public ResponseEntity<?> generateOtp(@RequestBody String number,OAuth2Authentication auth2Authentication) {
-        def email = emailGenerationService.parseEmail(auth2Authentication)
+        String email = serviceUtilities.parseEmail(auth2Authentication)
         //generating OTP
         Otp otp = new Otp()
         otp.setEmail(email)
-        def rand = 100000 + (int) (Math.random() * ((999999 - 100000) + 1))
+        int rand = 100000 + (int) (Math.random() * ((999999 - 100000) + 1))
         otp.setOtp(rand)
         otpRepository.save(otp)
         //sending SMS
-       // def status = sendSMS.sendSms(number.substring(1), otp.getOtp())
+        // def status = sendSMS.sendSms(number.substring(1), otp.getOtp())
         //println("status is${status}")
         //check whether status is successful or not
-        return new ResponseEntity<?>("success",HttpStatus.OK)
+        new ResponseEntity<?>("success",HttpStatus.OK)
     }
 
     @PostMapping(value="/user/validate/otp")
     public ResponseEntity<?> validateOtp(@RequestBody int otp,OAuth2Authentication auth2Authentication){
-        def email = emailGenerationService.parseEmail(auth2Authentication)
+        def email = serviceUtilities.parseEmail(auth2Authentication)
         def otpfromrepo = otpRepository.findByEmail(email)
         println("otp is ${otp} from repo is ${otpfromrepo.getOtp()}")
         if(otpfromrepo.getOtp() == otp)
-            return new ResponseEntity<>("success",HttpStatus.OK)
+             new ResponseEntity<>("success",HttpStatus.OK)
         else
-            return  new ResponseEntity<>("failure",HttpStatus.OK)
+            new ResponseEntity<>("failure",HttpStatus.BAD_REQUEST)
     }
 
 
 
-    @RequestMapping(value="/user/logout")
-    public Object logout(HttpServletRequest request, HttpServletResponse response)
+    @GetMapping(value="/user/logout")
+    public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response)
     {
         request.getSession().invalidate();
         SecurityContextHolder.getContext().setAuthentication(null);
-        return "logout successful"
+        new ResponseEntity<>("logout successful",HttpStatus.OK)
     }
 
+}
 
-
-    @RequestMapping(value = "/storeHangout",produces = "application/json",method = RequestMethod.POST)
-    @ResponseBody
-    public Object post(@RequestBody Organisation org){
-        System.out.print("organization" + org);
-        return org;
-    }
-
- }
 
 
 
