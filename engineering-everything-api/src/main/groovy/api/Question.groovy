@@ -12,7 +12,7 @@ import javax.validation.constraints.NotNull
 /**
  * Created by manoj on 22/7/17.
  */
-@Document(collection = "posteduser-questions")
+@Document(collection = "user-questions")
 public class Question {
 
     @Id
