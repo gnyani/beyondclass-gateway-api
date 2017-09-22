@@ -67,7 +67,7 @@ class CoachingCentreRestController {
     public Object getCoachingCentres (@PathVariable(value = "type", required = true) String caochingcentreId ){
 
         def coachingcentres = centresRepository.findBycoachingcentreIdStartingWith(caochingcentreId)
-         (coachingcentres ? coachingcentres: "No data available")
+        coachingcentres
     }
 
     @ResponseBody
