@@ -1,5 +1,13 @@
-package api.user;
+package api.user
 
+import groovy.transform.EqualsAndHashCode
+import groovy.transform.ToString
+import groovy.transform.TupleConstructor;
+
+
+@EqualsAndHashCode
+@ToString
+@TupleConstructor
 public class UserDetails {
 
      String email;
