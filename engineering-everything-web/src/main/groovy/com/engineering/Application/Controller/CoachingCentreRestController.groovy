@@ -1,20 +1,24 @@
 package com.engineering.Application.Controller
 
-import api.CoachingCentreImages
-import api.Coachingcentre
-import api.Rating
-import com.engineering.core.Service.EmailGenerationService
-import com.engineering.core.Service.FilenameGenerator
+import api.coachingcentres.CoachingCentreImages
+import api.coachingcentres.Coachingcentre
+import api.coachingcentres.Rating
+import com.engineering.core.Service.ServiceUtilities
 import com.engineering.core.repositories.CoachingCentresRepository
 import com.engineering.core.repositories.RatingRepository
+import javafx.geometry.Pos
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.data.mongodb.core.query.Query
 import org.springframework.data.mongodb.gridfs.GridFsTemplate
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
 import org.springframework.security.oauth2.provider.OAuth2Authentication
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestMethod
@@ -31,13 +35,10 @@ class CoachingCentreRestController {
     CoachingCentresRepository centresRepository
 
     @Autowired
-    FilenameGenerator filenameGenerator
-
-    @Autowired
     RatingRepository ratingRepository
 
     @Autowired
-    EmailGenerationService emailGenerationService
+    ServiceUtilities serviceUtils
 
     @Autowired
     @Qualifier("coachingcentres-files")
@@ -47,12 +48,12 @@ class CoachingCentreRestController {
     private String servicehost;
 
 
-    @RequestMapping(value= "/coachingcentres/insert", method = RequestMethod.POST )
+    @PostMapping(value= "/coachingcentres/insert")
     public String insertCentre ( @RequestBody Coachingcentre coachingcentre )
     {
-        def coachingcentreId = filenameGenerator.generateCoachingCentreId(coachingcentre)
-        coachingcentre.setCaochingcentreId(coachingcentreId)
-        def feesDetailsUrl = "http://"+servicehost+":8080/coachingcentres/get/"+coachingcentreId+"/feedetails"
+        def coachingcentreId = serviceUtils.generateFileName(coachingcentre.getType().toString(),coachingcentre.getCity().toString(),coachingcentre.getArea().toString(),coachingcentre.getOrgname())
+        coachingcentre.setCoachingcentreId(coachingcentreId)
+        def feesDetailsUrl = "http://${servicehost}:8080/coachingcentres/get/${coachingcentreId}/feedetails"
         coachingcentre.setFeesdetailsUrl(feesDetailsUrl)
         CoachingCentreImages images = new CoachingCentreImages()
         images.setCaochingcentreId(coachingcentreId)
@@ -60,44 +61,40 @@ class CoachingCentreRestController {
         InputStream inputStream = new ByteArrayInputStream(coachingcentre.getFeedetails())
         def y = gridFsTemplate.store(inputStream,coachingcentreId)
         def x = centresRepository.insert(coachingcentre)
-        println(x)
-        return( (x!=null && y!=null) ? "successfully inserted with Id ${x.getCaochingcentreId()}" : "sorry something went wrong")
+        (x!=null && y!=null) ? "successfully inserted with Id ${x.getCoachingcentreId()}" : "sorry something went wrong"
     }
-    @RequestMapping(value = "/coachingcentres/get/{type:.+}",method = RequestMethod.GET )
+    @GetMapping(value = "/coachingcentres/get/{type:.+}" )
     public Object getCoachingCentres (@PathVariable(value = "type", required = true) String caochingcentreId ){
 
-        def coachingcentres = centresRepository.findBycoachingcentreIdLike(caochingcentreId)
-        return (coachingcentres ? coachingcentres: "No data available")
+        def coachingcentres = centresRepository.findBycoachingcentreIdStartingWith(caochingcentreId)
+        coachingcentres
     }
 
     @ResponseBody
-    @RequestMapping(value = "/coachingcentres/get/{coachingcentreId:.+}/feedetails",method = RequestMethod.GET,produces = "image/jpg" )
-    public byte[] viewfeeDetails (@PathVariable(value = "coachingcentreId", required = true) String  coachingcentreId ){
+    @GetMapping(value = "/coachingcentres/get/{coachingcentreId:.+}/feedetails",produces = "image/jpg" )
+    public ResponseEntity<?> viewfeeDetails (@PathVariable(value = "coachingcentreId", required = true) String  coachingcentreId ){
 
-        byte[] file = null;
+        byte[] file
         Query query = new Query().addCriteria(Criteria.where("filename").is(coachingcentreId))
-        System.out.println("coaching centre id  is" + coachingcentreId);
-        System.out.print("query is"+query);
         def list = gridFsTemplate.findOne(query)
-        System.out.println("list is"  + list);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         list ?. writeTo(baos);
         file =baos ?. toByteArray();
-        return file
+        new ResponseEntity<>(file,HttpStatus.OK)
     }
 
-    @RequestMapping(value = "/coachingcentres/post/{coachingcentreId:.+}" ,method = RequestMethod.POST )
-    public String postRating (@PathVariable(value = "coachingcentreId" , required = true) String coachingcentreId, @RequestBody Rating  rating,OAuth2Authentication auth){
-        String email = emailGenerationService.parseEmail(auth)
+    @PostMapping(value = "/coachingcentres/post/{coachingcentreId:.+}" )
+    public ResponseEntity<?> postRating (@PathVariable(value = "coachingcentreId" , required = true) String coachingcentreId, @RequestBody Rating  rating,OAuth2Authentication auth){
+        String email = serviceUtils.parseEmail(auth)
         rating.setCoachingcentreId(coachingcentreId)
         rating.setEmail(email)
         rating.setReviewID(coachingcentreId+email)
         ratingRepository.save(rating)
         def x = updateRating(coachingcentreId)
-        return (x ? "success" : "something went wrong")
+        (x ? new ResponseEntity<>("success",HttpStatus.OK) : new ResponseEntity<>("something went wrong",HttpStatus.INTERNAL_SERVER_ERROR))
     }
-    @RequestMapping(value = "/coachingcentres/get/{coachingcentreId:.+}/reviews" ,method = RequestMethod.GET )
-    public Object getReviews (@PathVariable(value = "coachingcentreId" , required = true) String coachingcentreId){
+    @GetMapping(value = "/coachingcentres/get/{coachingcentreId:.+}/reviews")
+    public ResponseEntity<?> getReviews (@PathVariable(value = "coachingcentreId" , required = true) String coachingcentreId){
 
         def list = ratingRepository.findBycoachingcentreId(coachingcentreId)
         def finalist = []
@@ -106,7 +103,7 @@ class CoachingCentreRestController {
            if(it.review.length()!=0)
                finalist.add(it)
         }
-        return  finalist;
+        new ResponseEntity<>(finalist,HttpStatus.OK)
 
     }
 
@@ -121,7 +118,7 @@ class CoachingCentreRestController {
        def coachingcentre = centresRepository.findBycoachingcentreId(coachingcentreId)
        coachingcentre.setRating(actualrating)
        def x = centresRepository.save(coachingcentre)
-       return(x ? true: false)
+       (x ? true: false)
    }
 
 

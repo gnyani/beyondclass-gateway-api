@@ -1,24 +1,25 @@
 package com.engineering.Application.Controller
 
-import api.FileData
-import api.User
-import api.updateprofile
-import com.engineering.core.Service.EmailGenerationService
+import api.updateprofile.FileData
+import api.user.User
+import api.updateprofile.updateprofile
+import com.engineering.core.Service.ServiceUtilities
 import com.engineering.core.Service.NotificationService
 import com.engineering.core.repositories.UserRepository
 import com.mongodb.gridfs.GridFSDBFile
-import groovy.json.JsonSlurper
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.data.mongodb.core.query.Query
 import org.springframework.data.mongodb.gridfs.GridFsTemplate
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
 import org.springframework.security.oauth2.provider.OAuth2Authentication
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestMethod
 import org.springframework.web.bind.annotation.RestController
 
 /**
@@ -28,28 +29,26 @@ import org.springframework.web.bind.annotation.RestController
 class UpdateProfileRestController {
 
     @Autowired
-    private UserRepository userRepository;
+    UserRepository userRepository
 
     @Autowired
-    EmailGenerationService emailGenerationService;
+    ServiceUtilities serviceUtils
 
     @Autowired
     @Qualifier("profilepictures")
-    GridFsTemplate gridFsTemplate;
+    GridFsTemplate gridFsTemplate
 
     @Autowired
-    NotificationService notificationService;
+    NotificationService notificationService
 
     @Value('${engineering.everything.host}')
-    private String servicehost;
+    private String servicehost
 
 
-    def jsonSlurper = new JsonSlurper()
-
-    @RequestMapping(value="/user/update/profilepic", method = RequestMethod.POST)
-    public Object updateProfilepic(@RequestBody FileData fileText, OAuth2Authentication auth){
-        String email = emailGenerationService.parseEmail(auth)
-        User user = userRepository.findByEmail(email)
+    @PostMapping(value="/user/update/profilepic")
+    public ResponseEntity<?> updateProfilepic(@RequestBody FileData fileText, OAuth2Authentication auth){
+        String email = serviceUtils.parseEmail(auth)
+        User user = serviceUtils.findUserByEmail(email)
         Query query = new Query().addCriteria(Criteria.where("filename").is(email))
         GridFSDBFile imageForOutput = gridFsTemplate.findOne(query)
         try{
@@ -68,34 +67,33 @@ class UpdateProfileRestController {
         }
         def message="${user.firstName} changed his profile picture"
         notificationService.storeNotifications(user,message,"timeline")
-        def normalProppicUrl = "http://${servicehost}:8080/user/profilepic/view/"+email
+
+        def normalProppicUrl = "http://${servicehost}:8080/user/profilepic/view/${email}"
         user.setNormalpicUrl(normalProppicUrl)
         def x = userRepository.save(user)
-        return(x ? "success" : "something went wrong")
+        x ? new ResponseEntity<>("success", HttpStatus.OK) : new ResponseEntity<>("something went wrong",HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
-    @RequestMapping(value = "/user/profilepic/view/{email:.+}",produces = "image/jpg" , method = RequestMethod.GET)
-    public byte[] viewPropic(@PathVariable(value = "email" , required = true) Object email){
-        byte[] file = null;
+    @GetMapping(value = "/user/profilepic/view/{email:.+}",produces = "image/jpg")
+    public ResponseEntity<?> viewPropic(@PathVariable(value = "email" , required = true) Object email){
+        byte[] file
         Query query = new Query().addCriteria(Criteria.where("filename").is(email))
         GridFSDBFile imageForOutput = gridFsTemplate.findOne(query)
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         imageForOutput ?. writeTo(baos);
         file=baos ?. toByteArray()
-        return file
+        new ResponseEntity<>(file,HttpStatus.OK)
     }
 
-    @RequestMapping(value = "/user/update/profile",method = RequestMethod.POST)
-    public String updateProfile(@RequestBody updateprofile updateprofile,OAuth2Authentication auth2Authentication){
-        def email = emailGenerationService.parseEmail(auth2Authentication)
+    @PostMapping(value = "/user/update/profile")
+    public ResponseEntity<?> updateProfile(@RequestBody updateprofile updateprofile,OAuth2Authentication auth2Authentication){
+        def email = serviceUtils.parseEmail(auth2Authentication)
         def user = userRepository.findByEmail(email)
         user.setFirstName(updateprofile.getFirstName() ?: user.getFirstName())
         user.setLastName(updateprofile.getLastName() ?: user.getLastName())
         user.setDob(updateprofile.getDob() ?: user.getDob())
-        user.setYear(updateprofile.getYear() ?: user.getYear())
-        user.setSem(updateprofile.getSem() ?: user.getSem())
         def changeduser = userRepository.save(user)
-        return changeduser ? 'success' : 'failure'
+        changeduser ? new ResponseEntity<>('success',HttpStatus.OK) : new ResponseEntity<>('failure',HttpStatus.INTERNAL_SERVER_ERROR)
     }
 }
 

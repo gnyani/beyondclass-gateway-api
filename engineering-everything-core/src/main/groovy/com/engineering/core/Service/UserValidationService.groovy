@@ -1,6 +1,6 @@
 package com.engineering.core.Service
 
-import api.User
+import api.user.User
 import com.engineering.core.repositories.UserRepository
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper

@@ -1,8 +1,8 @@
 package com.engineering.core.Service
 
-import api.Notifications
-import api.NotificationsReadStatus
-import api.User
+import api.notifications.Notifications
+import api.notifications.NotificationsReadStatus
+import api.user.User
 import com.engineering.core.repositories.NotificationsRepository
 import com.engineering.core.repositories.UserRepository
 import org.springframework.beans.factory.annotation.Autowired
@@ -15,6 +15,9 @@ import org.springframework.stereotype.Component
 class NotificationService {
 
     @Autowired
+    ServiceUtilities serviceUtilities
+
+    @Autowired
     UserRepository userRepository
 
     @Autowired
@@ -22,46 +25,43 @@ class NotificationService {
 
     public boolean  storeNotifications(User user,String content,String type){
         Notifications notifications = new Notifications();
-        notifications.setNotificationId(user.notificationId+'-'+user.email+'-'+System.currentTimeMillis())
-        def users = userRepository.findByNotificationId(user.notificationId)
+        notifications.setNotificationId(user.uniqueclassid+'-'+user.email+'-'+System.currentTimeMillis())
+        def users = userRepository.findByUniqueclassid(user.uniqueclassid)
         users.removeAll(user)
-        def NotificationsReadStatus =  []
+        def usersNotificationsReadStatus =  []
         users.each {
-            def x = new NotificationsReadStatus()
-            x.setEmail(it.email)
-            x.setRead(false)
-            NotificationsReadStatus.add(x)
+            def userReadStatus = new NotificationsReadStatus()
+            userReadStatus.setEmail(it.email)
+            userReadStatus.setRead(false)
+            usersNotificationsReadStatus.add(userReadStatus)
         }
-        notifications.setUsers(NotificationsReadStatus)
+        notifications.setUsers(usersNotificationsReadStatus)
         notifications.setContent(content)
         notifications.setPicurl(user.normalpicUrl ?: user.googlepicUrl)
         notifications.setNotificationType(type)
         def notification = notificationsRepository.save(notifications)
-        return notification ? true:false
+        notification ? true:false
     }
 
-    public boolean storeNotifications(User user,String content,String type,String teacherclass){
+    public boolean storeNotifications(User user,String content,String type,String batch){
         Notifications notifications = new Notifications();
-        def notificationIdsem1 = user.notificationId.replace('- ','')+'-'+teacherclass.charAt(0)+'-'+'1'+'-'+teacherclass.charAt(2)
-        def notificationIdsem2 = user.notificationId.replace('- ','')+'-'+teacherclass.charAt(0)+'-'+'2'+'-'+teacherclass.charAt(2)
-        def userssem1 = userRepository.findByNotificationId(notificationIdsem1)
-        def userssem2 = userRepository.findByNotificationId(notificationIdsem2)
-        def users = userssem1 + userssem2
-        notifications.setNotificationId(notificationIdsem1+'-'+user.email+'-'+System.currentTimeMillis())
-        def NotificationsReadStatus =  []
+        String endyear = batch.substring(0,4).toInteger() + 4
+        def notificationId = serviceUtilities.generateFileName(user.university,user.college,user.branch,batch.substring(5),batch.substring(0,4),endyear)
+        def users = userRepository.findByUniqueclassid(notificationId)
+        String time = System.currentTimeMillis()
+        notifications.setNotificationId(serviceUtilities.generateFileName(notificationId,user.email,time))
+        def usersNotificationsReadStatus =  []
         users.each {
-            def x = new NotificationsReadStatus()
-            x.setEmail(it.email)
-            x.setRead(false)
-            NotificationsReadStatus.add(x)
+            def userReadStatus = new NotificationsReadStatus()
+            userReadStatus.setEmail(it.email)
+            userReadStatus.setRead(false)
+            usersNotificationsReadStatus.add(userReadStatus)
         }
-        notifications.setUsers(NotificationsReadStatus)
+        notifications.setUsers(usersNotificationsReadStatus)
         notifications.setContent(content)
         notifications.setPicurl(user.normalpicUrl ?: user.googlepicUrl)
         notifications.setNotificationType(type)
-        notificationsRepository.save(notifications)
-        notifications.setNotificationId(notificationIdsem2+'-'+user.email+'-'+System.currentTimeMillis())
         def notification = notificationsRepository.save(notifications)
-        return notification ? true:false
+        notification ? true:false
     }
 }

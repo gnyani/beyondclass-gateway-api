@@ -1,6 +1,6 @@
 package com.engineering.core.repositories
 
-import api.Rating
+import api.coachingcentres.Rating
 import org.springframework.data.mongodb.repository.MongoRepository
 
 /**

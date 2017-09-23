@@ -1,7 +1,7 @@
 package com.engineering.Application.Controller
 
 import api.Question
-import com.engineering.core.Service.EmailGenerationService
+import com.engineering.core.Service.ServiceUtilities
 import com.engineering.core.Service.FilenameGenerator
 import com.engineering.core.repositories.QuestionRepository
 import com.engineering.core.repositories.UserRepository
@@ -23,7 +23,7 @@ class QuestionController {
     UserRepository userRepository;
 
     @Autowired
-    EmailGenerationService emailGenerationService;
+    ServiceUtilities emailGenerationService;
 
     @Autowired
     FilenameGenerator filenameGenerator;
