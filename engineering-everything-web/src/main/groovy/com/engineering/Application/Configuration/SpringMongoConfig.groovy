@@ -1,9 +1,7 @@
 package com.engineering.Application.Configuration;
 
 import com.mongodb.Mongo
-import com.mongodb.WriteConcern;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.mongo.MongoProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -15,9 +13,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 
 import com.mongodb.MongoClient;
 import org.springframework.data.mongodb.core.SimpleMongoDbFactory
-import org.springframework.data.mongodb.core.WriteResultChecking;
 import org.springframework.data.mongodb.core.index.Index;
-import org.springframework.data.mongodb.core.query.Order;
 import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
@@ -53,7 +49,7 @@ public class SpringMongoConfig extends AbstractMongoConfiguration {
 	}
 	@Override
 	protected String getDatabaseName() {
-		return "test";
+		return "mydatabase";
 	}
 
     @Bean(name = "assignments")

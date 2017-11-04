@@ -4,6 +4,7 @@ package com.engineering.Application
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.autoconfigure.security.oauth2.client.EnableOAuth2Sso
+import org.springframework.cloud.netflix.zuul.EnableZuulProxy
 import org.springframework.context.annotation.ComponentScan
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories
 
@@ -15,6 +16,7 @@ import org.springframework.data.mongodb.repository.config.EnableMongoRepositorie
 @ComponentScan(basePackages = ['com.engineering.Application','com.engineering.core.Service'],basePackageClasses =[])
 @SpringBootApplication
 @EnableMongoRepositories
+@EnableZuulProxy
 @EnableOAuth2Sso
 public class EngineeringEverythingApplication{
 
