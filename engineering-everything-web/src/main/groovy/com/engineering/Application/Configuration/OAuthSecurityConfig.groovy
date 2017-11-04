@@ -53,7 +53,7 @@ public class OAuthSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Bean
 	public AuthenticationSuccessHandler successHandler() {
-		return new MyCustomLoginSuccessHandler("http://"+servicehost+":3000/#/");
+		return new MyCustomLoginSuccessHandler("http://"+servicehost+"/#/");
 	}
 
 	private OAuth2ClientAuthenticationProcessingFilter filter() {

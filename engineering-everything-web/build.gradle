@@ -10,6 +10,8 @@ repositories {
 dependencies {
     compile project (':engineering-everything-api')
     compile project (':engineering-everything-core')
+    // https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-starter-zuul
+    compile(libs.zuul)
     compile(libs.groovy)
     compile(libs.springBootStarterWeb)
     compile(libs.springBootStarterSecurity)

@@ -136,8 +136,8 @@ class UserRegGoogleContoller {
         otp.setOtp(rand)
         otpRepository.save(otp)
         //sending SMS
-        // def status = sendSMS.sendSms(number.substring(1), otp.getOtp())
-        //println("status is${status}")
+        def status = sendSMS.sendSms(number.substring(1), otp.getOtp())
+        println("status is${status}")
         //check whether status is successful or not
         new ResponseEntity<?>("success",HttpStatus.OK)
     }
