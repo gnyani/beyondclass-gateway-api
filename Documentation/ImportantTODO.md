@@ -41,4 +41,16 @@ Current status:
 - feedback support 
 - parse message delivery status from text local and give appropriate notification inUI.
 - Convert textlocal account to transactional from promotional
-- image compression
+- image compression (reveify compression ratio)
+
+
+- email sending at appropriate times
+- create assignment with ability to give coding questions as well as theory questions (appropriate changes at student side, should use the compiler component in js)
+- Home page for students showing various stats and updates
+    - Like announcements related to college like exam fee remainder, notices etc
+    - updates like your friends recently submitted a assignment
+    - you have pending assignments to take which are expiring soon.
+- rewrite or reimplement forums with a proper design and strategy.(category tagging should be der)
+- think about having a universal search
+- push notification support
+
