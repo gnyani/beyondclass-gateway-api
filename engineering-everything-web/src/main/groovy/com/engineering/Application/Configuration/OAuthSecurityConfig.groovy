@@ -5,7 +5,8 @@ import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.ResourceServerProperties;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.UserInfoTokenServices;
-import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Bean
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -38,6 +39,8 @@ public class OAuthSecurityConfig extends WebSecurityConfigurerAdapter {
 	AuthorizationCodeResourceDetails authorizationCodeResourceDetails;
 	@Autowired
 	ResourceServerProperties resourceServerProperties;
+	@Autowired
+	Environment environment;
 	@Value('${engineering.everything.host}')
 	private String servicehost;
 
@@ -53,7 +56,12 @@ public class OAuthSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Bean
 	public AuthenticationSuccessHandler successHandler() {
-		return new MyCustomLoginSuccessHandler("http://"+servicehost+"/#/");
+		String [] profiles = ["prod"]
+		println("Active profiles are ${environment.getActiveProfiles()} and profiles are ${profiles}")
+		if(environment.getActiveProfiles() == profiles)
+			return  new ProdCustomSuccessHandler("http://"+servicehost+"/#/")
+		else
+			return new DevCustomLoginSuccessHandler("http://"+servicehost+"/#/")
 	}
 
 	private OAuth2ClientAuthenticationProcessingFilter filter() {

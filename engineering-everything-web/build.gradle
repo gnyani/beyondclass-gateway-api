@@ -26,5 +26,12 @@ springBoot {
     executable = true
 }
 
+bootRun {
+    if ( project.hasProperty('jvmArgs') ) {
+        jvmArgs = (project.jvmArgs.split("\\s+") as List)
+
+    }
+}
+
 mainClassName = 'com.engineering.Application.EngineeringEverythingApplication'
 

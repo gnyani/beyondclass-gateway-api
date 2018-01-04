@@ -1,7 +1,10 @@
 package api.Timeline;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import org.springframework.data.mongodb.core.mapping.Document;
+import com.fasterxml.jackson.annotation.JsonProperty
+import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.Document
+
+import java.time.LocalDate;
 
 /**
  * Created by GnyaniMac on 09/05/17.
@@ -17,6 +20,7 @@ public class TimelinePosts {
 
     @JsonProperty
     private boolean isprofilepicchange;
+
 
     private String filename;
 
