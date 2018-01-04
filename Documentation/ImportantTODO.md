@@ -36,7 +36,7 @@ Current status:
 - send otp before registering and register only iff otp is correct -- **Done**
 - Start thinking about Entertainment page
 - Date validation
-- compound index on User object email and mobile number combo should be unique
+- compound index on User object email and mobile number combo should be unique -- **Done**
 - optimmize for mobile
 - feedback support 
 - parse message delivery status from text local and give appropriate notification inUI.
@@ -53,4 +53,30 @@ Current status:
 - rewrite or reimplement forums with a proper design and strategy.(category tagging should be der)
 - think about having a universal search
 - push notification support
+- Comments for notes
+- Delete option for notes
+- meta data for notes like timestamp and all
+- if an assignment is deleted what should happen to submissions of the corressponding assignment?
+- support for edit at various places like announcements and reviews
 
+
+** TODO for first release
+
+- Comments for notes
+- Delete option for notes
+- meta data for notes like timestamp and all
+- Timeline add dates for atleast an year(DONE till here) and also create an expiration policy on backend
+- Export assignment reports as excel
+- Email support(Should need to be done)
+- Data finding and uploading organizedly (Qp and syllabus basically)
+- Submit button confirmation everywhere
+- Auto save assignemt every 3 0r 4 mins so the student wont loose the data
+- Support for the students and teachers to give the feedback on the website. Additionally allowing them to upload the screenshot will help us in giving proper support.
+- many bug fixes
+- if possible automate the deployment to make our life simple
+- Forums either make it complete or remove it for now?
+- Multi environment support for spring boot. Makes deployment simpler. Good to do it before the deployment. --InProgress
+- Time stamp for announcements
+- Add question should actually add question to the list (teacher side assignment creation issue) (**DONE** - Gnyani)
+- Decide on the company name (Beyond class or student adda) if beyond class domain is not available forget it. --InProgress
+- Finish the f*****g coding assignemt
