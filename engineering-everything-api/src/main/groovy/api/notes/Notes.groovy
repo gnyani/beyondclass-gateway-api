@@ -4,7 +4,8 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import groovy.transform.EqualsAndHashCode
 import groovy.transform.ToString
 import groovy.transform.TupleConstructor;
-import org.hibernate.validator.constraints.NotEmpty;
+import org.hibernate.validator.constraints.NotEmpty
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.validation.constraints.NotNull;
@@ -17,13 +18,25 @@ import javax.validation.constraints.NotNull;
 @EqualsAndHashCode
 @TupleConstructor
 @ToString
+@Document(collection = "notes")
 public class Notes {
+
+    @Id
+    String filename
+
     @JsonProperty
     @NotEmpty
     @NotNull
-    String subject;
+    String subject
+
+    @JsonProperty
+    @NotNull
+    @NotEmpty
+    String comment
+
+
     @JsonProperty
     @NotEmpty
     @NotNull
-    byte[] file;
+    byte[] file
 }
