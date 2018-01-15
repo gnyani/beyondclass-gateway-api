@@ -2,9 +2,11 @@ package com.engineering.Application.Controller
 
 import api.notes.Notes
 import api.Subject
+import api.notes.NotesResponse
 import api.user.User
 import com.engineering.core.Service.ServiceUtilities
 import com.engineering.core.Service.NotificationService
+import com.engineering.core.repositories.NotesRepository
 import com.mongodb.gridfs.GridFSDBFile
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
@@ -37,6 +39,8 @@ class NotesRestController {
     @Autowired
     NotificationService notificationService
 
+    @Autowired
+    NotesRepository notesRepository
 
     @ResponseBody
     @PostMapping(value="/user/notes/upload")
@@ -44,8 +48,13 @@ class NotesRestController {
     {
         String email = serviceUtils.parseEmail(auth)
         User currentuser = serviceUtils.findUserByEmail(email);
-        String time= System.currentTimeMillis()
-        String filename= serviceUtils.generateFileName(currentuser.getUniqueclassid(),notes.getSubject(),currentuser.getEmail(),time)
+        String time = System.currentTimeMillis()
+        String filename = serviceUtils.generateFileName(currentuser.getUniqueclassid(),notes.getSubject(),currentuser.getEmail(),time)
+        notes.filename = filename
+        def savedNotes = notesRepository.save(notes)
+        if(savedNotes == null){
+            return  new ResponseEntity<>("Sorry Something went wrong please try again",HttpStatus.INTERNAL_SERVER_ERROR)
+        }
         InputStream inputStream = new ByteArrayInputStream(notes.getFile())
         //storing notification
         def message = "You have a new Notes on subject ${notes.subject.toUpperCase()} from your friend ${currentuser.firstName}"
@@ -57,20 +66,47 @@ class NotesRestController {
     }
     @ResponseBody
     @PostMapping(value="/user/noteslist",produces = "application/json")
-    public  String[] retrievedefaultnotes (@RequestBody Subject subjects,OAuth2Authentication auth)
+    public NotesResponse retrievedefaultnotes (@RequestBody Subject subjects, OAuth2Authentication auth)
     {
+        NotesResponse notesResponse = new NotesResponse()
         String email = serviceUtils.parseEmail(auth)
         User currentuser = serviceUtils.findUserByEmail(email)
         String filename = serviceUtils.generateFileName(currentuser.getUniqueclassid(),subjects.getSubject())
         Query query = new Query().addCriteria(Criteria.where("filename").regex(filename))
+        def commentsMap = generateHashMap(filename)
         def list = gridFsTemplate.find(query)
         def filelist = []
+        def comments = []
         list.each {
+            comments << commentsMap.get(it.filename)
             filelist << "http://${servicehost}:8080/user/notes/${it.getFilename()}"
         }
-
-        filelist
+        notesResponse.links = filelist
+        notesResponse.comments = comments
+        notesResponse
     }
+
+    @ResponseBody
+    @GetMapping(value = "/user/notes/{filename:.+}/delete")
+    public ResponseEntity<?> deleteNotes(@PathVariable(value = "filename", required = true) String filename,OAuth2Authentication auth){
+
+        String email = serviceUtils.parseEmail(auth)
+        String uploadeduser = filename.tokenize('-')[7]
+        if(uploadeduser == email){
+            try {
+                Query query = new Query().addCriteria(Criteria.where("filename").is(filename))
+                gridFsTemplate.delete(query)
+            }catch (Exception e){
+                return new ResponseEntity<>("Something went wrong please try again",HttpStatus.INTERNAL_SERVER_ERROR)
+            }
+          return new ResponseEntity<>("Successfully Deleted",HttpStatus.OK)
+        }else{
+            return  new ResponseEntity<>("Not Authorized",HttpStatus.UNAUTHORIZED)
+        }
+
+    }
+
+
 
     @RequestMapping(value="/user/notes/{filename:.+}",produces = "application/pdf" )
     public ResponseEntity<?> retrieveNotes(@PathVariable(value = "filename", required = true) String filename){
@@ -98,4 +134,13 @@ class NotesRestController {
         file =baos ?.toByteArray();
         new ResponseEntity<>(file,HttpStatus.OK);
     }
+
+     public HashMap generateHashMap(String filename){
+         List<Notes> notes = notesRepository.findByfilenameStartingWith(filename)
+         HashMap hashMap = new HashMap()
+         notes.each {
+             hashMap.put(it.filename,it.comment)
+         }
+         hashMap
+     }
 }
