@@ -6,6 +6,8 @@ import com.engineering.core.Service.ServiceUtilities
 import com.engineering.core.repositories.NotificationsRepository
 import com.engineering.core.repositories.UserRepository
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
 import org.springframework.security.oauth2.provider.OAuth2Authentication
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -54,15 +56,19 @@ class NotificationsRestController {
     }
     @RequestMapping(value="/user/notifications/unread" , method = RequestMethod.GET)
     public int getNotificationscount(OAuth2Authentication oAuth2Authentication){
-        def email = serviceUtils.parseEmail(oAuth2Authentication)
-        def user = serviceUtils.findUserByEmail(email)
-        def userReadStatus = new NotificationsReadStatus()
-        userReadStatus.setEmail(email)
-        userReadStatus.setRead(false)
-        if(user.userrole == "student") {
-            def unreadnotifications = notificationsRepository.findByNotificationIdStartingWithAndUsersContainingOrderByNotificationIdDesc(user.uniqueclassid, userReadStatus)
-            return unreadnotifications.size()
+        def unreadNotifications = getUnreadNotifications(oAuth2Authentication)
+        unreadNotifications.size()
+    }
+
+
+    @RequestMapping(value="/user/notifications/markallasread" , method = RequestMethod.GET)
+    public ResponseEntity<?> markAllNotificationsRead(OAuth2Authentication oAuth2Authentication){
+
+        def unreadNotifications = getUnreadNotifications(oAuth2Authentication)
+        unreadNotifications.each{
+            markAsread(it.notificationId,oAuth2Authentication)
         }
+        new ResponseEntity<>("Success",HttpStatus.OK)
     }
 
     @RequestMapping(value="/user/notifications/delete" , method = RequestMethod.POST)
@@ -78,5 +84,16 @@ class NotificationsRestController {
         notification.users.remove(x)
         notification.users.remove(y)
         notificationsRepository.save(notification)
+    }
+    private def getUnreadNotifications(OAuth2Authentication oAuth2Authentication) {
+        def email = serviceUtils.parseEmail(oAuth2Authentication)
+        def user = serviceUtils.findUserByEmail(email)
+        def userReadStatus = new NotificationsReadStatus()
+        userReadStatus.setEmail(email)
+        userReadStatus.setRead(false)
+        if (user.userrole == "student") {
+            def unreadnotifications = notificationsRepository.findByNotificationIdStartingWithAndUsersContainingOrderByNotificationIdDesc(user.uniqueclassid, userReadStatus)
+            return unreadnotifications
+        }
     }
 }

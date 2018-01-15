@@ -12,7 +12,7 @@ import com.mongodb.gridfs.GridFSInputFile
 /**
  * Created by GnyaniMac on 03/05/17.
  */
-class SyllabusInsertUtility {
+class   SyllabusInsertUtility {
     public static void main(String[] args) {
 
         try {
@@ -23,9 +23,9 @@ class SyllabusInsertUtility {
 
 
 
-            String newFileName = new ServiceUtilities().generateFileName("OU","VASV","CSE","DS");
+            String newFileName = new ServiceUtilities().generateFileName("OU","VASV","CSE","JAVA");
 
-            File imageFile = new File("/Users/GnyaniMac/Desktop/mywork/644205.jpg");
+            File imageFile = new File("/Users/GnyaniMac/Desktop/mywork/Syllabus/OU-VASV-CSE-2-2/JAVA.pdf");
 
             // create a "photo" namespace
             GridFS gfsPhoto = new GridFS(db, "syllabus");
