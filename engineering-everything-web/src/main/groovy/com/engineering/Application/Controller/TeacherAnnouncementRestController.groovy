@@ -1,9 +1,14 @@
 package com.engineering.Application.Controller
 
 import api.teacherstudentspace.TeacherAnnouncement
+import api.user.User
+import com.engineering.core.Service.EmailUtils
+import com.engineering.core.Service.MailService
 import com.engineering.core.Service.ServiceUtilities
 import com.engineering.core.Service.NotificationService
+import com.engineering.core.constants.EmailTypes
 import com.engineering.core.repositories.TeacherAnnouncementRepository
+import com.engineering.core.repositories.UserRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
@@ -32,8 +37,16 @@ class TeacherAnnouncementRestController {
     ServiceUtilities serviceUtils;
 
     @Autowired
+    UserRepository userRepository
+
+    @Autowired
     NotificationService notificationService;
 
+    @Autowired
+    EmailUtils emailUtils
+
+    @Autowired
+    MailService mailService
 
     def PAGE_SIZE = 5
 
@@ -41,6 +54,12 @@ class TeacherAnnouncementRestController {
     public ResponseEntity<?> insertAnouncement(@RequestBody TeacherAnnouncement announcement, OAuth2Authentication oauth){
         def email = serviceUtils.parseEmail(oauth)
         def user = serviceUtils.findUserByEmail(email)
+
+        def splits = announcement.batch.split('-')
+        String startyear = splits[0]
+        String section = splits[1]
+        String endyear = Integer.parseInt(startyear)+ 4
+
         String time = System.currentTimeMillis()
         def announcementid =  serviceUtils.generateFileName(user.getUniversity(),user.getCollege(),user.getBranch(),announcement.getBatch(),email,time)
         announcement.setAnnouncementid(announcementid)
@@ -49,6 +68,9 @@ class TeacherAnnouncementRestController {
             teacherAnnouncementRepository.save(announcement)
             def message ="You have a new announcement from your teacher ${user.firstName.toUpperCase()}"
             notificationService.storeNotifications(user,message,"teacherstudentspace",announcement.batch)
+
+            String classId = serviceUtils.generateFileName(user.university,user.college,user.branch,section,startyear,endyear)
+            findUsersAndSendEmail(classId,EmailTypes.ANNOUNCEMENT,user.email)
         }
         catch(Exception e){
          new ResponseEntity<>("sorry something went wrong please try again",HttpStatus.INTERNAL_SERVER_ERROR)
@@ -84,6 +106,20 @@ class TeacherAnnouncementRestController {
                 new PageRequest(pageNumber - 1, PAGE_SIZE,new Sort(Sort.Direction.DESC, "createdAt"));
 
         new ResponseEntity<>(teacherAnnouncementRepository.findByAnnouncementidStartingWith(announcementid,request),HttpStatus.OK)
+    }
+
+    void findUsersAndSendEmail(String classId, EmailTypes emailTypes, String sender){
+        List<User> users = userRepository.findByUniqueclassid(classId)
+        def toEmails = []
+        users.each {
+            toEmails.add(it.email)
+        }
+        String[] emails = new String[toEmails.size()]
+        emails = toEmails.toArray(emails)
+        String htmlMessage = emailUtils.createEmailMessage(emailTypes,sender)
+        String subject = emailUtils.createSubject(emailTypes)
+
+        mailService.sendHtmlMail(emails,subject,htmlMessage)
     }
 
 

@@ -22,9 +22,9 @@ public class QuestionPaperinsertUtility {
 
 
 
-            String newFileName = new ServiceUtilities().generateFileName("OU","VASV","CSE","OS","2015");
+            String newFileName = new ServiceUtilities().generateFileName("OU","VASV","CSE","JAVA","2009");
 
-            File imageFile = new File("/Users/GnyaniMac/Desktop/mywork/testimage.jpg");
+            File imageFile = new File("/Users/GnyaniMac/Desktop/mywork/questionpapers/JAVA/OU-VASV-CSE-JAVA-2009.pdf");
 
             // create a "photo" namespace
             GridFS gfsPhoto = new GridFS(db, "questionpapers");

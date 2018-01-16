@@ -39,39 +39,50 @@ class SyllabusRetrivalController {
     @PostMapping(value="/user/syllabusurl",produces = "text/plain")
     public ResponseEntity<?> retrievedefault (@RequestBody Syllabus syllabus, OAuth2Authentication auth)
     {
+        def url = null
         String email = serviceUtils.parseEmail(auth)
         User currentuser = serviceUtils.findUserByEmail(email);
         String filename = serviceUtils.generateFileName(currentuser.getUniversity(),currentuser.getCollege(),syllabus.getBranch(),syllabus.getSubject())
-        def url = "http://${servicehost}:8080/user/syllabus/${filename}"
-        new ResponseEntity<>(url,HttpStatus.OK)
+        GridFSDBFile imageForOutput = getGridFsFile(filename)
+        if(imageForOutput)
+            url = "http://${servicehost}:8080/user/syllabus/${filename}"
+        url? new ResponseEntity<>(url,HttpStatus.OK) : new ResponseEntity<>("Not found",HttpStatus.NOT_FOUND)
     }
+
     @ResponseBody
     @PostMapping(value="/user/syllabus/{filename:.+}/download",produces = "application/octet-stream" )
     public ResponseEntity<?> downloadSyllabus (@PathVariable(value = "filename", required = true) Object filename)
     {
         byte[] file
-        Query query = new Query().addCriteria(Criteria.where("filename").is(filename))
-        GridFSDBFile imageForOutput = gridFsTemplate.findOne(query)
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        imageForOutput ?. writeTo(baos);
-        file=baos.toByteArray()
-
+        GridFSDBFile imageForOutput = getGridFsFile(filename)
+        file = convertToByteStream(imageForOutput)
         new ResponseEntity<>(file,HttpStatus.OK)
     }
 
 
+
     @ResponseBody
-    @GetMapping(value="/user/syllabus/{filename:.+}",produces = "image/jpg")
+    @RequestMapping(value="/user/syllabus/{filename:.+}",produces = "application/pdf")
     public ResponseEntity<?> retrievedefault (@PathVariable(value = "filename", required = true) Object filename)
     {
         byte[] file
+        GridFSDBFile imageForOutput = getGridFsFile(filename)
+        file=convertToByteStream(imageForOutput)
+        new ResponseEntity<>(file,HttpStatus.OK)
+    }
+
+    private GridFSDBFile getGridFsFile(filename) {
         Query query = new Query().addCriteria(Criteria.where("filename").is(filename))
         GridFSDBFile imageForOutput = gridFsTemplate.findOne(query)
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        imageForOutput ?. writeTo(baos);
-        file=baos.toByteArray()
+        imageForOutput
+    }
 
-        new ResponseEntity<>(file,HttpStatus.OK)
+    private byte[] convertToByteStream(GridFSDBFile imageForOutput) {
+        byte[] file
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        imageForOutput?.writeTo(baos);
+        file = baos.toByteArray()
+        file
     }
 
 }

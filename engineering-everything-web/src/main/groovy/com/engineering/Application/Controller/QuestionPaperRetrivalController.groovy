@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.bind.annotation.RestController
 
@@ -42,15 +43,12 @@ class QuestionPaperRetrivalController {
 
 
     @ResponseBody
-    @GetMapping(value="/user/questionpaper/{filename:.+}",produces= "image/jpg" )
+    @RequestMapping(value="/user/questionpaper/{filename:.+}",produces= "application/pdf" )
     public ResponseEntity<?> retrievedefault (@PathVariable(value = "filename", required = true) Object filename)
     {
         byte[] file
-        Query query = new Query().addCriteria(Criteria.where("filename").is(filename))
-        GridFSDBFile imageForOutput = gridFsTemplate.findOne(query)
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        imageForOutput ?. writeTo(baos);
-        file=baos.toByteArray()
+        GridFSDBFile imageForOutput = getGridFsFile(filename)
+        file=convertToByteStream(imageForOutput)
         new ResponseEntity<>(file,HttpStatus.OK)
     }
 
@@ -59,11 +57,9 @@ class QuestionPaperRetrivalController {
     public ResponseEntity<?> downloadQp (@PathVariable(value = "filename", required = true) Object filename)
     {
         byte[] file;
-        Query query = new Query().addCriteria(Criteria.where("filename").is(filename))
-        GridFSDBFile imageForOutput = gridFsTemplate.findOne(query)
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        imageForOutput ?. writeTo(baos);
-        file=baos.toByteArray()
+
+        GridFSDBFile imageForOutput = getGridFsFile(filename)
+        file= convertToByteStream(imageForOutput)
         new ResponseEntity<>(file,HttpStatus.OK)
     }
 
@@ -71,11 +67,29 @@ class QuestionPaperRetrivalController {
     @PostMapping(value="/user/questionpaperurl",produces= "text/plain" )
     public ResponseEntity<?> retrieveQpurl (@RequestBody QuestionPaperSubject subject,OAuth2Authentication auth)
     {
+        def url = null
         String email = serviceUtils.parseEmail(auth)
         User currentuser = serviceUtils.findUserByEmail(email);
         String filename = serviceUtils.generateFileName(currentuser.getUniversity(),currentuser.getCollege(),subject.getBranch(),subject.getSubject(),subject.getQpyear());
-        def url = "http://${servicehost}:8080/user/questionpaper/${filename}"
-        new ResponseEntity<>(url,HttpStatus.OK)
+        GridFSDBFile imageForOutput = getGridFsFile(filename)
+        if(imageForOutput)
+            url = "http://${servicehost}:8080/user/questionpaper/${filename}"
+        url? new ResponseEntity<>(url,HttpStatus.OK) : new ResponseEntity<>("Not found",HttpStatus.NOT_FOUND)
+    }
+
+
+    private GridFSDBFile getGridFsFile(filename) {
+        Query query = new Query().addCriteria(Criteria.where("filename").is(filename))
+        GridFSDBFile imageForOutput = gridFsTemplate.findOne(query)
+        imageForOutput
+    }
+
+    private byte[] convertToByteStream(GridFSDBFile imageForOutput) {
+        byte[] file
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        imageForOutput?.writeTo(baos);
+        file = baos.toByteArray()
+        file
     }
 
 }
