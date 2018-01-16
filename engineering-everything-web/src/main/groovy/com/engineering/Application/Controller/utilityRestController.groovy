@@ -25,7 +25,7 @@ class utilityRestController {
     @GetMapping(value = '/deamons/admin/insert')
     public ResponseEntity<?> insertUsers(){
         println("This is called")
-        def file = new File("/Users/GnyaniMac/Desktop/mywork/OU-VASV-CSE-A-2016-2020.csv")
+        def file = new File("/home/beyondclasss/BeyondClass/user-data/OU-VASV-CSE-A-2016-2020.csv")
         file.eachLine { String line ->
             String[] splits = line.split(',')
             Date date = null
