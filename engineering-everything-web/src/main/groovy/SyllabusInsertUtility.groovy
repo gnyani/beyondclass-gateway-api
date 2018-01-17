@@ -23,27 +23,27 @@ class   SyllabusInsertUtility {
 
 
 
-            String newFileName = new ServiceUtilities().generateFileName("OU","VASV","CSE","JAVA");
-
-            File imageFile = new File("/Users/GnyaniMac/Desktop/mywork/Syllabus/OU-VASV-CSE-2-2/JAVA.pdf");
-
-            // create a "photo" namespace
-            GridFS gfsPhoto = new GridFS(db, "syllabus");
-
-            // get image file from local drive
-            GridFSInputFile gfsFile = gfsPhoto.createFile(imageFile);
-
-            BasicDBObject regexQuery = new BasicDBObject();
-            regexQuery.put("filename",
-                    new BasicDBObject('$regex', "OU-*")
-                            .append('$options', "i"));
-
-            // set a new filename for identify purpose
-            gfsFile.setFilename(newFileName);
-
-
-            // save the image file into mongoDB
-            gfsFile.save();
+//            String newFileName = new ServiceUtilities().generateFileName("OU","VASV","CSE","");
+//
+//            File imageFile = new File("/Users/GnyaniMac/Desktop/mywork/Syllabus/OU-VASV-CSE-2-2/DAA.pdf");
+//
+//            // create a "photo" namespace
+              GridFS gfsPhoto = new GridFS(db, "syllabus");
+//
+//            // get image file from local drive
+//            GridFSInputFile gfsFile = gfsPhoto.createFile(imageFile);
+//
+//            BasicDBObject regexQuery = new BasicDBObject();
+//            regexQuery.put("filename",
+//                    new BasicDBObject('$regex', "OU-*")
+//                            .append('$options', "i"));
+//
+//            // set a new filename for identify purpose
+//            gfsFile.setFilename(newFileName);
+//
+//
+//            // save the image file into mongoDB
+//            gfsFile.save();
 
             // print the result
             DBCursor cursor = gfsPhoto.getFileList();

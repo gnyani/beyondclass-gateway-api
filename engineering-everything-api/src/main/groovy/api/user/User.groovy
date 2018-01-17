@@ -74,7 +74,7 @@ public class User {
     double points;
 
     @JsonProperty
-     String hostel;
+     Boolean hostel;
 
     @JsonProperty
      Date dob;
