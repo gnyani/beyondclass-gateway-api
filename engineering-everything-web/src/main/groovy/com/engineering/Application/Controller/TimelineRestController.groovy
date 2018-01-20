@@ -113,7 +113,7 @@ class TimelineRestController {
             def userfromdb = serviceUtils.findUserByEmail(postemail)
             def propicUrl = userfromdb.getNormalpicUrl() ?: userfromdb.getGooglepicUrl()
             def firstNameinDB = userfromdb.getFirstName()
-            if((!temp.getPropicUrl().equalsIgnoreCase(propicUrl)) || (!temp.getOwner().equalsIgnoreCase(firstNameinDB))){
+            if((!propicUrl.equalsIgnoreCase(temp ?. getPropicUrl())) || (!firstNameinDB.equalsIgnoreCase(temp?.getOwner()))){
                 temp.setPropicUrl(propicUrl)
                 temp.setOwner(firstNameinDB)
                 temp.setUploadeduser(serviceUtils.toUserDetails(userfromdb))
