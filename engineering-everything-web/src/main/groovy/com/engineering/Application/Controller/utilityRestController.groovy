@@ -42,10 +42,10 @@ class utilityRestController {
 
             def user = new User()
             user.with{
-                email = splits[0]
-                mobilenumber = splits[1]
-                firstName = splits[2]
-                lastName = splits[3]
+                email = splits[0].trim()
+                mobilenumber = splits[1].trim()
+                firstName = splits[2].trim()
+                lastName = splits[3].trim()
                 dob = date
                 hostel = stay
                 userrole = "student"
@@ -78,10 +78,10 @@ class utilityRestController {
             String[] splits = line.split(',')
             def user = new User()
             user.with{
-                email = splits[0]
-                mobilenumber = splits[1]
-                firstName = splits[2]
-                lastName = splits[3]
+                email = splits[0].trim()
+                mobilenumber = splits[1].trim()
+                firstName = splits[2].trim()
+                lastName = splits[3].trim()
                 batches = batch
                 university = "OU"
                 college = "VASV"

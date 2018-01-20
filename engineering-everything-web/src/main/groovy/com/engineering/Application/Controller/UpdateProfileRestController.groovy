@@ -66,7 +66,7 @@ class UpdateProfileRestController {
                 throw new Exception("Data lost exception")
             }
         }
-        def message="${user.firstName} changed his profile picture"
+        def message="${user.firstName} changed profile picture"
         notificationService.storeNotifications(user,message,"timeline")
 
         def normalProppicUrl = "http://${servicehost}:8080/user/profilepic/view/${email}"
