@@ -17,7 +17,7 @@ class SendSMS {
         try {
             // Construct data
             String apiKey = "apikey=${apikey}";
-            String message = "&message=Your otp for registering into StudentAdda is ${otp}";
+            String message = "&message=Your otp for registering into Beyond Class is ${otp}";
             String sender = "&sender=" + "TXTLCL";
             String numbers = "&numbers=${number}";
 
