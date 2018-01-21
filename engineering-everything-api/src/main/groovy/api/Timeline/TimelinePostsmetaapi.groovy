@@ -31,7 +31,7 @@ public class TimelinePostsmetaapi {
      ArrayList<Comment> comments;
      String owner;
 
-     @Indexed(expireAfterSeconds = 126144000)        // 4 years = 1460 days
+     @Indexed(expireAfterSeconds = 5616000)        // 4 years = 1460 days
      LocalDate postdateTime;
 
      ArrayList<UserDetails> likedUsers = new ArrayList<>();
