@@ -82,6 +82,9 @@ public class User {
     @Indexed
      String uniqueclassid;
 
+    @JsonProperty
+    String rollNumber
+
      String googlepicUrl;
 
      String normalpicUrl;

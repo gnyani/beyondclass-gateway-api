@@ -45,7 +45,6 @@ public class SpringMongoConfig extends AbstractMongoConfiguration {
 		MongoTemplate mongoTemplate = new MongoTemplate(mongoDbFactory());
 	    mongoTemplate.indexOps("profilepictures.files").ensureIndex(new Index().on("filename", Sort.Direction.ASC).unique());
 		mongoTemplate.indexOps("timeline-files.files").ensureIndex(new Index().on("uploadDate",Sort.Direction.ASC).expire(5616000));
-		 mongoTemplate.indexOps("timeline-files.chunks").ensureIndex(new Index().on("uploadDate",Sort.Direction.ASC).expire(5616000));
 		return mongoTemplate;
 
 	}

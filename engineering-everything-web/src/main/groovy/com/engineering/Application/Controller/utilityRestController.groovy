@@ -42,7 +42,7 @@ class utilityRestController {
 
             def user = new User()
             user.with{
-                email = splits[0].trim()
+                email = splits[0].trim().toLowerCase()
                 mobilenumber = splits[1].trim()
                 firstName = splits[2].trim()
                 lastName = splits[3].trim()
@@ -55,6 +55,7 @@ class utilityRestController {
                 section = "A"
                 startYear = "2016"
                 endYear = "2020"
+                rollNumber = splits[6]
                 enabled = true
                 accountNonExpired = true
                 accountNonLocked = true
