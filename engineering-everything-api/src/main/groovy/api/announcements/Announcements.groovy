@@ -21,7 +21,7 @@ import javax.validation.constraints.NotNull
 
 public class Announcements {
 
-    public static final int expireAfterSeconds = 2592000 //30days
+    public static final int expireAfterSeconds = 604800 //7days
 
     @Id
     String announcementid;
