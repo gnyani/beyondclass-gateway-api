@@ -52,7 +52,7 @@ class utilityRestController {
                 university = "OU"
                 college = "VASV"
                 branch = "CSE"
-                section = "A"
+                section = "B"
                 startYear = "2016"
                 endYear = "2020"
                 rollNumber = splits[6]
@@ -74,7 +74,7 @@ class utilityRestController {
     public ResponseEntity<?> insertTeacher(@RequestParam String path){
         def file = new File(path)
         String [] batch = new String[1]
-        batch[0] = "2016-A"
+        batch[0] = "2016-B"
         file.eachLine {String line ->
             String[] splits = line.split(',')
             def user = new User()
