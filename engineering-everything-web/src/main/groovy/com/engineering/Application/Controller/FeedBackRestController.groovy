@@ -4,13 +4,16 @@ import api.feedback.ReportIssue
 import com.engineering.core.Service.EmailUtils
 import com.engineering.core.Service.MailService
 import com.engineering.core.repositories.FeedBackRepository
+import javafx.geometry.Pos
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
 /**
@@ -36,6 +39,15 @@ class FeedBackRestController {
         sendEmail(reportIssue.email)
 
         response ? new ResponseEntity<>("Success",HttpStatus.OK) : new ResponseEntity<>("Something went wrong",HttpStatus.INTERNAL_SERVER_ERROR)
+    }
+
+    @GetMapping(value = "/deamons/feedback/retrieve",produces = "image/*")
+    ResponseEntity<?> viewImage (@RequestParam String email){
+
+        ReportIssue response = feedBackRepository.findByEmail(email)
+
+        new ResponseEntity<>(response.file,HttpStatus.OK)
+
     }
 
     void sendEmail(String email){
