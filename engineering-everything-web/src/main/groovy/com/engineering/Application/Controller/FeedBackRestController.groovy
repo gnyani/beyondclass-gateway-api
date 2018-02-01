@@ -1,10 +1,8 @@
 package com.engineering.Application.Controller
 
 import api.feedback.ReportIssue
-import com.engineering.core.Service.EmailUtils
 import com.engineering.core.Service.MailService
 import com.engineering.core.repositories.FeedBackRepository
-import javafx.geometry.Pos
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
