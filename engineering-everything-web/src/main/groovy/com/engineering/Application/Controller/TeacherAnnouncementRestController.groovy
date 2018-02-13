@@ -98,7 +98,7 @@ class TeacherAnnouncementRestController {
         def announcementid = serviceUtils.generateFileName(user.getUniversity(),user.getCollege(),user.getBranch(),batch,email)
         Pageable request =
                 new PageRequest(pageNumber - 1, PAGE_SIZE,new Sort(Sort.Direction.DESC, "createdAt"));
-        log.info("<Questions>["+serviceUtils.parseEmail(auth)+"](get all Questions)")
+        log.info("<Questions>["+serviceUtils.parseEmail(oauth)+"](get all Questions)")
         new  ResponseEntity<>(teacherAnnouncementRepository.findByAnnouncementidStartingWith(announcementid,request),HttpStatus.OK)
     }
 
