@@ -8,6 +8,8 @@ import com.mongodb.Mongo
 import com.mongodb.gridfs.GridFS
 import com.mongodb.gridfs.GridFSInputFile
 import groovy.io.FileType
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -20,13 +22,14 @@ import org.springframework.web.bind.annotation.RestController
  */
 
 @RestController
-class utilityRestController {
+class UtilityRestController {
 
     @Autowired
     ServiceUtilities serviceUtilities
 
     @Autowired
     UserRepository userRepository
+
 
     @GetMapping(value = '/deamons/admin/insert')
     public ResponseEntity<?> insertUsers(@RequestParam String path){
@@ -65,7 +68,6 @@ class utilityRestController {
             def uniqueid = serviceUtilities.generateFileName(user.getUniversity(), user.getCollege(), user.getBranch(), user?.getSection(), user.getStartYear(), user.getEndYear())
             user.uniqueclassid = uniqueid
             userRepository.save(user)
-            println("user created is ${user}")
         }
         new ResponseEntity<>("success",HttpStatus.OK)
     }
@@ -94,11 +96,8 @@ class utilityRestController {
                 userrole = "teacher"
             }
             user.addRole("ROLE_USER")
-            print(user)
             userRepository.save(user)
         }
-
-
         new ResponseEntity<>("success",HttpStatus.OK)
     }
 
@@ -124,7 +123,6 @@ class utilityRestController {
 
             String filenameinDb = serviceUtilities.generateFileName(splits[0], splits[1], splits[2],file.getName().tokenize('.').first())
 
-            println("filepath in db is ${filenameinDb}")
 
             File imageFile = new File("${path}/${file.getName()}");
 
@@ -168,8 +166,6 @@ class utilityRestController {
 
             String filename = file.getName().tokenize('.').first()
 
-            println("filename is ${filename}")
-
             File imageFile = new File("${path}/${file.getName()}");
 
             // create a "photo" namespace
@@ -187,9 +183,6 @@ class utilityRestController {
 
 
         }
-
         new ResponseEntity<>("success",HttpStatus.OK)
     }
-
-
 }

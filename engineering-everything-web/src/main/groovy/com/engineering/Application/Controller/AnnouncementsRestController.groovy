@@ -6,6 +6,8 @@ import api.announcements.Announcements
 import com.engineering.core.Service.ServiceUtilities
 import com.engineering.core.Service.NotificationService
 import com.engineering.core.repositories.AnnouncementRepository
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
@@ -25,6 +27,8 @@ import org.springframework.web.bind.annotation.RestController
  */
 @RestController
 class AnnouncementsRestController {
+
+    private Logger log = LoggerFactory.getLogger(AnnouncementsRestController.class);
 
     @Autowired
     AnnouncementRepository announcementRepository;
@@ -57,6 +61,8 @@ class AnnouncementsRestController {
         String message = user.firstName+" posted an announcement"
         notificationService.storeNotifications(user,message,"announcements")
 
+        log.info("<announcement>["+email+"](posted an announcement)")
+
         object ? new ResponseEntity<>("anouncement saved successfully as ${anouncements}", HttpStatus.CREATED)
                 : new ResponseEntity<>("something went wrong",HttpStatus.INTERNAL_SERVER_ERROR)
     }
@@ -65,9 +71,10 @@ class AnnouncementsRestController {
     public ResponseEntity<?>  deleteAnnouncement(@PathVariable(value = "announcementid" , required = true) String announcementid){
         def deletedannouncement = announcementRepository.deleteByAnnouncementid(announcementid)
         println("delete announcement ${deletedannouncement}")
+        log.info("<announcement>["+email+"](announcement deleted)")
         deletedannouncement ? new ResponseEntity<>("Success",HttpStatus.OK):new ResponseEntity<>("Something went wrong",HttpStatus.INTERNAL_SERVER_ERROR)
-    }
 
+    }
 
     @GetMapping(value="/user/announcements/list",produces = "application/json")
     public ResponseEntity<?> getAnouncements(@RequestParam int pageNumber, OAuth2Authentication oauth){
@@ -75,8 +82,7 @@ class AnnouncementsRestController {
         def user = serviceUtils.findUserByEmail(email)
         Pageable request =
                 new PageRequest(pageNumber - 1, PAGE_SIZE,new Sort(Sort.Direction.DESC, "createdAt"));
-
-         new ResponseEntity<>(announcementRepository.findByAnnouncementidStartingWith(user.getUniqueclassid(),request),HttpStatus.OK)
+        log.info("<announcement>["+email+"](announcement page:"+pageNumber+" viewed)")
+        new ResponseEntity<>(announcementRepository.findByAnnouncementidStartingWith(user.getUniqueclassid(),request),HttpStatus.OK)
     }
-
 }

@@ -8,6 +8,8 @@ import com.engineering.core.Service.ServiceUtilities
 import com.engineering.core.Service.NotificationService
 import com.engineering.core.repositories.NotesRepository
 import com.mongodb.gridfs.GridFSDBFile
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
@@ -42,6 +44,8 @@ class NotesRestController {
     @Autowired
     NotesRepository notesRepository
 
+    private static Logger log = LoggerFactory.getLogger(NotesRestController.class)
+
     @ResponseBody
     @PostMapping(value="/user/notes/upload")
     public ResponseEntity<?> uploadanotes (@RequestBody Notes notes, OAuth2Authentication auth)
@@ -59,7 +63,7 @@ class NotesRestController {
         //storing notification
         def message = "You have a new Notes on subject ${notes.subject.toUpperCase()} from your friend ${currentuser.firstName}"
         notificationService.storeNotifications(currentuser,message,"notes")
-
+        log.info("<notes>["+email+"](uploaded notes)")
         gridFsTemplate.store(inputStream,filename) ? new ResponseEntity<>("File uploaded successfully with filename ${filename}",HttpStatus.CREATED)
                 : new ResponseEntity<>("Sorry something went wrong",HttpStatus.INTERNAL_SERVER_ERROR)
 
@@ -83,6 +87,7 @@ class NotesRestController {
         }
         notesResponse.links = filelist
         notesResponse.comments = comments
+        log.info("<notes>["+serviceUtils.parseEmail(auth)+"](notes list)")
         notesResponse
     }
 
@@ -92,6 +97,7 @@ class NotesRestController {
 
         String email = serviceUtils.parseEmail(auth)
         String uploadeduser = filename.tokenize('-')[7]
+        log.info("<notes>["+email+"](deleted file "+filename+")")
         if(uploadeduser == email){
             try {
                 Query query = new Query().addCriteria(Criteria.where("filename").is(filename))
@@ -109,9 +115,10 @@ class NotesRestController {
 
 
     @RequestMapping(value="/user/notes/{filename:.+}",produces = "application/pdf" )
-    public ResponseEntity<?> retrieveNotes(@PathVariable(value = "filename", required = true) String filename){
+    public ResponseEntity<?> retrieveNotes(@PathVariable(value = "filename", required = true) String filename,OAuth2Authentication auth){
 
         byte[] file
+        log.info("<notes>["+serviceUtils.parseEmail(auth)+"](retrieve notes)")
         Query query = new Query().addCriteria(Criteria.where("filename").is(filename))
         GridFSDBFile imageForOutput = gridFsTemplate.findOne(query)
 
@@ -122,8 +129,9 @@ class NotesRestController {
     }
 
     @PostMapping(value="/user/notes/{filename:.+}/download",produces = "application/octet-stream")
-    public ResponseEntity<?> downloadNotes(@PathVariable(value = "filename", required = true) String filename){
+    public ResponseEntity<?> downloadNotes(@PathVariable(value = "filename", required = true) String filename,OAuth2Authentication auth){
 
+        log.info("<notes>["+serviceUtils.parseEmail(auth)+"](download notes " +filename+ " )")
         byte[] file
         def filenameactual = filename.substring(filename.indexOf("/") + 1)
         Query query = new Query().addCriteria(Criteria.where("filename").is(filenameactual))

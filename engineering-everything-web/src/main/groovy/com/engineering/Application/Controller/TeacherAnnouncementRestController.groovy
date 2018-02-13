@@ -9,6 +9,8 @@ import com.engineering.core.Service.NotificationService
 import com.engineering.core.constants.EmailTypes
 import com.engineering.core.repositories.TeacherAnnouncementRepository
 import com.engineering.core.repositories.UserRepository
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
@@ -48,6 +50,8 @@ class TeacherAnnouncementRestController {
     @Autowired
     MailService mailService
 
+    Logger log = LoggerFactory.getLogger(TeacherAnnouncementRestController.class)
+
     def PAGE_SIZE = 5
 
     @PostMapping(value="/teacher/announcements/insert")
@@ -64,6 +68,7 @@ class TeacherAnnouncementRestController {
         def announcementid =  serviceUtils.generateFileName(user.getUniversity(),user.getCollege(),user.getBranch(),announcement.getBatch(),email,time)
         announcement.setAnnouncementid(announcementid)
         announcement.setPosteduser(serviceUtils.toUserDetails(user))
+        log.info("<Questions>["+serviceUtils.parseEmail(auth)+"](get all Questions)")
         try {
             teacherAnnouncementRepository.save(announcement)
             def message ="You have a new announcement from your teacher ${user.firstName.toUpperCase()}"
@@ -81,6 +86,7 @@ class TeacherAnnouncementRestController {
     @GetMapping(value = "/teacher/announcement/delete/{announcementid:.+}")
     public ResponseEntity<?>  deleteAnnouncement(@PathVariable(value = "announcementid" , required = true) String announcementid){
         def deletedannouncement= teacherAnnouncementRepository.deleteByAnnouncementid(announcementid)
+        log.info("<Questions>["+serviceUtils.parseEmail(auth)+"](get all Questions)")
         deletedannouncement ? new ResponseEntity<>("Success",HttpStatus.OK): new ResponseEntity<>("Something went wrong",HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
@@ -92,7 +98,7 @@ class TeacherAnnouncementRestController {
         def announcementid = serviceUtils.generateFileName(user.getUniversity(),user.getCollege(),user.getBranch(),batch,email)
         Pageable request =
                 new PageRequest(pageNumber - 1, PAGE_SIZE,new Sort(Sort.Direction.DESC, "createdAt"));
-
+        log.info("<Questions>["+serviceUtils.parseEmail(auth)+"](get all Questions)")
         new  ResponseEntity<>(teacherAnnouncementRepository.findByAnnouncementidStartingWith(announcementid,request),HttpStatus.OK)
     }
 
@@ -104,7 +110,7 @@ class TeacherAnnouncementRestController {
         def announcementid = serviceUtils.generateFileName(user.getUniversity(),user.getCollege(),user.getBranch(),batch)
         Pageable request =
                 new PageRequest(pageNumber - 1, PAGE_SIZE,new Sort(Sort.Direction.DESC, "createdAt"));
-
+        log.info("<Questions>["+email+"](get all Questions)")
         new ResponseEntity<>(teacherAnnouncementRepository.findByAnnouncementidStartingWith(announcementid,request),HttpStatus.OK)
     }
 
@@ -121,6 +127,4 @@ class TeacherAnnouncementRestController {
 
         mailService.sendHtmlMail(emails,subject,htmlMessage)
     }
-
-
 }

@@ -2,12 +2,16 @@ package com.engineering.Application.Controller
 
 import api.feedback.ReportIssue
 import com.engineering.core.Service.MailService
+import com.engineering.core.Service.ServiceUtilities
 import com.engineering.core.repositories.FeedBackRepository
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
+import org.springframework.security.oauth2.provider.OAuth2Authentication
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -29,21 +33,25 @@ class FeedBackRestController {
     @Autowired
     MailService mailService
 
+    @Autowired ServiceUtilities serviceUtils
+
+    private static Logger log = LoggerFactory.getLogger(FeedBackRestController.class)
+
 
     @PostMapping(value = "/user/report/issue",produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<?> saveFeedBack(@RequestBody ReportIssue reportIssue){
+    ResponseEntity<?> saveFeedBack(@RequestBody ReportIssue reportIssue, OAuth2Authentication oauth){
         ReportIssue response = feedBackRepository.save(reportIssue)
 
         sendEmail(reportIssue.email)
-
+        log.info("<feedBack>["+serviceUtils.parseEmail(auth)+"](issue reported)")
         response ? new ResponseEntity<>("Success",HttpStatus.OK) : new ResponseEntity<>("Something went wrong",HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
     @GetMapping(value = "/deamons/feedback/retrieve",produces = "image/*")
-    ResponseEntity<?> viewImage (@RequestParam String email){
+    ResponseEntity<?> viewImage (@RequestParam String email, OAuth2Authentication oauth){
 
         ReportIssue response = feedBackRepository.findByEmail(email)
-
+        log.info("<feedBack>["+serviceUtils.parseEmail(auth)+"](retrieved feedback)")
         new ResponseEntity<>(response.file,HttpStatus.OK)
 
     }

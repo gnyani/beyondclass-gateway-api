@@ -5,6 +5,8 @@ import api.questionpapers.Questionpaper
 import api.questionpapers.QuestionPaperSubject
 import api.user.User
 import com.mongodb.gridfs.GridFSDBFile
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
@@ -39,25 +41,28 @@ class QuestionPaperRetrivalController {
     @Value('${engineering.everything.host}')
     private String servicehost;
 
+    private static Logger log = LoggerFactory.getLogger(QuestionPaperRetrivalController.class)
+
 
 
 
     @ResponseBody
     @RequestMapping(value="/user/questionpaper/{filename:.+}",produces= "application/pdf" )
-    public ResponseEntity<?> retrievedefault (@PathVariable(value = "filename", required = true) Object filename)
+    public ResponseEntity<?> retrievedefault (@PathVariable(value = "filename", required = true) Object filename, OAuth2Authentication auth)
     {
         byte[] file
         GridFSDBFile imageForOutput = getGridFsFile(filename)
         file=convertToByteStream(imageForOutput)
+        log.info("<Questions>["+serviceUtils.parseEmail(auth)+"](get all Questions)")
         new ResponseEntity<>(file,HttpStatus.OK)
     }
 
     @ResponseBody
     @PostMapping(value="/user/questionpaper/{filename:.+}/download",produces = "application/octet-stream")
-    public ResponseEntity<?> downloadQp (@PathVariable(value = "filename", required = true) Object filename)
+    public ResponseEntity<?> downloadQp (@PathVariable(value = "filename", required = true) Object filename, OAuth2Authentication auth)
     {
         byte[] file;
-
+        log.info("<Questions>["+serviceUtils.parseEmail(auth)+"](get all Questions)")
         GridFSDBFile imageForOutput = getGridFsFile(filename)
         file= convertToByteStream(imageForOutput)
         new ResponseEntity<>(file,HttpStatus.OK)
@@ -74,6 +79,7 @@ class QuestionPaperRetrivalController {
         GridFSDBFile imageForOutput = getGridFsFile(filename)
         if(imageForOutput)
             url = "http://${servicehost}:8080/user/questionpaper/${filename}"
+        log.info("<Questions>["+serviceUtils.parseEmail(auth)+"](get all Questions)")
         url? new ResponseEntity<>(url,HttpStatus.OK) : new ResponseEntity<>("Not found",HttpStatus.NOT_FOUND)
     }
 

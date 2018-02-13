@@ -48,14 +48,13 @@ class   SyllabusInsertUtility {
             // print the result
             DBCursor cursor = gfsPhoto.getFileList();
             while (cursor.hasNext()) {
-                System.out.println(cursor.next());
+                cursor.next()
             }
 
 
 // remove the image file from mongoDB
 //			gfsPhoto.remove(gfsPhoto.findOne(newFileName));
 
-            System.out.println("Done");
 
         } catch (UnknownHostException e) {
             e.printStackTrace();
