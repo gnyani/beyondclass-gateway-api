@@ -5,6 +5,8 @@ import api.notifications.NotificationsReadStatus
 import com.engineering.core.Service.ServiceUtilities
 import com.engineering.core.repositories.NotificationsRepository
 import com.engineering.core.repositories.UserRepository
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -28,10 +30,13 @@ class NotificationsRestController {
     @Autowired
     NotificationsRepository notificationsRepository
 
+    private static Logger log = LoggerFactory.getLogger(NotificationsRestController.class)
+
 
     @GetMapping(value="/user/notifications" )
     public List<Notifications> getNotifications(OAuth2Authentication oAuth2Authentication){
         def email = serviceUtils.parseEmail(oAuth2Authentication)
+        log.info("<Notifications>["+email+"](retrieved notifications)")
         def user = serviceUtils.findUserByEmail(email)
         if(user.userrole == "student") {
             def userReadStatus = new NotificationsReadStatus()
@@ -47,6 +52,7 @@ class NotificationsRestController {
     public String markAsread(@RequestBody String id,OAuth2Authentication auth2Authentication){
         def email = serviceUtils.parseEmail(auth2Authentication)
         def notification = notificationsRepository.findByNotificationId(id)
+        log.info("<Notifications>["+email+"](marked as Read for notification " + notification + ")")
         def userReadStatus = new NotificationsReadStatus()
         userReadStatus.setEmail(email)
         userReadStatus.setRead(false)
@@ -63,7 +69,7 @@ class NotificationsRestController {
 
     @RequestMapping(value="/user/notifications/markallasread" , method = RequestMethod.GET)
     public ResponseEntity<?> markAllNotificationsRead(OAuth2Authentication oAuth2Authentication){
-
+        log.info("<Notifications>["+serviceUtils.parseEmail(oAuth2Authentication)+"](markAllNotificationsRead)")
         def unreadNotifications = getUnreadNotifications(oAuth2Authentication)
         unreadNotifications.each{
             markAsread(it.notificationId,oAuth2Authentication)
@@ -73,6 +79,7 @@ class NotificationsRestController {
 
     @RequestMapping(value="/user/notifications/delete" , method = RequestMethod.POST)
     public boolean deleteUserfromNotification(@RequestBody String id,OAuth2Authentication oAuth2Authentication){
+        log.info("<Notifications>["+serviceUtils.parseEmail(oAuth2Authentication)+"](deleted user from notification)")
         def email = serviceUtils.parseEmail(oAuth2Authentication)
         def x = new NotificationsReadStatus()
         x.setEmail(email)

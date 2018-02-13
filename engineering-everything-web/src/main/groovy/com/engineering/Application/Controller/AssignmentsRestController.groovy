@@ -6,6 +6,8 @@ import api.user.User
 import com.engineering.core.Service.ServiceUtilities
 import com.engineering.core.Service.NotificationService
 import com.mongodb.gridfs.GridFSDBFile
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
@@ -30,6 +32,7 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 class AssignmentsRestController {
 
+    private Logger log = LoggerFactory.getLogger(AssignmentsRestController.class);
 
     @Autowired
     ServiceUtilities serviceUtils;
@@ -60,6 +63,7 @@ class AssignmentsRestController {
         def message = "You have a new Assignment on subject ${assignments.subject.toUpperCase()} from your friend ${currentuser.firstName}"
         notificationService.storeNotifications(currentuser,message,"assignments")
 
+        log.info("<assignments>["+email+"](assignments uploded)")
          gridFsTemplate.store(inputStream,filename) ? new ResponseEntity<>("File uploaded successfully with filename ${filename}",HttpStatus.CREATED)
                 : new ResponseEntity<>("Sorry something went wrong",HttpStatus.INTERNAL_SERVER_ERROR)
     }
@@ -78,12 +82,12 @@ class AssignmentsRestController {
         list.each {
             filelist << "http://${servicehost}:8080/user/assignment/${it.getFilename()}";
         }
-
+        log.info("<assignments>["+email+"](assignment list requested)")
         filelist
     }
 
     @RequestMapping(value="/user/assignment/{filename:.+}",produces = "application/pdf" )
-    public ResponseEntity<?> retrieveAssignment(@PathVariable(value = "filename", required = true) Object filename){
+    public ResponseEntity<?> retrieveAssignment(@PathVariable(value = "filename", required = true) Object filename, OAuth2Authentication auth){
 
         byte[] file;
         Query query = new Query().addCriteria(Criteria.where("filename").is(filename))
@@ -91,12 +95,12 @@ class AssignmentsRestController {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         imageForOutput ?. writeTo(baos);
         file = baos ?. toByteArray();
-
+        log.info("<assignments>["+serviceUtils.parseEmail(auth)+"](assignment retrieved)")
         new ResponseEntity<> (file,HttpStatus.OK)
     }
 
     @PostMapping(value="/user/assignment/{filename:.+}/download",produces = "application/octet-stream")
-    public ResponseEntity<?> downloadAssignment(@PathVariable(value = "filename", required = true) String filename){
+    public ResponseEntity<?> downloadAssignment(@PathVariable(value = "filename", required = true) String filename, OAuth2Authentication auth){
 
         byte[] file
         def filenameactual = filename.substring(filename.indexOf("/") + 1)
@@ -105,7 +109,7 @@ class AssignmentsRestController {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         imageForOutput ?. writeTo(baos);
         file =baos ?. toByteArray();
-
+        log.info("<assignments>["+serviceUtils.parseEmail(auth)+"](assignments downloaded)")
         new ResponseEntity<>(file,HttpStatus.OK)
     }
 

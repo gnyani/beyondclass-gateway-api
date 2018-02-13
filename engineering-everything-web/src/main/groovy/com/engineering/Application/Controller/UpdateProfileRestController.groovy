@@ -7,6 +7,8 @@ import com.engineering.core.Service.ServiceUtilities
 import com.engineering.core.Service.NotificationService
 import com.engineering.core.repositories.UserRepository
 import com.mongodb.gridfs.GridFSDBFile
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
@@ -45,6 +47,8 @@ class UpdateProfileRestController {
     @Value('${engineering.everything.host}')
     private String servicehost
 
+    private static Logger log = LoggerFactory.getLogger(UpdateProfileRestController.class)
+
 
     @PostMapping(value="/user/update/profilepic")
     public ResponseEntity<?> updateProfilepic(@RequestBody FileData fileText, OAuth2Authentication auth){
@@ -52,6 +56,7 @@ class UpdateProfileRestController {
         User user = serviceUtils.findUserByEmail(email)
         Query query = new Query().addCriteria(Criteria.where("filename").is(email))
         GridFSDBFile imageForOutput = gridFsTemplate.findOne(query)
+        log.info("<ProfileUpdate>["+email+"](update profile pic)")
         try{
             gridFsTemplate.delete(query)
         }catch (Exception e){
@@ -77,12 +82,13 @@ class UpdateProfileRestController {
 
     @ResponseBody
     @GetMapping(value = "/user/profilepic/view/{email:.+}")
-    public ResponseEntity<?> viewPropic(@PathVariable(value = "email" , required = true) String email){
+    public ResponseEntity<?> viewPropic(@PathVariable(value = "email" , required = true) String email, OAuth2Authentication auth2Authentication){
         byte[] file
         Query query = new Query().addCriteria(Criteria.where("filename").is(email))
         GridFSDBFile imageForOutput = gridFsTemplate.findOne(query)
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         imageForOutput ?. writeTo(baos);
+        log.info("<UpdateProfile>["+serviceUtils.parseEmail(auth2Authentication)+"](view profile pic)")
         file=baos ?. toByteArray()
         new ResponseEntity<>(file,HttpStatus.OK)
     }
@@ -95,6 +101,7 @@ class UpdateProfileRestController {
         user.setLastName(updateprofile.getLastName() ?: user.getLastName())
         user.setDob(updateprofile.getDob() ?: user.getDob())
         def changeduser = userRepository.save(user)
+        log.info("<UpdateProfile>["+serviceUtils.parseEmail(auth2Authentication)+"](profile updated)")
         changeduser ? new ResponseEntity<>('success',HttpStatus.OK) : new ResponseEntity<>('failure',HttpStatus.INTERNAL_SERVER_ERROR)
     }
 }

@@ -6,6 +6,8 @@ import api.coachingcentres.Rating
 import com.engineering.core.Service.ServiceUtilities
 import com.engineering.core.repositories.CoachingCentresRepository
 import com.engineering.core.repositories.RatingRepository
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
@@ -28,6 +30,9 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 class CoachingCentreRestController {
 
+
+    private static Logger log = LoggerFactory.getLogger(CoachingCentreRestController.class)
+
     @Autowired
     CoachingCentresRepository centresRepository
 
@@ -46,7 +51,7 @@ class CoachingCentreRestController {
 
 
     @PostMapping(value= "/coachingcentres/insert")
-    public String insertCentre ( @RequestBody Coachingcentre coachingcentre )
+    public String insertCentre ( @RequestBody Coachingcentre coachingcentre, OAuth2Authentication auth)
     {
         def coachingcentreId = serviceUtils.generateFileName(coachingcentre.getType().toString(),coachingcentre.getCity().toString(),coachingcentre.getArea().toString(),coachingcentre.getOrgname())
         coachingcentre.setCoachingcentreId(coachingcentreId)
@@ -58,10 +63,11 @@ class CoachingCentreRestController {
         InputStream inputStream = new ByteArrayInputStream(coachingcentre.getFeedetails())
         def y = gridFsTemplate.store(inputStream,coachingcentreId)
         def x = centresRepository.insert(coachingcentre)
+        log.info("<coachingcenter>["+serviceUtils.parseEmail(auth)+"](inserted Coachingcenters)")
         (x!=null && y!=null) ? "successfully inserted with Id ${x.getCoachingcentreId()}" : "sorry something went wrong"
     }
     @GetMapping(value = "/coachingcentres/get/{type:.+}" )
-    public Object getCoachingCentres (@PathVariable(value = "type", required = true) String caochingcentreId ){
+    public Object getCoachingCentres (@PathVariable(value = "type", required = true) String caochingcentreId, OAuth2Authentication auth ){
 
         def coachingcentres = centresRepository.findBycoachingcentreIdStartingWith(caochingcentreId)
         coachingcentres
@@ -69,7 +75,7 @@ class CoachingCentreRestController {
 
     @ResponseBody
     @GetMapping(value = "/coachingcentres/get/{coachingcentreId:.+}/feedetails",produces = "image/jpg" )
-    public ResponseEntity<?> viewfeeDetails (@PathVariable(value = "coachingcentreId", required = true) String  coachingcentreId ){
+    public ResponseEntity<?> viewfeeDetails (@PathVariable(value = "coachingcentreId", required = true) String  coachingcentreId, OAuth2Authentication auth ){
 
         byte[] file
         Query query = new Query().addCriteria(Criteria.where("filename").is(coachingcentreId))
@@ -77,6 +83,7 @@ class CoachingCentreRestController {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         list ?. writeTo(baos);
         file =baos ?. toByteArray();
+        log.info("<coachingcenter>["+serviceUtils.parseEmail(auth)+"](feeId viewed for coaching center"+coachingcentreId+")")
         new ResponseEntity<>(file,HttpStatus.OK)
     }
 
@@ -88,10 +95,11 @@ class CoachingCentreRestController {
         rating.setReviewID(coachingcentreId+email)
         ratingRepository.save(rating)
         def x = updateRating(coachingcentreId)
+        log.info("<coachingcenter>["+serviceUtils.parseEmail(auth)+"](rating posted)")
         (x ? new ResponseEntity<>("success",HttpStatus.OK) : new ResponseEntity<>("something went wrong",HttpStatus.INTERNAL_SERVER_ERROR))
     }
     @GetMapping(value = "/coachingcentres/get/{coachingcentreId:.+}/reviews")
-    public ResponseEntity<?> getReviews (@PathVariable(value = "coachingcentreId" , required = true) String coachingcentreId){
+    public ResponseEntity<?> getReviews (@PathVariable(value = "coachingcentreId" , required = true) String coachingcentreId, OAuth2Authentication auth){
 
         def list = ratingRepository.findBycoachingcentreId(coachingcentreId)
         def finalist = []
@@ -100,6 +108,7 @@ class CoachingCentreRestController {
            if(it.review.length()!=0)
                finalist.add(it)
         }
+        log.info("<coachingcenter>["+serviceUtils.parseEmail(auth)+"](asked reviews)")
         new ResponseEntity<>(finalist,HttpStatus.OK)
 
     }

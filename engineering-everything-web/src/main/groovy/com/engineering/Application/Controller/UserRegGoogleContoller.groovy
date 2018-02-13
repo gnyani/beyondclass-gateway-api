@@ -10,7 +10,9 @@ import com.engineering.core.repositories.UserRepository
 import com.mongodb.DuplicateKeyException
 import constants.UserRoles
 import groovy.json.JsonOutput
-import groovy.json.JsonSlurper;
+import groovy.json.JsonSlurper
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -42,6 +44,8 @@ class UserRegGoogleContoller {
     @Autowired
     private OtpRepository otpRepository;
 
+    private static Logger log = LoggerFactory.getLogger(UserRegGoogleContoller.class)
+
 
     def jsonSlurper = new JsonSlurper()
 
@@ -57,7 +61,8 @@ class UserRegGoogleContoller {
     @GetMapping(value="/user/google/auth")
     public ResponseEntity<?> auth(OAuth2Authentication auth)
     {
-         new ResponseEntity<>(auth,HttpStatus.OK)
+        log.info("<UserRegistration>["+serviceUtilities.parseEmail(auth)+"](authenticated)")
+        new ResponseEntity<>(auth,HttpStatus.OK)
     }
 
     @PostMapping(value="/users/registration", produces ="application/json" )
@@ -93,7 +98,7 @@ class UserRegGoogleContoller {
             else
                 return new ResponseEntity<>("Error occurred while registering user please try again after sometime${e.getClass()}",HttpStatus.INTERNAL_SERVER_ERROR)
         }
-
+        log.info("<userRegistration>["+serviceUtilities.parseEmail(auth)+"](user registered)")
         userinserted ? new ResponseEntity<>("User registration successful",HttpStatus.CREATED) :  new ResponseEntity<>("Something went wrong ",HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
@@ -102,7 +107,7 @@ class UserRegGoogleContoller {
 
         String email = serviceUtilities.parseEmail(auth)
         User userTest1 = userRepository.findByEmail(email);
-
+        log.info("<Questions>["+email+"](get all Questions)")
         if(updateduser.getDob() != null)
         {
             userTest1.setDob(updateduser.getDob())
@@ -120,10 +125,8 @@ class UserRegGoogleContoller {
         catch(Exception e){
              new ResponseEntity<>("Error occurred while registering user please try again after sometime" + e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR)
         }
-
+        log.info("<userRegistration>["+serviceUtilities.parseEmail(auth)+"](user details update)")
          new ResponseEntity<>("User updation successful for user "+userTest1.getEmail(),HttpStatus.CREATED)
-
-
     }
 
     @PostMapping("/user/generate/otp")
@@ -137,7 +140,7 @@ class UserRegGoogleContoller {
         otpRepository.save(otp)
         //sending SMS
         def status = sendSMS.sendSms(number.substring(1), otp.getOtp())
-        println("status is${status}")
+        log.info("<userRegistration>["+serviceUtilities.parseEmail(auth2Authentication)+"](otp statis is " +status + ")")
         //check whether status is successful or not
         new ResponseEntity<?>("success",HttpStatus.OK)
     }
@@ -146,7 +149,7 @@ class UserRegGoogleContoller {
     public ResponseEntity<?> validateOtp(@RequestBody int otp,OAuth2Authentication auth2Authentication){
         def email = serviceUtilities.parseEmail(auth2Authentication)
         def otpfromrepo = otpRepository.findByEmail(email)
-        println("otp is ${otp} from repo is ${otpfromrepo.getOtp()}")
+        log.info("<userRegistration>["+serviceUtilities.parseEmail(auth2Authentication)+"](otp is " + otpfromrepo.Otp + ")")
         if(otpfromrepo.getOtp() == otp)
              new ResponseEntity<>("success",HttpStatus.OK)
         else
@@ -156,13 +159,13 @@ class UserRegGoogleContoller {
 
 
     @GetMapping(value="/user/logout")
-    public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response)
+    public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response, OAuth2Authentication auth2Authentication)
     {
         request.getSession().invalidate();
         SecurityContextHolder.getContext().setAuthentication(null);
+        log.info("<userRegistration>["+serviceUtilities.parseEmail(auth2Authentication)+"](user logged out)")
         new ResponseEntity<>("logout successful",HttpStatus.OK)
     }
-
 }
 
 

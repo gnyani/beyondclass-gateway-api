@@ -8,6 +8,8 @@ import com.engineering.core.Service.ServiceUtilities
 import com.engineering.core.repositories.TimelineRepository
 import com.engineering.core.repositories.UserRepository
 import com.mongodb.gridfs.GridFSDBFile
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
@@ -51,6 +53,7 @@ class TimelineRestController {
     @Qualifier("timeline-files")
     GridFsTemplate gridFsTemplate
 
+    Logger log = LoggerFactory.getLogger(TimelineRestController.class)
 
 
     @ResponseBody
@@ -85,6 +88,7 @@ class TimelineRestController {
         gridFsTemplate.store(inputStream,filename)
 
         def object = timelineRepository.save(timelinePostsmetaapi);
+        log.info("<Timeline>["+email+"](added new post)")
         if(object)
              new ResponseEntity<>("Your post has been updated successfully ${filename}",HttpStatus.OK)
         else
@@ -120,6 +124,7 @@ class TimelineRestController {
                 timelineRepository.save(temp)
             }
         }
+        log.info("<timeline>["+email+"](get all posts)")
 
         new ResponseEntity<>(objectlist,HttpStatus.OK)
     }
@@ -129,6 +134,7 @@ class TimelineRestController {
     public ResponseEntity<?> deletepost(@PathVariable(value = "filename" , required = true) Object filename,OAuth2Authentication auth){
         String email = serviceUtils.parseEmail(auth)
         TimelinePostsmetaapi timelinePostsmetaapi = timelineRepository.findByFilename(filename.toString())
+        log.info("<Timeline>["+email+"](deleted post)")
         if(timelinePostsmetaapi.getUploadeduser().getEmail() == email) {
             Query query = new Query().addCriteria(Criteria.where("filename").is(filename))
             try {
@@ -158,6 +164,7 @@ class TimelineRestController {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         imageForOutput ?. writeTo(baos);
         file =baos ?. toByteArray();
+        log.info("<Timeline>["+email+"](get a post)")
         new ResponseEntity<>(file,HttpStatus.OK)
     }
 
@@ -176,6 +183,7 @@ class TimelineRestController {
                 flag =false
             }
         }
+        log.info("<Questions>["+email+"](get all Questions)")
         if(flag){
             likes = likes + 1;
             likedusers.add(serviceUtils.toUserDetails(loggeduser))
@@ -197,6 +205,7 @@ class TimelineRestController {
         likedusers.each{
             usernamesarray << it.getFirstName()
         }
+        log.info("<Questions>["+email+"](get all Questions)")
         new  ResponseEntity<>(usernamesarray,HttpStatus.OK)
     }
 
@@ -210,6 +219,7 @@ class TimelineRestController {
         def likes = timelinePostsmetaapi.getLikes()
         def likedusers = timelinePostsmetaapi.getLikedUsers()
         def flag = true
+        log.info("<Questions>["+email+"](get all Questions)")
         likedusers.each {
             if(loggeduser.getEmail() == it.getEmail()){
                 flag =true
@@ -240,9 +250,7 @@ class TimelineRestController {
         timelinePostsmetaapi.setComments(commentscurrent)
         timelineRepository.save(timelinePostsmetaapi)
         def finalcomment = loggeduser.getFirstName() +":\n"+comment.getComment()
+        log.info("<Questions>["+email+"](get all Questions)")
         new ResponseEntity<>(finalcomment,HttpStatus.OK)
-
     }
-
-
 }

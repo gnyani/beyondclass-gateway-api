@@ -70,15 +70,11 @@
 //
 //            // print the result
 //            DBCursor cursor = gfsPhoto.getFileList();
-//            while (cursor.hasNext()) {
-//                System.out.println(cursor.next());
-//            }
 //            BasicDBObject regexQuery = new BasicDBObject();
 //            regexQuery.put("filename",
 //                    new BasicDBObject('$regex', "OU-*")
 //                            .append('$options', "i"));
 //
-//            System.out.println(regexQuery.toString());
 //
 //
 //            // get image file by it's filename
@@ -90,7 +86,6 @@
 //// remove the image file from mongoDB
 ////			gfsPhoto.remove(gfsPhoto.findOne(newFileName));
 //
-//            System.out.println("Done" + imageForOutput );
 //
 //        } catch (UnknownHostException e) {
 //            e.printStackTrace();

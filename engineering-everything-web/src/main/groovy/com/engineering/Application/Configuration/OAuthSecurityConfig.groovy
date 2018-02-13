@@ -57,7 +57,6 @@ public class OAuthSecurityConfig extends WebSecurityConfigurerAdapter {
 	@Bean
 	public AuthenticationSuccessHandler successHandler() {
 		String [] profiles = ["prod"]
-		println("Active profiles are ${environment.getActiveProfiles()} and profiles are ${profiles}")
 		if(environment.getActiveProfiles() == profiles)
 			return  new ProdCustomSuccessHandler("http://"+servicehost+"/#/")
 		else

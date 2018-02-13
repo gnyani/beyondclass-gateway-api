@@ -1,7 +1,10 @@
 package com.engineering.core.Service
 
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
+
 
 /**
  * Created by GnyaniMac on 26/08/17.
@@ -12,6 +15,8 @@ class SendSMS {
 
     @Value('${textlocal.api.key}')
     private String apikey;
+
+    Logger log = LoggerFactory.getLogger(SendSMS.class)
 
     public String sendSms(String number, int otp) {
         try {
@@ -40,7 +45,7 @@ class SendSMS {
 
             return stringBuffer.toString();
         } catch (Exception e) {
-            System.out.println("Error SMS "+e);
+            log.info("[OTP] SMS "+e);
             return "Error "+e;
         }
     }

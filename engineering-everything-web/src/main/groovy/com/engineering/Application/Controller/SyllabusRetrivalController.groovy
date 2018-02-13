@@ -5,6 +5,8 @@ import api.syllabus.Syllabus
 import api.user.User
 import com.engineering.core.Service.ServiceUtilities
 import com.mongodb.gridfs.GridFSDBFile
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
@@ -34,6 +36,8 @@ class SyllabusRetrivalController {
     @Value('${engineering.everything.host}')
     private String servicehost;
 
+    Logger log = LoggerFactory.getLogger(SyllabusRetrivalController.class)
+
 
     @ResponseBody
     @PostMapping(value="/user/syllabusurl",produces = "text/plain")
@@ -44,6 +48,7 @@ class SyllabusRetrivalController {
         User currentuser = serviceUtils.findUserByEmail(email);
         String filename = serviceUtils.generateFileName(currentuser.getUniversity(),currentuser.getCollege(),syllabus.getBranch(),syllabus.getSubject())
         GridFSDBFile imageForOutput = getGridFsFile(filename)
+        log.info("<Questions>["+serviceUtils.parseEmail(auth)+"](get all Questions)")
         if(imageForOutput)
             url = "http://${servicehost}:8080/user/syllabus/${filename}"
         url? new ResponseEntity<>(url,HttpStatus.OK) : new ResponseEntity<>("Not found",HttpStatus.NOT_FOUND)
@@ -51,11 +56,12 @@ class SyllabusRetrivalController {
 
     @ResponseBody
     @PostMapping(value="/user/syllabus/{filename:.+}/download",produces = "application/octet-stream" )
-    public ResponseEntity<?> downloadSyllabus (@PathVariable(value = "filename", required = true) Object filename)
+    public ResponseEntity<?> downloadSyllabus (@PathVariable(value = "filename", required = true) Object filename, OAuth2Authentication auth)
     {
         byte[] file
         GridFSDBFile imageForOutput = getGridFsFile(filename)
         file = convertToByteStream(imageForOutput)
+        log.info("<Questions>["+serviceUtils.parseEmail(auth)+"](get all Questions)")
         new ResponseEntity<>(file,HttpStatus.OK)
     }
 
@@ -63,11 +69,12 @@ class SyllabusRetrivalController {
 
     @ResponseBody
     @RequestMapping(value="/user/syllabus/{filename:.+}",produces = "application/pdf")
-    public ResponseEntity<?> retrievedefault (@PathVariable(value = "filename", required = true) Object filename)
+    public ResponseEntity<?> retrievedefault (@PathVariable(value = "filename", required = true) Object filename,OAuth2Authentication auth)
     {
         byte[] file
         GridFSDBFile imageForOutput = getGridFsFile(filename)
         file=convertToByteStream(imageForOutput)
+        log.info("<Questions>["+serviceUtils.parseEmail(auth)+"](get all Questions)")
         new ResponseEntity<>(file,HttpStatus.OK)
     }
 

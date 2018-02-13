@@ -4,6 +4,8 @@ import api.user.User
 import com.engineering.core.repositories.UserRepository
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Service
@@ -16,6 +18,8 @@ class UserValidationService {
 
     @Autowired
     private UserRepository userRepository
+
+    private static Logger log = LoggerFactory.getLogger(UserValidationService.class)
 
     JsonSlurper jsonSlurper = new JsonSlurper();
 
@@ -37,6 +41,7 @@ class UserValidationService {
             return  present
         }
         else {
+            log.info("[Registration] new user "+email)
             return null
         }
     }

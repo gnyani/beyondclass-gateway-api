@@ -43,14 +43,12 @@ public class QuestionPaperinsertUtility {
             // print the result
             DBCursor cursor = gfsPhoto.getFileList();
             while (cursor.hasNext()) {
-                System.out.println(cursor.next());
+                cursor.next()
             }
             BasicDBObject regexQuery = new BasicDBObject();
             regexQuery.put("filename",
                     new BasicDBObject('$regex', "OU-*")
                             .append('$options', "i"));
-
-            System.out.println(regexQuery.toString());
 
 
             // get image file by it's filename
@@ -62,7 +60,6 @@ public class QuestionPaperinsertUtility {
 // remove the image file from mongoDB
 //			gfsPhoto.remove(gfsPhoto.findOne(newFileName));
 
-            System.out.println("Done");
 
         } catch (UnknownHostException e) {
             e.printStackTrace();
