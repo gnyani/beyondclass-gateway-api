@@ -4,7 +4,6 @@ import api.notifications.Notifications
 import api.notifications.NotificationsReadStatus
 import com.engineering.core.Service.ServiceUtilities
 import com.engineering.core.repositories.NotificationsRepository
-import com.engineering.core.repositories.UserRepository
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired

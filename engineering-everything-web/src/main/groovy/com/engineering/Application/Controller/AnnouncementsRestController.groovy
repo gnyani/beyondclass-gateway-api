@@ -71,7 +71,6 @@ class AnnouncementsRestController {
     public ResponseEntity<?>  deleteAnnouncement(@PathVariable(value = "announcementid" , required = true) String announcementid){
         def deletedannouncement = announcementRepository.deleteByAnnouncementid(announcementid)
         println("delete announcement ${deletedannouncement}")
-        log.info("<announcement>["+email+"](announcement deleted)")
         deletedannouncement ? new ResponseEntity<>("Success",HttpStatus.OK):new ResponseEntity<>("Something went wrong",HttpStatus.INTERNAL_SERVER_ERROR)
 
     }

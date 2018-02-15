@@ -56,7 +56,6 @@ class TeacherAssignmentRestController {
         gridFsTemplate.store(inputStream,filename)
         //def message ="You got a new assignment from your teacher ${currentuser.firstName.toUpperCase()}"
        // notificationService.storeNotifications(currentuser,message,"teacherstudentspace",assignments.getBatch())
-        log.info("<Questions>["+email+"](get all Questions)")
         new ResponseEntity<>("File uploaded successfully with filename ${filename}",HttpStatus.CREATED)
     }
 
@@ -71,7 +70,6 @@ class TeacherAssignmentRestController {
 
         def list = gridFsTemplate.find(query)
         def filelist = []
-        log.info("<Questions>["+email+"](get all Questions)")
         list.each {
             filelist << "http://${servicehost}:8080/teacher/assignment/${it.getFilename()}"
         }
@@ -90,7 +88,6 @@ class TeacherAssignmentRestController {
         list.each {
             filelist << "http://${servicehost}:8080/teacher/assignment/${it.getFilename()}"
         }
-        log.info("<Questions>["+email+"](get all Questions)")
         filelist
     }
 
@@ -103,7 +100,6 @@ class TeacherAssignmentRestController {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         imageForOutput ?. writeTo(baos);
         file =baos ?. toByteArray();
-        log.info("<Questions>["+email+"](get all Questions)")
         new ResponseEntity<>(file,HttpStatus.OK)
     }
 
@@ -115,7 +111,6 @@ class TeacherAssignmentRestController {
         }catch (Exception e){
             new ResponseEntity<>("sorry something went wrong",HttpStatus.INTERNAL_SERVER_ERROR)
         }
-        log.info("<Questions>["+email+"](get all Questions)")
         new ResponseEntity<>("successfully deleted",HttpStatus.OK)
     }
 
@@ -128,7 +123,6 @@ class TeacherAssignmentRestController {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         imageForOutput ?. writeTo(baos);
         file =baos ?. toByteArray();
-        log.info("<Questions>["+email+"](get all Questions)")
         new ResponseEntity<>(file,HttpStatus.OK)
     }
 }

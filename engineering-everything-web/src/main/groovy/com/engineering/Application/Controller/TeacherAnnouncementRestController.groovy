@@ -68,7 +68,7 @@ class TeacherAnnouncementRestController {
         def announcementid =  serviceUtils.generateFileName(user.getUniversity(),user.getCollege(),user.getBranch(),announcement.getBatch(),email,time)
         announcement.setAnnouncementid(announcementid)
         announcement.setPosteduser(serviceUtils.toUserDetails(user))
-        log.info("<Questions>["+serviceUtils.parseEmail(auth)+"](get all Questions)")
+        log.info("<Questions>["+serviceUtils.parseEmail(oauth)+"](get all Questions)")
         try {
             teacherAnnouncementRepository.save(announcement)
             def message ="You have a new announcement from your teacher ${user.firstName.toUpperCase()}"
@@ -86,7 +86,6 @@ class TeacherAnnouncementRestController {
     @GetMapping(value = "/teacher/announcement/delete/{announcementid:.+}")
     public ResponseEntity<?>  deleteAnnouncement(@PathVariable(value = "announcementid" , required = true) String announcementid){
         def deletedannouncement= teacherAnnouncementRepository.deleteByAnnouncementid(announcementid)
-        log.info("<Questions>["+serviceUtils.parseEmail(auth)+"](get all Questions)")
         deletedannouncement ? new ResponseEntity<>("Success",HttpStatus.OK): new ResponseEntity<>("Something went wrong",HttpStatus.INTERNAL_SERVER_ERROR)
     }
 

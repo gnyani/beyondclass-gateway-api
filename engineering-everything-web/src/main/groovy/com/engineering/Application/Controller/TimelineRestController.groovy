@@ -164,7 +164,6 @@ class TimelineRestController {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         imageForOutput ?. writeTo(baos);
         file =baos ?. toByteArray();
-        log.info("<Timeline>["+email+"](get a post)")
         new ResponseEntity<>(file,HttpStatus.OK)
     }
 
@@ -205,7 +204,6 @@ class TimelineRestController {
         likedusers.each{
             usernamesarray << it.getFirstName()
         }
-        log.info("<Questions>["+email+"](get all Questions)")
         new  ResponseEntity<>(usernamesarray,HttpStatus.OK)
     }
 

@@ -43,7 +43,7 @@ class FeedBackRestController {
         ReportIssue response = feedBackRepository.save(reportIssue)
 
         sendEmail(reportIssue.email)
-        log.info("<feedBack>["+serviceUtils.parseEmail(auth)+"](issue reported)")
+        log.info("<feedBack>["+serviceUtils.parseEmail(oauth)+"](issue reported)")
         response ? new ResponseEntity<>("Success",HttpStatus.OK) : new ResponseEntity<>("Something went wrong",HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
@@ -51,7 +51,7 @@ class FeedBackRestController {
     ResponseEntity<?> viewImage (@RequestParam String email, OAuth2Authentication oauth){
 
         ReportIssue response = feedBackRepository.findByEmail(email)
-        log.info("<feedBack>["+serviceUtils.parseEmail(auth)+"](retrieved feedback)")
+        log.info("<feedBack>["+serviceUtils.parseEmail(oauth)+"](retrieved feedback)")
         new ResponseEntity<>(response.file,HttpStatus.OK)
 
     }
