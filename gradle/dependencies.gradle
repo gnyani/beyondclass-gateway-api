@@ -10,6 +10,7 @@ versions += [
         oauth                    : "1.2.1.RELEASE",
         zuul                     : "1.3.4.RELEASE",
         sendGrid                 : "2.2.2",
+        gpars                    : "1.2.1",
 
 ]
 libs+=[
@@ -37,5 +38,7 @@ libs+=[
         jsr311                      : [group: 'javax.ws.rs', name: 'jsr311-api', version: '0.11'],
         oauth                       : [group: 'org.springframework.cloud',name: 'spring-cloud-starter-oauth2',version: "${versions.oauth}"],
         zuul                        : [group: 'org.springframework.cloud', name: 'spring-cloud-starter-zuul', version: "${versions.zuul}"],
-        sendGrid                    : [group: 'com.sendgrid', name: 'sendgrid-java', version: "${versions.sendGrid}"]
+        sendGrid                    : [group: 'com.sendgrid', name: 'sendgrid-java', version: "${versions.sendGrid}"],
+        gpars                       : [group: 'org.codehaus.gpars', name: 'gpars', version: "${versions.gpars}"],
+
 ]

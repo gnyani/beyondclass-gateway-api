@@ -18,6 +18,7 @@ import org.springframework.data.domain.Sort
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.oauth2.provider.OAuth2Authentication
+import static groovyx.gpars.dataflow.Dataflow.task
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
@@ -75,7 +76,7 @@ class TeacherAnnouncementRestController {
             notificationService.storeNotifications(user,message,"teacherstudentspace",announcement.batch)
 
             String classId = serviceUtils.generateFileName(user.university,user.college,user.branch,section,startyear,endyear)
-            findUsersAndSendEmail(classId,EmailTypes.ANNOUNCEMENT,user.email)
+            findUsersAndSendEmail(classId,EmailTypes.ANNOUNCEMENT,user.email,announcementid)
         }
         catch(Exception e){
          new ResponseEntity<>("sorry something went wrong please try again",HttpStatus.INTERNAL_SERVER_ERROR)
@@ -113,17 +114,21 @@ class TeacherAnnouncementRestController {
         new ResponseEntity<>(teacherAnnouncementRepository.findByAnnouncementidStartingWith(announcementid,request),HttpStatus.OK)
     }
 
-    void findUsersAndSendEmail(String classId, EmailTypes emailTypes, String sender){
-        List<User> users = userRepository.findByUniqueclassid(classId)
-        def toEmails = []
-        users.each {
-            toEmails.add(it.email)
-        }
-        String[] emails = new String[toEmails.size()]
-        emails = toEmails.toArray(emails)
-        String htmlMessage = emailUtils.createEmailMessage(emailTypes,sender)
-        String subject = emailUtils.createSubject(emailTypes)
+    void findUsersAndSendEmail(String classId, EmailTypes emailTypes, String sender,String annoucementId){
+        task {
+            List<User> users = userRepository.findByUniqueclassid(classId)
+            def toEmails = []
+            users.each {
+                toEmails.add(it.email)
+            }
+            String[] emails = new String[toEmails.size()]
+            emails = toEmails.toArray(emails)
+            String htmlMessage = emailUtils.createEmailMessage(emailTypes, sender)
+            String subject = emailUtils.createSubject(emailTypes)
 
-        mailService.sendHtmlMail(emails,subject,htmlMessage)
+            mailService.sendHtmlMail(emails, subject, htmlMessage)
+        }.then{
+            println("Sending mail for Teacher Announcement ${annoucementId}")
+        }
     }
 }
