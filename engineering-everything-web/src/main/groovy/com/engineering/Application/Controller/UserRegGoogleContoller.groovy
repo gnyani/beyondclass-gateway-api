@@ -54,7 +54,7 @@ class UserRegGoogleContoller {
     public ResponseEntity<?> loggeduser(Authentication auth) {
         String email = serviceUtilities.parseEmail(auth)
         User user = userRepository.findByEmail(email)
-        new ResponseEntity<>(user,HttpStatus.OK)
+        user ? new ResponseEntity<>(user,HttpStatus.OK) : new ResponseEntity<>("not found",HttpStatus.NOT_FOUND)
     }
 
 
@@ -140,7 +140,7 @@ class UserRegGoogleContoller {
         otpRepository.save(otp)
         //sending SMS
         //def status = sendSMS.sendSms(number.substring(1), otp.getOtp())
-        log.info("<userRegistration>["+serviceUtilities.parseEmail(auth2Authentication)+"](otp statis is " +status + ")")
+        //log.info("<userRegistration>["+serviceUtilities.parseEmail(auth2Authentication)+"](otp statis is " +status + ")")
         //check whether status is successful or not
         new ResponseEntity<?>("success",HttpStatus.OK)
     }
