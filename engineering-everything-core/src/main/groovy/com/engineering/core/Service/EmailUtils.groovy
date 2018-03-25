@@ -18,17 +18,7 @@ class EmailUtils {
 
         String message = "";
         String sender = strings[0]
-        String noOfDays = strings[1]
 
-      //  if(type == EmailTypes.ANNOUNCEMENT){
-
-         //   message = "<h3> You got a new ${type.toString()} from your teacher ${sender} </h3>" +
-           //         "<br />" +
-             //       "<form action=\"http://${hostName}/#/teacherstudentspace\">\n" +
-               //     "    <input type=\"submit\" value=\"View ${type}\" />\n" +
-               //     "</form>" +
-               //     "<br />" +
-                //    "<h4>          --Team Beyond Class"
 
         if(type == EmailTypes.ANNOUNCEMENT)
         {
@@ -56,6 +46,7 @@ class EmailUtils {
         }
         else if(type == EmailTypes.REMINDER_NOTIFIER)
         {
+            String noOfDays = strings[1]
             def emailTemplate = getClass().getResource("/Assignment_Notification.html")
             Map<String,String> config = new HashMap()
             config.put("noOfDays",noOfDays)
@@ -76,16 +67,6 @@ class EmailUtils {
             def template = engine.createTemplate(emailTemplate).make(config)
             message = template.toString()
         }
-        //else if(type == EmailTypes.ASSIGNMENT){
-
-          //  message = "<h3> You got a new ${type.toString()} from your teacher ${sender} </h3>" +
-            //        "<br />" +
-             //       "<form action=\"http://${hostName}/#/teacherstudentspace\">\n" +
-              //      "    <input type=\"submit\" value=\"view ${type}\" />\n" +
-               //     "</form>" +
-                //    "<h4>          --Team Beyond Class"
-
-        //}
         return message
     }
 
