@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
+import java.util.regex.Pattern
+
 /**
  * Created by GnyaniMac on 16/01/18.
  */
@@ -34,49 +36,59 @@ class UtilityRestController {
     @GetMapping(value = '/deamons/admin/insert')
     public ResponseEntity<?> insertUsers(@RequestParam String path){
         def file = new File(path)
+        String fileName = file.getName()
+        def userInfo = fileName.split('-')
+        def invalidEmails = []
+
         file.eachLine { String line ->
             String[] splits = line.split(',')
             Date date = null
-            if(splits[4])
-               date = new Date(splits[4])
-            def stay = false
-            if(splits[5] == "Yes" || splits[5] == "yes")
-                stay = true
+       //     if(splits[4])
+            //   date = new Date(splits[4])
+//            def stay = false
+//            if(splits[5] == "Yes" || splits[5] == "yes")
+//                stay = true
+           if(isValid(splits[0].trim().toLowerCase())){
+               def user = new User()
+               user.with{
+                   email = splits[0].trim().toLowerCase()
+                   mobilenumber = splits[1].trim()
+                   firstName = splits[2].trim().capitalize()
+                   lastName = splits[3].trim().capitalize()
+                   dob = date
+//                   hostel = stay
+                   userrole = "student"
+                   university = userInfo[0]
+                   college = userInfo[1]
+                   branch = userInfo[2]
+                   section = userInfo[3]
+                   startYear = userInfo[4]
+                   endYear = userInfo[5].tokenize('.')[0]
+                   rollNumber = splits[6]
+                   enabled = true
+                   accountNonExpired = true
+                   accountNonLocked = true
+                   credentialsNonExpired = true
+               }
+               user.addRole("ROLE_USER")
+               def uniqueid = serviceUtilities.generateFileName(user.getUniversity(), user.getCollege(), user.getBranch(), user?.getSection(), user.getStartYear(), user.getEndYear())
+               user.uniqueclassid = uniqueid
+               userRepository.save(user)
+           }else{
+               invalidEmails.add(splits[0].trim().toLowerCase())
+           }
 
-            def user = new User()
-            user.with{
-                email = splits[0].trim().toLowerCase()
-                mobilenumber = splits[1].trim()
-                firstName = splits[2].trim()
-                lastName = splits[3].trim()
-                dob = date
-                hostel = stay
-                userrole = "student"
-                university = "OU"
-                college = "VASV"
-                branch = "CSE"
-                section = "B"
-                startYear = "2016"
-                endYear = "2020"
-                rollNumber = splits[6]
-                enabled = true
-                accountNonExpired = true
-                accountNonLocked = true
-                credentialsNonExpired = true
-            }
-            user.addRole("ROLE_USER")
-            def uniqueid = serviceUtilities.generateFileName(user.getUniversity(), user.getCollege(), user.getBranch(), user?.getSection(), user.getStartYear(), user.getEndYear())
-            user.uniqueclassid = uniqueid
-            userRepository.save(user)
         }
+        println("Invalid emails are ${invalidEmails}")
         new ResponseEntity<>("success",HttpStatus.OK)
     }
 
     @GetMapping(value ="/deamons/admin/insert/teacher")
     public ResponseEntity<?> insertTeacher(@RequestParam String path){
         def file = new File(path)
-        String [] batch = new String[1]
-        batch[0] = "2016-B"
+        String [] batch = new String[2]
+        batch[0] = "2014-A"
+        batch[1] = "2014-B"
         file.eachLine {String line ->
             String[] splits = line.split(',')
             def user = new User()
@@ -88,7 +100,7 @@ class UtilityRestController {
                 batches = batch
                 university = "OU"
                 college = "VASV"
-                branch = "CSE"
+                branch = "IT"
                 enabled = true
                 accountNonExpired = true
                 accountNonLocked = true
@@ -184,5 +196,17 @@ class UtilityRestController {
 
         }
         new ResponseEntity<>("success",HttpStatus.OK)
+    }
+    public static boolean isValid(String email)
+    {
+        String emailRegex = '^[a-zA-Z0-9_+&*-]+(?:\\.'+
+                '[a-zA-Z0-9_+&*-]+)*@' +
+                '(?:[a-zA-Z0-9-]+\\.)+[a-z' +
+                'A-Z]{2,7}$';
+
+        Pattern pat = Pattern.compile(emailRegex);
+        if (email == null)
+            return false;
+        return pat.matcher(email).matches();
     }
 }
