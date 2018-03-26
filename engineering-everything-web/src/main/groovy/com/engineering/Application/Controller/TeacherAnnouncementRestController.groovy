@@ -76,7 +76,7 @@ class TeacherAnnouncementRestController {
             notificationService.storeNotifications(user,message,"teacherstudentspace",announcement.batch)
 
             String classId = serviceUtils.generateFileName(user.university,user.college,user.branch,section,startyear,endyear)
-            findUsersAndSendEmail(classId,EmailTypes.ANNOUNCEMENT,user.email,announcementid)
+            findUsersAndSendEmail(classId,EmailTypes.ANNOUNCEMENT,user.firstName+user.lastName,announcementid)
         }
         catch(Exception e){
          new ResponseEntity<>("sorry something went wrong please try again",HttpStatus.INTERNAL_SERVER_ERROR)
