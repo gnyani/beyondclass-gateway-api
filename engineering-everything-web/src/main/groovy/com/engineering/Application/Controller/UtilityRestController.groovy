@@ -172,27 +172,29 @@ class UtilityRestController {
         }
         list.each{ File file ->
 
-            String year = file.getName().split('-')[4].tokenize('.').first()
+            if(file.getName() != ".DS_Store")
+            {
+                String year = file.getName().split('-')[4].tokenize('.').first()
 
-            String subject = path.split('/').last()
+                String subject = path.split('/').last()
 
-            String filename = file.getName().tokenize('.').first()
+                String filename = file.getName().tokenize('.').first()
 
-            File imageFile = new File("${path}/${file.getName()}");
+                File imageFile = new File("${path}/${file.getName()}");
 
-            // create a "photo" namespace
-            GridFS gfsPhoto = new GridFS(db, "questionpapers");
+                // create a "photo" namespace
+                GridFS gfsPhoto = new GridFS(db, "questionpapers");
 
-            // get image file from local drive
-            GridFSInputFile gfsFile = gfsPhoto.createFile(imageFile);
+                // get image file from local drive
+                GridFSInputFile gfsFile = gfsPhoto.createFile(imageFile);
 
-            // set a new filename for identify purpose
-            gfsFile.setFilename(filename);
+                // set a new filename for identify purpose
+                gfsFile.setFilename(filename);
 
 
-            // save the image file into mongoDB
-            gfsFile.save();
-
+                // save the image file into mongoDB
+                gfsFile.save();
+            }
 
         }
         new ResponseEntity<>("success",HttpStatus.OK)
