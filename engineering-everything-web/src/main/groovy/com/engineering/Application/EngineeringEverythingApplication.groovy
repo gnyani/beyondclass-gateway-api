@@ -8,6 +8,8 @@ import org.springframework.cloud.netflix.zuul.EnableZuulProxy
 import org.springframework.context.annotation.ComponentScan
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories
 
+import javax.annotation.PostConstruct
+
 
 /**
  * Created by GnyaniMac on 27/04/17.
@@ -19,6 +21,13 @@ import org.springframework.data.mongodb.repository.config.EnableMongoRepositorie
 @EnableZuulProxy
 @EnableOAuth2Sso
 public class EngineeringEverythingApplication{
+
+    @PostConstruct
+    public void init(){
+        TimeZone.setDefault(TimeZone.getTimeZone("IST"));   // It will set IST timezone
+        System.out.println("Spring boot application running in UTC timezone :"+new Date());   // It will print IST timezone
+    }
+
 
     public static void main(String[] args) {
         SpringApplication.run(EngineeringEverythingApplication.class, args);
