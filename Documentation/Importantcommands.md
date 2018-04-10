@@ -21,4 +21,9 @@ git:
 
 //greping service logs
 
-journalctl -u studentadda -b --no-pager | grep -B 10 -A 3 "status is"
+journalctl -u beyondclass-assignments -b --no-pager | grep -B 10 -A 3 "status is"
+
+//command to get the webpack bundle size.
+export NODE_ENV=production
+webpack -p --progress --config config/webpack.config.prod.js
+

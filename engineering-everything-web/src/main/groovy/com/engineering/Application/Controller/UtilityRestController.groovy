@@ -86,9 +86,8 @@ class UtilityRestController {
     @GetMapping(value ="/deamons/admin/insert/teacher")
     public ResponseEntity<?> insertTeacher(@RequestParam String path){
         def file = new File(path)
-        String [] batch = new String[2]
-        batch[0] = "2014-A"
-        batch[1] = "2014-B"
+        String [] batch = new String[1]
+        batch[0] = "2015-A"
         file.eachLine {String line ->
             String[] splits = line.split(',')
             def user = new User()
@@ -100,7 +99,7 @@ class UtilityRestController {
                 batches = batch
                 university = "OU"
                 college = "VASV"
-                branch = "IT"
+                branch = "CSE"
                 enabled = true
                 accountNonExpired = true
                 accountNonLocked = true
