@@ -14,7 +14,7 @@ class EmailUtils {
     @Value('${engineering.everything.host}')
     private String hostName
 
-    public String createEmailMessage(EmailTypes type, String ... strings){
+     String createEmailMessage(EmailTypes type, String ... strings){
 
         String message = "";
         String sender = strings[0]
@@ -67,10 +67,20 @@ class EmailUtils {
             def template = engine.createTemplate(emailTemplate).make(config)
             message = template.toString()
         }
+        else if (type == EmailTypes.HANDOUT)
+        {
+            def emailTemplate = getClass().getResource("/New_Handout.html")
+            Map<String,String> config = new HashMap<>()
+            config.put("hostname",hostName)
+            config.put("sender",sender)
+            def engine = new SimpleTemplateEngine()
+            def template = engine.createTemplate(emailTemplate).make(config)
+            message = template.toString()
+        }
         return message
     }
 
-    public String createSubject(EmailTypes type){
+     String createSubject(EmailTypes type){
 
         String subject = ""
         if(type == EmailTypes.ASSIGNMENT)
@@ -81,7 +91,8 @@ class EmailUtils {
             subject = "Your Assignment has been evaluated"
         else if(type == EmailTypes.REMINDER_NOTIFIER)
             subject = "Reminder for your assignment"
-
+        else if(type == EmailTypes.HANDOUT)
+            subject = "You got a new Handout"
         return subject
     }
 }

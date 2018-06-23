@@ -21,6 +21,8 @@ import org.springframework.http.ResponseEntity
 import org.springframework.security.oauth2.provider.OAuth2Authentication
 import org.springframework.web.bind.annotation.*
 
+import javax.servlet.http.HttpServletResponse
+
 /**
  * Created by GnyaniMac on 05/05/17.
  */
@@ -87,6 +89,7 @@ class NotesRestController {
         }
         notesResponse.links = filelist
         notesResponse.comments = comments
+        notesResponse.profilePicUrl = currentuser.normalpicUrl ? currentuser.normalpicUrl : currentuser.googlepicUrl
         log.info("<notes>["+serviceUtils.parseEmail(auth)+"](notes list)")
         notesResponse
     }
@@ -114,7 +117,7 @@ class NotesRestController {
 
 
 
-    @RequestMapping(value="/user/notes/{filename:.+}",produces = "application/pdf" )
+    @GetMapping(value="/user/notes/{filename:.+}",produces = "application/pdf" )
     public ResponseEntity<?> retrieveNotes(@PathVariable(value = "filename", required = true) String filename,OAuth2Authentication auth){
 
         byte[] file
@@ -129,7 +132,7 @@ class NotesRestController {
     }
 
     @PostMapping(value="/user/notes/{filename:.+}/download",produces = "application/octet-stream")
-    public ResponseEntity<?> downloadNotes(@PathVariable(value = "filename", required = true) String filename,OAuth2Authentication auth){
+    public ResponseEntity<?> downloadNotes(@PathVariable(value = "filename", required = true) String filename,OAuth2Authentication auth, HttpServletResponse response){
 
         log.info("<notes>["+serviceUtils.parseEmail(auth)+"](download notes " +filename+ " )")
         byte[] file
@@ -137,10 +140,13 @@ class NotesRestController {
         Query query = new Query().addCriteria(Criteria.where("filename").is(filenameactual))
         GridFSDBFile imageForOutput = gridFsTemplate.findOne(query)
 
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        imageForOutput ?. writeTo(baos);
-        file =baos ?.toByteArray();
-        new ResponseEntity<>(file,HttpStatus.OK);
+        response.setContentType("application/pdf")
+        response.setHeader("Content-Disposition", "attachment; filename=notes.pdf")
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream()
+        imageForOutput ?. writeTo(baos)
+        file =baos ?.toByteArray()
+        new ResponseEntity<>(file,HttpStatus.OK)
     }
 
      public HashMap generateHashMap(String filename){

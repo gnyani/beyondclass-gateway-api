@@ -1,7 +1,6 @@
 package com.engineering.Application.Controller
 
 import api.teacherstudentspace.TeacherAnnouncement
-import api.user.User
 import com.engineering.core.Service.EmailUtils
 import com.engineering.core.Service.MailService
 import com.engineering.core.Service.ServiceUtilities
@@ -18,7 +17,6 @@ import org.springframework.data.domain.Sort
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.oauth2.provider.OAuth2Authentication
-import static groovyx.gpars.dataflow.Dataflow.task
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
@@ -45,12 +43,6 @@ class TeacherAnnouncementRestController {
     @Autowired
     NotificationService notificationService;
 
-    @Autowired
-    EmailUtils emailUtils
-
-    @Autowired
-    MailService mailService
-
     Logger log = LoggerFactory.getLogger(TeacherAnnouncementRestController.class)
 
     def PAGE_SIZE = 5
@@ -72,11 +64,11 @@ class TeacherAnnouncementRestController {
         log.info("<Questions>["+serviceUtils.parseEmail(oauth)+"](get all Questions)")
         try {
             teacherAnnouncementRepository.save(announcement)
-            def message ="You have a new announcement from your teacher ${user.firstName.toUpperCase()}"
+            def message ="You got a new announcement from your teacher ${user.firstName}"
             notificationService.storeNotifications(user,message,"teacherstudentspace",announcement.batch)
 
             String classId = serviceUtils.generateFileName(user.university,user.college,user.branch,section,startyear,endyear)
-            findUsersAndSendEmail(classId,EmailTypes.ANNOUNCEMENT,user.firstName+user.lastName,announcementid)
+            serviceUtils.findUsersAndSendEmail(classId,EmailTypes.ANNOUNCEMENT,user.firstName+user.lastName)
         }
         catch(Exception e){
          new ResponseEntity<>("sorry something went wrong please try again",HttpStatus.INTERNAL_SERVER_ERROR)
@@ -112,23 +104,5 @@ class TeacherAnnouncementRestController {
                 new PageRequest(pageNumber - 1, PAGE_SIZE,new Sort(Sort.Direction.DESC, "createdAt"));
         log.info("<Questions>["+email+"](get all Questions)")
         new ResponseEntity<>(teacherAnnouncementRepository.findByAnnouncementidStartingWith(announcementid,request),HttpStatus.OK)
-    }
-
-    void findUsersAndSendEmail(String classId, EmailTypes emailTypes, String sender,String annoucementId){
-        task {
-            List<User> users = userRepository.findByUniqueclassid(classId)
-            def toEmails = []
-            users.each {
-                toEmails.add(it.email)
-            }
-            String[] emails = new String[toEmails.size()]
-            emails = toEmails.toArray(emails)
-            String htmlMessage = emailUtils.createEmailMessage(emailTypes, sender)
-            String subject = emailUtils.createSubject(emailTypes)
-
-            mailService.sendHtmlMail(emails, subject, htmlMessage)
-        }.then{
-            println("Sending mail for Teacher Announcement ${annoucementId}")
-        }
     }
 }

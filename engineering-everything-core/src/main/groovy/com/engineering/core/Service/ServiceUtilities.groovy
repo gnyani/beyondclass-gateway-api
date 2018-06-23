@@ -2,9 +2,11 @@ package com.engineering.core.Service
 
 import api.user.User
 import api.user.UserDetails
+import com.engineering.core.constants.EmailTypes
 import com.engineering.core.repositories.UserRepository
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
+import static groovyx.gpars.dataflow.Dataflow.task
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
@@ -16,6 +18,13 @@ class ServiceUtilities {
 
     @Autowired
     UserRepository repository;
+
+    @Autowired
+    EmailUtils emailUtils
+
+    @Autowired
+    MailService mailService
+
 
     UserDetails userDetails = new UserDetails()
 
@@ -71,5 +80,33 @@ class ServiceUtilities {
         userDetails.setNormalpicUrl(user ?. getNormalpicUrl())
 
         userDetails
+    }
+
+    public String generateUniqueClassIdForTeacher( String batch, String email) {
+        def splits = batch.split('-')
+        String startyear = splits[0]
+        String section = splits[1]
+        String endyear = Integer.parseInt(startyear) + 4
+        def user = findUserByEmail(email)
+        def uniqueClassId = generateFileName(user.university, user.college, user.branch, section, startyear, endyear)
+        uniqueClassId
+    }
+
+    void findUsersAndSendEmail(String classId, EmailTypes emailTypes, String sender){
+        task {
+            List<User> users = repository.findByUniqueclassid(classId)
+            def toEmails = []
+            users.each {
+                toEmails.add(it.email)
+            }
+            String[] emails = new String[toEmails.size()]
+            emails = toEmails.toArray(emails)
+            String htmlMessage = emailUtils.createEmailMessage(emailTypes, sender)
+            String subject = emailUtils.createSubject(emailTypes)
+
+            mailService.sendHtmlMail(emails, subject, htmlMessage)
+        }.then{
+            println("Sending mail for ${emailTypes} from ${sender} to class ${classId}")
+        }
     }
 }

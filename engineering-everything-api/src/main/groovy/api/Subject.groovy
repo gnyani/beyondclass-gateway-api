@@ -12,18 +12,18 @@ public class Subject {
     public String subject;
 
     @JsonProperty
-    public String teacherclass;
+    public String batch;
 
     public Subject(){
 
     }
 
     public String getTeacherclass() {
-        return teacherclass;
+        return batch;
     }
 
     public void setTeacherclass(String teacherclass) {
-        this.teacherclass = teacherclass;
+        this.batch = teacherclass;
     }
 
     @JsonCreator

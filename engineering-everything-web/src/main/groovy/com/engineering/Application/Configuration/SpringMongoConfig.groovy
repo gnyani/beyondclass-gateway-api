@@ -93,6 +93,12 @@ public class SpringMongoConfig extends AbstractMongoConfiguration {
 		return new GridFsTemplate(mongoDbFactory(), mappingMongoConverter(),"TeacherAssignmentUpload");
 	}
 
+	@Bean(name= "handouts")
+	public GridFsTemplate gridFsTemplate8() throws Exception {
+		return new GridFsTemplate(mongoDbFactory(), mappingMongoConverter(),"handouts");
+	}
+
+
 	@Override
 	@Bean
 	public Mongo mongo() throws Exception {

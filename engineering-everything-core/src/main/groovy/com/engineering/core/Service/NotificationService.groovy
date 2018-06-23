@@ -25,7 +25,7 @@ class NotificationService {
 
     public boolean  storeNotifications(User user,String content,String type){
         Notifications notifications = new Notifications();
-        notifications.setNotificationId(user.uniqueclassid+'-'+user.email+'-'+System.currentTimeMillis())
+        notifications.setNotificationId(user.uniqueclassid +'-'+user.email+'-'+System.currentTimeMillis())
         def users = userRepository.findByUniqueclassid(user.uniqueclassid)
         users.removeAll(user)
         def usersNotificationsReadStatus =  []

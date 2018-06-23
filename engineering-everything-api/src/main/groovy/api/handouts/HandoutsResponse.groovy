@@ -1,9 +1,9 @@
-package api.notes
+package api.handouts
 
 /**
- * Created by GnyaniMac on 06/01/18.
+ * Created by Gnyani on 20/06/18.
  */
-class NotesResponse {
+class HandoutsResponse {
 
     String[] links
 

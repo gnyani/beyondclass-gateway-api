@@ -18,18 +18,18 @@ import org.springframework.data.mongodb.core.mapping.Document
 public class Notifications {
 
     @Id
-    String notificationId;
+    String notificationId
 
-    String content;
+    String content
 
-    String picurl;
+    String picurl
 
-    String notificationType;
+    String notificationType
 
     //14day expiry
 
     @Indexed(expireAfterSeconds =  1205600)
-    Date createdAt = new Date();
+    Date createdAt = new Date()
 
     @Indexed
     List<NotificationsReadStatus> users;
