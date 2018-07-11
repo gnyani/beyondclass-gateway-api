@@ -11,6 +11,7 @@ import com.mongodb.DuplicateKeyException
 import constants.UserRoles
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
+import org.omg.CORBA.NameValuePair
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired
@@ -41,6 +42,7 @@ class UserRegGoogleContoller {
     @Autowired
     private SendSMS sendSMS;
 
+
     @Autowired
     private OtpRepository otpRepository;
 
@@ -52,10 +54,30 @@ class UserRegGoogleContoller {
 
     @GetMapping(value="/user/loggedin" ,produces = "application/json")
     public ResponseEntity<?> loggeduser(Authentication auth) {
+
         String email = serviceUtilities.parseEmail(auth)
         User user = userRepository.findByEmail(email)
-        user ? new ResponseEntity<>(user,HttpStatus.OK) : new ResponseEntity<>("not found",HttpStatus.NOT_FOUND)
+       try{
+        if (user.userrole.compareTo("teacher") == 0) {
+            HashMap<String, String> StudentCountList = new HashMap<String, String>();
+            for (int i = 0; i < user.batches.length ; i++) {
+                println("${user.batches[i]} and ${i}")
+                String UniqueClassID = serviceUtilities.generateUniqueClassIdForTeacher(user.batches[i], user.email)
+                String NumberOfStudents = userRepository.countByUniqueclassid(UniqueClassID).toString()
+                StudentCountList.put(user.batches[i], NumberOfStudents)
+            }
+            user.StudentCountList = StudentCountList
+        }}
+       catch(Exception e){
+           log.error("Exception while counting the number of students per batch for teacher role")
+       }
+
+        user ? new ResponseEntity<>(user, HttpStatus.OK) : new ResponseEntity<>("not found", HttpStatus.NOT_FOUND)
     }
+
+
+
+
 
 
     @GetMapping(value="/user/google/auth")

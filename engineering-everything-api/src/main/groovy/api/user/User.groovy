@@ -4,8 +4,10 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import constants.UserRoles
 import groovy.transform.EqualsAndHashCode
 import groovy.transform.ToString;
-import org.hibernate.validator.constraints.NotEmpty;
-import org.springframework.data.annotation.Id;
+import org.hibernate.validator.constraints.NotEmpty
+import org.omg.CORBA.NameValuePair;
+import org.springframework.data.annotation.Id
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -66,6 +68,9 @@ public class User {
      String startYear;
 
      String endYear;
+
+    @Transient
+    HashMap<String,String> StudentCountList;
 
     @JsonProperty
      String[] batches;
