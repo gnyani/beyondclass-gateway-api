@@ -102,7 +102,7 @@ class UpdateProfileRestController {
         user.setLastName(updateprofile.getLastName() ?: user.getLastName())
         user.setDob(updateprofile.getDob() ?: user.getDob())
         def changeduser = userRepository.save(user)
-        log.info("<UpdateProfile>["+serviceUtils.parseEmail(auth2Authentication)+"](profile updated)")
+        log.info("<UpdateProfile>[${email}](profile updated)")
         changeduser ? new ResponseEntity<>('success',HttpStatus.OK) : new ResponseEntity<>('failure',HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
@@ -110,21 +110,22 @@ class UpdateProfileRestController {
 // Added by pratap to add new batches for teacher role
 
     @PostMapping(value="/teacher/addclass")
-    public def AddBatchToTeacher(@RequestBody AddClass addClass, OAuth2Authentication auth){
+    def AddBatchToTeacher(@RequestBody AddClass addClass, OAuth2Authentication auth){
 
     try{
         String email = serviceUtils.parseEmail(auth)
         User user=userRepository.findByEmail(email)
-        List<String> ListOfBatches=new ArrayList<String>()
-        ListOfBatches=user.batches
+        List<String> ListOfBatches = new ArrayList<String>()
+        ListOfBatches = user.batches
         ListOfBatches.add(serviceUtils.generateFileName(addClass.year,addClass.section))
-        user.batches=ListOfBatches
+        user.batches = ListOfBatches
         def newUser = userRepository.save(user)
-        println("new user is ${newUser}")
-        newUser ? new ResponseEntity<>(newUser,HttpStatus.OK) : new ResponseEntity<>('failure',HttpStatus.INTERNAL_SERVER_ERROR)
+        log.info("<UpdateProfile/teacher/addclass>[${email}](profile updated)")
+        newUser ? new ResponseEntity<>('success',HttpStatus.OK) : new ResponseEntity<>('failure',HttpStatus.INTERNAL_SERVER_ERROR)
     }
     catch(Exception e){
-        log.error("Exception found while adding an extra batch in teacher role")
+        log.error("Exception found while adding an extra batch in teacher role ${e.printStackTrace()}")
+        return new ResponseEntity<>('failure',HttpStatus.INTERNAL_SERVER_ERROR)
     }
     }
 

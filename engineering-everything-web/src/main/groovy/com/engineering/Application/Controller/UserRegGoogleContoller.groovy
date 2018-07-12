@@ -61,15 +61,15 @@ class UserRegGoogleContoller {
         if (user.userrole.compareTo("teacher") == 0) {
             HashMap<String, String> StudentCountList = new HashMap<String, String>();
             for (int i = 0; i < user.batches.length ; i++) {
-                println("${user.batches[i]} and ${i}")
-                String UniqueClassID = serviceUtilities.generateUniqueClassIdForTeacher(user.batches[i], user.email)
-                String NumberOfStudents = userRepository.countByUniqueclassid(UniqueClassID).toString()
+                String UniqueClassId = serviceUtilities.generateUniqueClassIdForTeacher(user.batches[i], user.email)
+                String NumberOfStudents = userRepository.countByUniqueclassid(UniqueClassId).toString()
                 StudentCountList.put(user.batches[i], NumberOfStudents)
             }
             user.StudentCountList = StudentCountList
         }}
        catch(Exception e){
            log.error("Exception while counting the number of students per batch for teacher role")
+           return new ResponseEntity<>("not found", HttpStatus.INTERNAL_SERVER_ERROR)
        }
 
         user ? new ResponseEntity<>(user, HttpStatus.OK) : new ResponseEntity<>("not found", HttpStatus.NOT_FOUND)
