@@ -3,11 +3,9 @@ package com.engineering.Application.Controller
 import api.user.Otp
 import api.user.User
 import com.engineering.core.Service.ServiceUtilities
-import com.engineering.core.Service.FilenameGenerator
 import com.engineering.core.Service.SendSMS
 import com.engineering.core.repositories.OtpRepository
 import com.engineering.core.repositories.UserRepository
-import com.mongodb.DuplicateKeyException
 import constants.UserRoles
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
@@ -41,6 +39,7 @@ class UserRegGoogleContoller {
     @Autowired
     private SendSMS sendSMS;
 
+
     @Autowired
     private OtpRepository otpRepository;
 
@@ -52,10 +51,30 @@ class UserRegGoogleContoller {
 
     @GetMapping(value="/user/loggedin" ,produces = "application/json")
     public ResponseEntity<?> loggeduser(Authentication auth) {
+
         String email = serviceUtilities.parseEmail(auth)
         User user = userRepository.findByEmail(email)
-        user ? new ResponseEntity<>(user,HttpStatus.OK) : new ResponseEntity<>("not found",HttpStatus.NOT_FOUND)
+       try{
+        if (user.userrole.compareTo("teacher") == 0) {
+            HashMap<String, String> StudentCountList = new HashMap<String, String>();
+            for (int i = 0; i < user.batches.length ; i++) {
+                String UniqueClassId = serviceUtilities.generateUniqueClassIdForTeacher(user.batches[i], user.email)
+                String NumberOfStudents = userRepository.countByUniqueclassid(UniqueClassId).toString()
+                StudentCountList.put(user.batches[i], NumberOfStudents)
+            }
+            user.StudentCountList = StudentCountList
+        }}
+       catch(Exception e){
+           log.error("Exception while counting the number of students per batch for teacher role")
+           return new ResponseEntity<>("not found", HttpStatus.INTERNAL_SERVER_ERROR)
+       }
+
+        user ? new ResponseEntity<>(user, HttpStatus.OK) : new ResponseEntity<>("not found", HttpStatus.NOT_FOUND)
     }
+
+
+
+
 
 
     @GetMapping(value="/user/google/auth")
