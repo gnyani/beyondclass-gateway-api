@@ -3,15 +3,12 @@ package com.engineering.Application.Controller
 import api.user.Otp
 import api.user.User
 import com.engineering.core.Service.ServiceUtilities
-import com.engineering.core.Service.FilenameGenerator
 import com.engineering.core.Service.SendSMS
 import com.engineering.core.repositories.OtpRepository
 import com.engineering.core.repositories.UserRepository
-import com.mongodb.DuplicateKeyException
 import constants.UserRoles
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
-import org.omg.CORBA.NameValuePair
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired

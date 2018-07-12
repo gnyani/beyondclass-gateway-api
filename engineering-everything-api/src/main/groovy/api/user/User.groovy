@@ -1,11 +1,9 @@
 package api.user;
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import constants.UserRoles
 import groovy.transform.EqualsAndHashCode
 import groovy.transform.ToString;
 import org.hibernate.validator.constraints.NotEmpty
-import org.omg.CORBA.NameValuePair;
 import org.springframework.data.annotation.Id
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.index.Indexed;
