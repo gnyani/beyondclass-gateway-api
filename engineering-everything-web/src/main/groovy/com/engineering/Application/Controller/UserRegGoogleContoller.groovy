@@ -185,6 +185,12 @@ class UserRegGoogleContoller {
         log.info("<userRegistration>["+serviceUtilities.parseEmail(auth2Authentication)+"](user logged out)")
         new ResponseEntity<>("logout successful",HttpStatus.OK)
     }
+
+    @GetMapping(value="/get/user")
+    public ResponseEntity<?> getUser(@RequestParam String email){
+        User user = serviceUtilities.findUserByEmail(email)
+        user ? new ResponseEntity<>(user, HttpStatus.OK) : new ResponseEntity<>("something went wrong", HttpStatus.INTERNAL_SERVER_ERROR)
+    }
 }
 
 
