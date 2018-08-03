@@ -19,7 +19,7 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
 
-@Profile("prod")
+@Profile("!default")
 public class ProdCustomSuccessHandler extends SavedRequestAwareAuthenticationSuccessHandler {
 
     @Autowired
