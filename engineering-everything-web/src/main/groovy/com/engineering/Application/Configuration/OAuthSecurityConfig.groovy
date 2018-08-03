@@ -19,14 +19,8 @@ import org.springframework.security.oauth2.client.filter.OAuth2ClientAuthenticat
 import org.springframework.security.oauth2.client.token.grant.code.AuthorizationCodeResourceDetails;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
-import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
-import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
-import org.springframework.security.web.header.writers.StaticHeadersWriter;
-import org.springframework.security.web.header.writers.frameoptions.WhiteListedAllowFromStrategy;
-import org.springframework.security.web.header.writers.frameoptions.XFrameOptionsHeaderWriter;
-
-import java.util.Arrays;
-
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter
+import org.springframework.security.web.header.writers.StaticHeadersWriter
 
 @Configurable
 @EnableWebSecurity
@@ -56,11 +50,7 @@ public class OAuthSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Bean
 	public AuthenticationSuccessHandler successHandler() {
-		String [] profiles = ["prod"]
-		if(environment.getActiveProfiles() == profiles)
-			return  new ProdCustomSuccessHandler("http://"+servicehost+"/#/")
-		else
-			return new DevCustomLoginSuccessHandler("http://"+servicehost+"/#/")
+			return  new CustomSuccessHandler("http://"+servicehost+"/#/")
 	}
 
 	private OAuth2ClientAuthenticationProcessingFilter filter() {

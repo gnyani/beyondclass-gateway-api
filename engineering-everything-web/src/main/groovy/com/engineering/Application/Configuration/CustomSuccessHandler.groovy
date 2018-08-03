@@ -7,7 +7,6 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.context.annotation.Profile;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler
 
@@ -15,12 +14,9 @@ import org.springframework.security.web.authentication.SavedRequestAwareAuthenti
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import java.io.IOException;
+import javax.servlet.http.HttpSession
 
-
-@Profile("!default")
-public class ProdCustomSuccessHandler extends SavedRequestAwareAuthenticationSuccessHandler {
+public class CustomSuccessHandler extends SavedRequestAwareAuthenticationSuccessHandler {
 
     @Autowired
     private UserValidationService userValidationService;
@@ -31,9 +27,9 @@ public class ProdCustomSuccessHandler extends SavedRequestAwareAuthenticationSuc
     @Value('${engineering.everything.host}')
     private String servicehost;
 
-    private static Logger log = LoggerFactory.getLogger(ProdCustomSuccessHandler.class);
+    private static Logger log = LoggerFactory.getLogger(CustomSuccessHandler.class);
 
-    public ProdCustomSuccessHandler(String defaultTargetUrl) {
+    public CustomSuccessHandler(String defaultTargetUrl) {
         setDefaultTargetUrl(defaultTargetUrl);
     }
 
