@@ -1,0 +1,6 @@
+2018-08-03 13:17:08.353  INFO 90283 --- [main] c.e.A.EngineeringEverythingApplication   : The following profiles are active: vce
+2018-08-03 13:17:15.927  INFO 90283 --- [main] c.e.A.EngineeringEverythingApplication   : Started EngineeringEverythingApplication in 8.703 seconds (JVM running for 9.301)
+2018-08-03 13:17:42.735  INFO 90296 --- [main] c.e.A.EngineeringEverythingApplication   : The following profiles are active: vce
+2018-08-03 13:17:50.012  INFO 90296 --- [main] c.e.A.EngineeringEverythingApplication   : Started EngineeringEverythingApplication in 8.151 seconds (JVM running for 8.701)
+2018-08-03 13:17:58.384  INFO 90296 --- [http-nio-8080-exec-2] c.e.A.C.DevCustomLoginSuccessHandler     : <Authentication>[gnyani007@gmail.com](authentication successfull)
+2018-08-03 13:17:58.503  INFO 90296 --- [http-nio-8080-exec-2] c.e.A.C.DevCustomLoginSuccessHandler     : <Authentication>[gnyani007@gmail.com](Student login)
