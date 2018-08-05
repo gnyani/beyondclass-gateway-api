@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
+import java.util.regex.Matcher
 import java.util.regex.Pattern
 
 /**
@@ -52,7 +53,7 @@ class UtilityRestController {
                def user = new User()
                user.with{
                    email = splits[0].trim().toLowerCase()
-                   mobilenumber = splits[1].trim()
+                   mobilenumber = splits[1]?.trim()
                    firstName = splits[2].trim().capitalize()
                    lastName = splits[3].trim().capitalize()
                    dob = date
@@ -74,7 +75,7 @@ class UtilityRestController {
                def uniqueid = serviceUtilities.generateFileName(user.getUniversity(), user.getCollege(), user.getBranch(), user?.getSection(), user.getStartYear(), user.getEndYear())
                user.uniqueclassid = uniqueid
                println(user)
-              // userRepository.save(user)
+               userRepository.save(user)
            }else{
                invalidEmails.add(splits[0].trim().toLowerCase())
            }
@@ -87,20 +88,22 @@ class UtilityRestController {
     @GetMapping(value ="/deamons/admin/insert/teacher")
     public ResponseEntity<?> insertTeacher(@RequestParam String path){
         def file = new File(path)
-        String [] batch = new String[1]
-        batch[0] = "2015-A"
+        String fileName = file.getName()
+        def userInfo = fileName.split('-')
+        def invalidEmails = []
         file.eachLine {String line ->
             String[] splits = line.split(',')
+            if(isValid(splits[0].trim().toLowerCase())){
             def user = new User()
             user.with{
-                email = splits[0].trim()
+                email = splits[0].trim().toLowerCase()
                 mobilenumber = splits[1].trim()
-                firstName = splits[2].trim()
-                lastName = splits[3].trim()
-                batches = batch
-                university = "OU"
-                college = "VASV"
-                branch = "CSE"
+                firstName = splits[2].trim().capitalize()
+                lastName = splits[3].trim().capitalize()
+                batches = splits.size() > 4 ? splits[4]?.split('@') : []
+                university = userInfo[0]
+                college = userInfo[1]
+                branch = userInfo[2]
                 enabled = true
                 accountNonExpired = true
                 accountNonLocked = true
@@ -109,7 +112,12 @@ class UtilityRestController {
             }
             user.addRole("ROLE_USER")
             userRepository.save(user)
+                println(user)
+        }else{
+                invalidEmails.add(splits[0].trim().toLowerCase())
+            }
         }
+        println("Invalid emails are ${invalidEmails}")
         new ResponseEntity<>("success",HttpStatus.OK)
     }
 
@@ -201,14 +209,10 @@ class UtilityRestController {
     }
     public static boolean isValid(String email)
     {
-        String emailRegex = '^[a-zA-Z0-9_+&*-]+(?:\\.'+
-                '[a-zA-Z0-9_+&*-]+)*@' +
-                '(?:[a-zA-Z0-9-]+\\.)+[a-z' +
-                'A-Z]{2,7}$';
-
-        Pattern pat = Pattern.compile(emailRegex);
-        if (email == null)
-            return false;
-        return pat.matcher(email).matches();
+        String expression = '^[\\w.+\\-&]+@gmail\\.com$'
+        CharSequence inputStr = email
+        Pattern pattern = Pattern.compile(expression, Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(inputStr)
+        return matcher.matches()
     }
 }
