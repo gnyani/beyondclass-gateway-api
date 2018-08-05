@@ -74,7 +74,7 @@ class UtilityRestController {
                def uniqueid = serviceUtilities.generateFileName(user.getUniversity(), user.getCollege(), user.getBranch(), user?.getSection(), user.getStartYear(), user.getEndYear())
                user.uniqueclassid = uniqueid
                println(user)
-              // userRepository.save(user)
+               userRepository.save(user)
            }else{
                invalidEmails.add(splits[0].trim().toLowerCase())
            }
