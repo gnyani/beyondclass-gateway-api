@@ -112,7 +112,7 @@ class UtilityRestController {
                 userrole = "teacher"
             }
             user.addRole("ROLE_USER")
-            ///userRepository.save(user)
+            userRepository.save(user)
                 println(user)
         }else{
                 invalidEmails.add(splits[0].trim().toLowerCase())
