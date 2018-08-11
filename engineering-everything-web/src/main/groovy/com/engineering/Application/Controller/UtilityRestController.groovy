@@ -89,8 +89,9 @@ class UtilityRestController {
     public ResponseEntity<?> insertTeacher(@RequestParam String path){
         def file = new File(path)
         String fileName = file.getName()
-        def userInfo = fileName.split('-')
+        def userInfo = fileName.tokenize('-')
         def invalidEmails = []
+        def branchToken = userInfo[2].tokenize('.')[0]
         file.eachLine {String line ->
             String[] splits = line.split(',')
             if(isValid(splits[0].trim().toLowerCase())){
@@ -100,10 +101,10 @@ class UtilityRestController {
                 mobilenumber = splits[1].trim()
                 firstName = splits[2].trim().capitalize()
                 lastName = splits[3].trim().capitalize()
-                batches = splits.size() > 4 ? splits[4]?.split('@') : []
+                batches = splits.size() > 4 ? splits[4]?.tokenize('@') : []
                 university = userInfo[0]
                 college = userInfo[1]
-                branch = userInfo[2]
+                branch = branchToken
                 enabled = true
                 accountNonExpired = true
                 accountNonLocked = true
@@ -111,7 +112,7 @@ class UtilityRestController {
                 userrole = "teacher"
             }
             user.addRole("ROLE_USER")
-            userRepository.save(user)
+            ///userRepository.save(user)
                 println(user)
         }else{
                 invalidEmails.add(splits[0].trim().toLowerCase())
