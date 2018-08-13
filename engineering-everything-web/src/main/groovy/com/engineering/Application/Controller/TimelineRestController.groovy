@@ -77,9 +77,9 @@ class TimelineRestController {
         String posttime = System.currentTimeMillis()
         String filename=serviceUtils.generateFileName(currentuser.getUniqueclassid(),postDate,currentuser.getEmail(),posttime)
         timelinePostsmetaapi.setFilename(filename)
-        String postUrl = post.file ? "http://${servicehost}:8080/users/timeline/view/${filename}" : null ;
-        String likeUrl =  "http://${servicehost}:8080/users/timeline/view/${filename}/like"
-        String commentUrl =  "http://${servicehost}:8080/users/timeline/view/${filename}/comment"
+        String postUrl = post.file ? "http://${servicehost.tokenize(':')[0]}:8080/users/timeline/view/${filename}" : null ;
+        String likeUrl =  "http://${servicehost.tokenize(':')[0]}:8080/users/timeline/view/${filename}/like"
+        String commentUrl =  "http://${servicehost.tokenize(':')[0]}:8080/users/timeline/view/${filename}/comment"
         timelinePostsmetaapi.setPostUrl(postUrl);
         timelinePostsmetaapi.setLikeUrl(likeUrl);
         timelinePostsmetaapi.setCommentUrl(commentUrl);

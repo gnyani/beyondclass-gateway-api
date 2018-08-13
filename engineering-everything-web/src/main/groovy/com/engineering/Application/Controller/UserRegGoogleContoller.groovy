@@ -73,8 +73,13 @@ class UserRegGoogleContoller {
     }
 
 
-
-
+    @GetMapping(value = "/get/students/list")
+    public ResponseEntity<?> getStudentsList(OAuth2Authentication auth, @RequestParam(value='batch', required = true) String batch){
+        String email = serviceUtilities.parseEmail(auth)
+        String classId = serviceUtilities.generateUniqueClassIdForTeacher(batch, email)
+        def students = userRepository.findByUniqueclassid(classId)
+        students ? new ResponseEntity<>(students, HttpStatus.OK) : new ResponseEntity<>("not found", HttpStatus.NOT_FOUND)
+    }
 
 
     @GetMapping(value="/user/google/auth")
