@@ -75,7 +75,7 @@ class UpdateProfileRestController {
         def message="${user.firstName} changed profile picture"
         notificationService.storeNotifications(user,message,"timeline")
 
-        def normalProppicUrl = "http://${servicehost.tokenize(':')[0]}:8080/user/profilepic/view/${email}"
+        def normalProppicUrl = "http://${servicehost}:8080/user/profilepic/view/${email}"
         user.setNormalpicUrl(normalProppicUrl)
         def x = userRepository.save(user)
         x ? new ResponseEntity<>("success", HttpStatus.OK) : new ResponseEntity<>("something went wrong",HttpStatus.INTERNAL_SERVER_ERROR)
