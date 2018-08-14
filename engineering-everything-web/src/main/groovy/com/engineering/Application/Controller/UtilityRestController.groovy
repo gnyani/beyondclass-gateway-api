@@ -42,7 +42,7 @@ class UtilityRestController {
         def invalidEmails = []
 
         file.eachLine { String line ->
-            String[] splits = line.split(',')
+            String[] splits = line.tokenize(',')
             Date date = null
        //     if(splits[4])
             //   date = new Date(splits[4])
@@ -55,7 +55,7 @@ class UtilityRestController {
                    email = splits[0].trim().toLowerCase()
                    mobilenumber = splits[1]?.trim()
                    firstName = splits[2].trim().capitalize()
-                   lastName = splits[3].trim().capitalize()
+                   lastName = splits[3]?.trim()?.capitalize()
                    dob = date
 //                   hostel = stay
                    userrole = "student"
@@ -65,7 +65,7 @@ class UtilityRestController {
                    section = userInfo[3]
                    startYear = userInfo[4]
                    endYear = userInfo[5].tokenize('.')[0]
-                   rollNumber = splits[6]
+                   rollNumber = splits[5]
                    enabled = true
                    accountNonExpired = true
                    accountNonLocked = true
