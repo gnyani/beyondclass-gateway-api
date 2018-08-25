@@ -49,7 +49,7 @@ class AnnouncementsRestController {
         User user = serviceUtils.findUserByEmail(email)
         String firstname = user?.getFirstName()
         String secondname = user?.getLastName()
-        String username = firstname + secondname.substring(0,1)
+        String username = firstname + secondname
         String time = System.currentTimeMillis()
         String announcementid = serviceUtils.generateFileName(user.uniqueclassid,email,time)
 
